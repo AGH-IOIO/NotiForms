@@ -1,0 +1,20 @@
+* Running
+Building and starint container:
+  #+begin_src bash
+docker build --target dev -t ioio-backend .
+# Port mappings will differ depending on env variables
+# 8080 represent local machine port, 80 represents container port
+docker run --rm -p 8080:80 ioio-backend
+  #+end_src
+
+Or use small shell script:
+  #+begin_src 
+./run.sh
+  #+end_src
+
+** Environement variables
+   - FLASK_HOST
+   - FLASK_PORT
+   - FLASK_DEBUG
+
+Those can be set during image build-time or overwriten at run-time.
