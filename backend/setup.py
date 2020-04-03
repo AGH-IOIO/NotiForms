@@ -1,13 +1,5 @@
 import os
-from flask import Flask, Response
-
-app = Flask(__name__)
-
-@app.route('/', methods=['GET'])
-def index():
-    """Return the index.html page"""
-    return "Hello world!"
-
+from flaskr import app
 
 if __name__ == '__main__':
     host  = os.environ.get("FLASK_HOST", "0.0.0.0")

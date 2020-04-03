@@ -7,7 +7,9 @@ docker build --target dev -t ioio-backend .
 docker run --rm -p 8080:80 ioio-backend
   #+end_src
 
-Or use small shell script:
+You can use ~run.sh~ script, however it has problem with image caching.
+It keeps rebuild it each run. 
+I don't want to deal with this right now.
   #+begin_src 
 ./run.sh
   #+end_src

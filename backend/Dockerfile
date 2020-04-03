@@ -4,9 +4,8 @@ RUN pacman -Sy python3 python-pip --noconfirm
 WORKDIR /app
 COPY . .
 RUN pip install -r requirements.txt
-WORKDIR /app/app
 
-# Developement container
+# Developement image
 FROM base as dev
 
 ARG FLASK_HOST=0.0.0.0
@@ -21,4 +20,4 @@ EXPOSE ${FLASK_PORT}
 COPY --from=base /app /app
 
 ENTRYPOINT ["python3"]
-CMD ["app.py"]
+CMD ["setup.py"]
