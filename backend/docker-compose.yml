@@ -1,0 +1,19 @@
+version: '3.4'
+services:
+  flask:
+    build:
+      context: .
+      target: dev
+    ports:
+      - 8080:8080
+    volumes:
+      - ./flaskr:/app/flaskr
+    env_file:
+      - ./.config/flask.dev.env
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    env_file:
+      - ./.config/mongo.dev.env
