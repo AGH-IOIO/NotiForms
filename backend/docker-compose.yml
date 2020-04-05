@@ -1,0 +1,15 @@
+version: '3'
+services:
+  flask:
+    build: .
+    ports:
+      - 8080:8080
+    env_file:
+      - ./.config/flask.dev.env
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    env_file:
+      - ./.config/mongo.dev.env

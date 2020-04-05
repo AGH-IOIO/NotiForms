@@ -2,6 +2,7 @@ class UserD(object):
     def __init__(self):
         self._username = None
         self._email = None
+        self._password = None
 
     @property
     def username(self):
@@ -19,5 +20,16 @@ class UserD(object):
     def email(self, new_email):
         self._email = new_email
 
-    def __repr__(self):
-        return "%s<%s>" % (self.username, self.email)
+    @property
+    def password(self):
+        return self._email
+
+    @password.setter
+    def password(self, new_password):
+        self._password = new_password
+
+    def as_dict(self):
+        return {
+            "email": self.email,
+            "username": self.username
+        }
