@@ -1,4 +1,5 @@
-from flask import Response, jsonify
+from flask import g, request, Response, jsonify
+from functools import wraps
 
 class ValidatorErr(object):
     def __init__(self, message, code=400):
@@ -21,8 +22,8 @@ def if_unlocked(decorated):
     return func
 
 class Validator(object):
-    def __init__(self, request):
-        self._request = request
+    def __init__(self, json_body):
+        self._body = json_body
         self._response = None
         self._locked = False
 
@@ -37,8 +38,7 @@ class Validator(object):
 
     @if_unlocked
     def field_present(self, key, err=None):
-        body = self._request.json
-        if key in body:
+        if key in self._body:
             return True
 
         if err is None:
@@ -52,11 +52,10 @@ class Validator(object):
 
     @if_unlocked
     def field_predicate(self, key, predicate, err=None):
-        body = self._request.json
-        if key not in body:
+        if key not in self._body:
             return True
 
-        value = body[key]
+        value = self._body[key]
         if predicate(value) is True:
             return True
 
@@ -68,3 +67,41 @@ class Validator(object):
         self._locked = True
 
         return False
+
+def expect_mime(types):
+    '''
+    Handler decorator.
+    Performs check for application/json Content Type.
+    '''
+    if not isinstance(types, list):
+        types = [types]
+
+    def decorator(f):
+        @wraps(f)
+        def decorated(*args, **kwargs):
+            # Read 'Authorization' header
+            content_type = request.headers.get("Content-Type", "")
+            # This cuts off possible ';charset=...' part.
+            content_type = content_type.split(";", 1)[0]
+            if content_type not in types:
+                return mk_error("Accepting only %s." % types, code=400)()
+            return f(*args, **kwargs)
+        return decorated
+    return decorator
+
+def json_body(f):
+    '''
+    Handler decorator.
+    Tries to parse JSON in request body.
+    If succeded g.body will hold resulting dictionary.
+    '''
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        try:
+            json_body = request.get_json(silent=False)
+            g.body = json_body
+        except Exception:
+            return mk_error("Malformed JSON body.", code=400)()
+        return f(*args, **kwargs)
+
+    return decorated

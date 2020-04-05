@@ -1,22 +1,12 @@
 * Running
-Building and starint container:
   #+begin_src bash
-docker build --target dev -t ioio-backend .
-# Port mappings will differ depending on env variables
-# 8080 represent local machine port, 80 represents container port
-docker run --rm -p 8080:80 ioio-backend
+  docker-compose build && docker-compose up
   #+end_src
 
-You can use ~run.sh~ script, however it has problem with image caching.
-It keeps rebuild it each run. 
-I don't want to deal with this right now.
-  #+begin_src 
-./run.sh
-  #+end_src
+* Default port mappings
+  - 8080 for Flask application
+  - 27017 for Mongo DB
 
-** Environement variables
-   - FLASK_HOST
-   - FLASK_PORT
-   - FLASK_DEBUG
-
-Those can be set during image build-time or overwriten at run-time.
+* About API
+  - 2xx status code when request successful
+  - JWT Token passed via _Authorizaton_ header
