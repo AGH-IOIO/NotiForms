@@ -3,10 +3,56 @@
   docker-compose build && docker-compose up
   #+end_src
 
+Flask server should detect changes dynamically, so no need to rebuild each time.
+Rebuild will be required after Dockerfile change.
+
 * Default port mappings
   - 8080 for Flask application
   - 27017 for Mongo DB
 
+* Custom decorators
+** auth_required
+   Checks for presence of JWT token in ~Authorizaton~ header.
+   If no header or token ivalid, it results in ~400 Bad Request~.
+   If it succeded token data may be accessed through ~g.user~.
+
+   What is flask.g? Check out [[https://flask.palletsprojects.com/en/1.1.x/appcontext/][here]].
+
+   You WANT to use this decorator on handlers that need to associate request with specific user.
+   #+begin_src python
+  @app.route("/", methods=["POST"])
+  @auth_required
+  def handler():
+    # ...
+   #+end_src
+** json_body
+   This method performs parsing of request body.
+
+   It results in ~400 Bad Request~ on failure.
+   On success it sets ~g.body~ to resulting dictionary.
+
+   You WANT to use it on handlers accepting JSON data.
+   #+begin_src python
+  @app.route("/", methods=["POST"])
+  @json_body
+  def handler():
+    # ...
+   #+end_src 
+** expect_mime
+   Performs ~Content-Type~ check before processing request further.
+   If invalid ~Content-Type~ detected, it results in ~400 Bad Request~.
+  #+begin_src python
+  @app.route("/", methods=["GET"])
+  @expect_mime("application/json")
+  def handler():
+    # ...
+  #+end_src
+  #+begin_src python
+  @app.route("/", methods=["GET"])
+  @expect_mime(["application/json", "text/plain"])
+  def handler():
+    # ...
+  #+end_src
 * About API
   - 2xx status code when request successful
   - JWT Token passed via _Authorizaton_ header

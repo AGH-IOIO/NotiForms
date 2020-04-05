@@ -41,7 +41,7 @@ def auth_required(f):
         # Read 'Authorization' header
         token = request.headers.get("Authorization", None)
         if token is None:
-            return mk_error("No authorization token provided.", code=401)()
+            return mk_error("No authorization token provided.", code=400)()
 
         # Try to decode the token
         try:
