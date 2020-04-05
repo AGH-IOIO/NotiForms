@@ -31,5 +31,15 @@ class UserD(object):
     def as_dict(self):
         return {
             "email": self.email,
+            "password": self.password,
             "username": self.username
         }
+
+    @staticmethod
+    def from_dict(d):
+        user = UserD()
+        user.username = d.get("username", None)
+        user.email = d.get("email", None)
+        user.password = d.get("password", None)
+        return user
+
