@@ -27,11 +27,11 @@ def make_token():
     username = body["username"]
     user = UserD.get_user({"username": username})
     if user is None:
-        return "There is no user with this name!"
+        return mk_error("There is no user with this name!")
 
     # Check password
     if not user.verify_password(body["password"]):
-        return "Incorrect password!"
+        return mk_error("Incorrect password!")
 
     # Issue a token
     token_data = {"username": username}
@@ -69,7 +69,7 @@ def make_user():
         mk_error("Password must be at least 5 characters long")
     )
 
-    email_format = lambda: lambda x: re.match(r'[A-Za-z][A-Za-z0-9_\.]*@[A-Za-z0-9_]+\.[A-Za-z0-9_]')
+    email_format = lambda x: re.match(r'[A-Za-z][A-Za-z0-9_\.]*@[A-Za-z0-9_]+\.[A-Za-z0-9_]')
     validator.field_predicate(
         "email", email_format(),
         mk_error("Incorrect email format")
@@ -82,6 +82,6 @@ def make_user():
 
     new_user = UserD.create_user(body["username"], body["email"], body["password"])
     if new_user is None:
-        return "User with given name or email already exists!"
+        return mk_error("User with given name or email already exists!")
 
     return jsonify(new_user.as_dict())
