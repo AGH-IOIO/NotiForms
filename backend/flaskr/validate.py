@@ -1,18 +1,11 @@
 from flask import g, request, Response, jsonify
 from functools import wraps
 
-class ValidatorErr(object):
-    def __init__(self, message, code=400):
-        self._message = message
-        self._code = code
-
-    def __call__(self):
-        response = jsonify({"error": self._message})
-        response.status_code = self._code
-        return response
 
 def mk_error(message, code=400):
-    return ValidatorErr(message, code)
+    response = jsonify({"error": message})
+    response.status_code = code
+    return response
 
 def if_unlocked(decorated):
     def func(self, *args, **kwargs):
@@ -45,7 +38,7 @@ class Validator(object):
             msg = "Required field '%s' is not present." % key
             err = mk_error(msg, 400)
 
-        self._response = err()
+        self._response = err
         self._locked = True
 
         return False
@@ -56,14 +49,14 @@ class Validator(object):
             return True
 
         value = self._body[key]
-        if predicate(value) is True:
+        if predicate(value):
             return True
 
         if err is None:
             msg = "Field '%s' does not match predicate." % key
             err = mk_error(msg, 400)
 
-        self._response = err()
+        self._response = err
         self._locked = True
 
         return False
@@ -84,7 +77,7 @@ def expect_mime(types):
             # This cuts off possible ';charset=...' part.
             content_type = content_type.split(";", 1)[0]
             if content_type not in types:
-                return mk_error("Accepting only %s." % types, code=400)()
+                return mk_error("Accepting only %s." % types, code=400)
             return f(*args, **kwargs)
         return decorated
     return decorator
@@ -101,7 +94,7 @@ def json_body(f):
             json_body = request.get_json(silent=False)
             g.body = json_body
         except Exception:
-            return mk_error("Malformed JSON body.", code=400)()
+            return mk_error("Malformed JSON body.", code=400)
         return f(*args, **kwargs)
 
     return decorated

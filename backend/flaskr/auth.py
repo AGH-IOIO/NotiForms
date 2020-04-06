@@ -41,13 +41,13 @@ def auth_required(f):
         # Read 'Authorization' header
         token = request.headers.get("Authorization", None)
         if token is None:
-            return mk_error("No authorization token provided.", code=400)()
+            return mk_error("No authorization token provided.", code=400)
 
         # Try to decode the token
         try:
             g.session = from_jwt(token)
         except Exception:
-            return mk_error("Unable to devode provided token.", code=400)()
+            return mk_error("Unable to decode provided token.", code=400)
 
         return f(*args, **kwargs)
 
