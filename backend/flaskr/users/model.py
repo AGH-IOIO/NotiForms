@@ -26,7 +26,7 @@ class UserD(object):
 
     @property
     def password(self):
-        raise AttributeError('You cannot read password attribute!')
+        return self._password
 
     @password.setter
     def password(self, new_password):
@@ -73,6 +73,6 @@ class UserD(object):
         user = UserD()
         user.username = d.get("username", None)
         user.email = d.get("email", None)
-        user.password = d.get("password", None)
+        user.password = d.get("password", "")
         return user
 
