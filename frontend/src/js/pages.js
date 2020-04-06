@@ -1,20 +1,14 @@
 var pages = {
-  "nav-login": "login-page",
-  "nav-register": "register-page",
-  "nav-generator": "generator-page",
+  "nav-login": "login.html",
+  "nav-register": "register.html",
+  "nav-generator": "generator.html",
 };
 
 function switchPage(page) {
-  for (var i in pages) {
-    setPageVisibility(pages[i], false);
-  }
-  setPageVisibility(page, true);
+  $("#main").empty();
+  $("#main").load(page);
 }
 
-function setPageVisibility(page, display) {
-  $("#" + page).css("display", display ? "block" : "none");
-  console.log(page, display ? "block" : "none");
-}
 
 $(document).ready(function () {
   $(".nav-link").click(function (element) {
@@ -22,5 +16,25 @@ $(document).ready(function () {
     switchPage(pages[clicked]);
   });
 
-  switchPage("login-page");
+
+  var path = location.href.replace(location.origin,'');
+
+  if(path == "/"){
+    if(localStorage.getItem("logged") != "ok"){
+      console.log("not logged")
+      location.href="/login";
+    }else{
+      console.log("logged")
+      location.href="/dashboard";
+    }
+  }
+  else if(path == "/login"){
+    switchPage("/login.html");
+  }
+  else if(path == "/register"){
+    switchPage("/register.html");
+  }
+  else if (path == "/dashboard"){
+    switchPage("/generator.html");
+  }
 });

@@ -49,9 +49,3 @@ function generatorSubmit(){
 	}
 	return false;
 }
-
-$(document).ready(function (){
-
-	$("#button-add-text").click(addTextField);
-	$("#button-remove-field").click(removeField);
-});
