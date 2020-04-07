@@ -1,51 +1,74 @@
-fields = []
+const fields = {}
+let checked = []
 
-function addTextField(){
+let index = 0
 
-	var fieldIndex = fields.length;
-	var fieldID = "field"+fieldIndex;
+function addTextField() {
 
-	fields.push({
-		type: "open_text",
-		question: ""
-	});
+    const fieldIndex = index;
+    const fieldID = "field" + fieldIndex;
 
-	var field = $("<input>")
-		.attr("type", "text")
-		.addClass("form-control")
-		.attr("placeholder", "Question")
-		.attr("id",fieldID)
-		.attr("required","required");
+    fields[fieldID] = {
+        type: "open_text",
+        question: ""
+    };
 
-	$("#inquiry-fields").append(field);
+    const field = $("<input>")
+        .attr("type", "text")
+        .addClass("form-control")
+        .attr("placeholder", "Question")
+        .attr("required", "required");
 
+
+    const box = $("<div>").addClass("box").attr("id", fieldID)
+
+    const check = $("<input>").attr("type", "checkbox")
+
+    check.change(function () {
+            const parent_id = $(this).parent().attr("id")
+            if ($(this).is(":checked")) {
+                checked.push(parent_id)
+            } else {
+                const index = checked.indexOf(parent_id);
+                if (index > -1) {
+                    checked.splice(index, 1);
+                }
+            }
+        }
+    )
+
+    box.append(check)
+    box.append(field)
+
+    $("#inquiry-fields").append(box);
+
+    index++
 }
 
-function removeField(){
-	if(fields.length > 0){
-		var fieldID = "field"+(fields.length-1);
-		$("#"+fieldID).remove();
-		fields.pop();
-	}
+const removeField = () => {
+
+    checked.forEach(fieldID => {
+        $("#" + fieldID).remove();
+        delete fields[fieldID];
+    })
+
+    checked = []
 }
 
-function generatorSubmit(){
-	if(fields.length > 0){
+const generatorSubmit = () => {
 
-		//set questions
-		for(var i=0; i<fields.length; i++){
-			if(fields[i].type == "open_text"){
-				fields[i].question = $("#field"+i).val();
-			}
-		}
+    Object.keys(fields).forEach(function (key) {
+        if (this[key].type === "open_text")
+            this[key].question = $("#" + key).find("input[type='text']").val();
+    }, fields);
 
-		var inquiryName = $("#input-inquiry-name").val();
-		var inquiry = {
-			name: inquiryName,
-			questions: fields
-		};
+    const inquiryName = $("#input-inquiry-name").val();
+    const inquiry = {
+        name: inquiryName,
+        questions: fields
+    };
 
-		alert(JSON.stringify(inquiry));
-	}
-	return false;
+
+    alert(JSON.stringify(inquiry));
+    return false;
 }
