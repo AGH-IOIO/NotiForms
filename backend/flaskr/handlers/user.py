@@ -1,12 +1,16 @@
-from flask import g, jsonify
+from flask import g, jsonify, Blueprint
 
-from flaskr import app
-from flaskr.validate import Validator, mk_error, expect_mime, json_body
-from flaskr.auth import as_jwt, auth_required
+from .. import app
+from ..validate import Validator, mk_error, expect_mime, json_body
+from ..auth import as_jwt, auth_required
 
-from .model import UserD
+from model.user import User
+from database.user_dao import UserDAO
 
 import re
+
+
+users_bp = Blueprint('users', __name__)
 
 
 @app.route("/token/", methods=["POST"])
@@ -25,7 +29,8 @@ def make_token():
     # Token should be issued only after successful check.
     # Check if user exists
     username = body["username"]
-    user = UserD.get_user({"username": username})
+    dao = UserDAO()
+    user = dao.find_one({"username": username})
     if user is None:
         return mk_error("There is no user with this name")
 
@@ -42,7 +47,8 @@ def make_token():
 @app.route("/users/", methods=["GET"])
 @auth_required
 def list_users():
-    users = [user.as_dict() for user in UserD.list_users({})]
+    dao = UserDAO()
+    users = dao.find_all_users(as_json=True)
     return jsonify({"users": users})
 
 
@@ -64,12 +70,14 @@ def make_user():
         "username", min_size(5),
         mk_error("Username must be at least 5 characters long")
     )
+
     validator.field_predicate(
         "password", min_size(5),
         mk_error("Password must be at least 5 characters long")
     )
 
-    email_format = lambda x: re.match(r'[A-Za-z][A-Za-z0-9_\.]*@[A-Za-z0-9_]+\.[A-Za-z0-9_]', x)
+    email_regex = r'[A-Za-z][A-Za-z0-9_.]*@[A-Za-z0-9_]+\.[A-Za-z0-9_]'
+    email_format = lambda x: re.match(email_regex, x)
     validator.field_predicate(
         "email", email_format,
         mk_error("Incorrect email format")
@@ -80,7 +88,12 @@ def make_user():
     if error_res is not None:
         return error_res
 
-    new_user = UserD.create_user(body["username"], body["email"], body["password"])
+    new_user = User(
+        username=body["username"],
+        email=body["email"],
+        password=body["password"]
+    )
+
     if new_user is None:
         return mk_error("User with given name or email already exists.")
 
