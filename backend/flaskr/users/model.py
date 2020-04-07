@@ -1,7 +1,6 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from flaskr.db import db
 
-
 class UserD(object):
     def __init__(self):
         self._username = None
