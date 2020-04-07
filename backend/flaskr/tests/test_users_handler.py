@@ -14,10 +14,7 @@ def test_token_acquire(flask_client, stub_user):
         "username": stub_user["username"],
         "password": stub_user["password"],
     }
-    res = post(
-        flask_client,
-        "/token/", data
-    )
+    res = post(flask_client, "/token/", data)
     assert res.status_code == 200
     body = res.get_json()
     assert "token" in body
@@ -32,10 +29,7 @@ def test_token_acquire_invalid_passwd(flask_client, stub_user):
         "username": stub_user["username"],
         "password": "no chodź adasiu zapraszam na morenke",
     }
-    res = post(
-        flask_client,
-        "/token/", data
-    )
+    res = post(flask_client, "/token/", data)
     assert res.status_code == 400
 
 '''
@@ -60,10 +54,7 @@ def test_register_user(flask_client, data=None):
             "email": "morenka@sweetnight.pl"
         }
 
-    res = post(
-        flask_client,
-        "/users/", data
-    )
+    res = post(flask_client, "/users/", data)
     assert res.status_code == 200
     result = db.users.find_one({"username":data["username"]})
     assert result != None
@@ -76,10 +67,7 @@ def test_register_duplicate_user(flask_client):
         "email": "morenka@sweetnight.pl"
     }
     test_register_user(flask_client, data=data)
-    res = post(
-        flask_client,
-        "/users/", data
-    )
+    res = post(flask_client, "/users/", data)
     assert res.status_code == 400
 
 def test_register_user_invalid_email(flask_client):
@@ -88,10 +76,7 @@ def test_register_user_invalid_email(flask_client):
         "password": "12345678",
         "email": "morenkasweetnight.com"
     }
-    res = post(
-        flask_client,
-        "/users/", data
-    )
+    res = post(flask_client, "/users/", data)
     assert res.status_code == 400
 
 def test_register_user_missing_field(flask_client):
@@ -99,9 +84,6 @@ def test_register_user_missing_field(flask_client):
         "username": "jajanek",
         "email": "morenka@sweetnight.pl"
     })
-    res = post(
-        flask_client,
-        "/users/", data
-    )
+    res = post(flask_client, "/users/", data)
     assert res.status_code == 400
 
