@@ -4,8 +4,8 @@ from .. import app
 from ..validate import Validator, mk_error, expect_mime, json_body
 from ..auth import as_jwt, auth_required
 
-from model.user import User
-from database.user_dao import UserDAO
+from ..model.user import User
+from ..database.user_dao import UserDAO
 
 import re
 
@@ -93,8 +93,11 @@ def make_user():
         email=body["email"],
         password=body["password"]
     )
+    dao = UserDAO()
 
-    if new_user is None:
+    if dao.does_username_or_email_exist(body["username"], body["email"]):
         return mk_error("User with given name or email already exists.")
+    else:
+        dao.insert_one(new_user)
 
     return jsonify(new_user.as_dict())
