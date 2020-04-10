@@ -7,12 +7,14 @@ def mk_error(message, code=400):
     response.status_code = code
     return response
 
+
 def if_unlocked(decorated):
     def func(self, *args, **kwargs):
         if not self.locked:
             return decorated(self, *args, **kwargs)
         return None
     return func
+
 
 class Validator(object):
     def __init__(self, json_body):
@@ -61,11 +63,12 @@ class Validator(object):
 
         return False
 
+
 def expect_mime(types):
-    '''
+    """
     Handler decorator.
     Performs check for application/json Content Type.
-    '''
+    """
     if not isinstance(types, list):
         types = [types]
 
@@ -82,12 +85,13 @@ def expect_mime(types):
         return decorated
     return decorator
 
+
 def json_body(f):
-    '''
+    """
     Handler decorator.
     Tries to parse JSON in request body.
-    If succeded g.body will hold resulting dictionary.
-    '''
+    If succeeded g.body will hold resulting dictionary.
+    """
     @wraps(f)
     def decorated(*args, **kwargs):
         try:

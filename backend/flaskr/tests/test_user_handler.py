@@ -1,18 +1,18 @@
 import pytest
 import json
 
-from flaskr.tests import get_with_auth, post, post_with_auth, flask_client, stub_user
-from flaskr.db import db
+from . import get_with_auth, post, post_with_auth, flask_client, \
+    stub_user, clear_db
+from ..database import db
+from ..database.user_dao import UserDAO
+from ..auth import from_jwt
 
-from flaskr.auth import from_jwt
 
-'''
-Token acquire test
-'''
-def test_token_acquire(flask_client, stub_user):
+# token acquire test
+def test_token_acquire(clear_db, flask_client, stub_user):
     data = {
-        "username": stub_user["username"],
-        "password": stub_user["password"],
+        "username": stub_user.username,
+        "password": stub_user.password,
     }
     res = post(flask_client, "/token/", data)
     assert res.status_code == 200
@@ -24,65 +24,67 @@ def test_token_acquire(flask_client, stub_user):
     assert decoded["username"] == data["username"]
     return token
 
-def test_token_acquire_invalid_passwd(flask_client, stub_user):
+
+def test_token_acquire_invalid_password(clear_db, flask_client, stub_user):
     data = {
-        "username": stub_user["username"],
-        "password": "no chodź adasiu zapraszam na morenke",
+        "username": stub_user.username,
+        "password": "totally invalid password",
     }
     res = post(flask_client, "/token/", data)
     assert res.status_code == 400
 
-'''
-Get users list
-'''
-def test_users_list(flask_client):
+
+# get users list
+def test_users_list(clear_db, flask_client):
     results = get_with_auth(flask_client, "/users/")
-    res = get_with_auth(flask_client, "/users/")
-    assert res.status_code == 200
-    body = res.get_json()
+    assert results.status_code == 200
+    body = results.get_json()
     assert "users" in body
     assert isinstance(body["users"], list)
 
-'''
-User Registration
-'''
+
+# user registration
 def test_register_user(flask_client, data=None):
     if data is None:
         data = {
-            "username": "jajanek",
-            "password": "12345678",
-            "email": "morenka@sweetnight.pl"
+            "username": "someUser",
+            "password": "123456789",
+            "email": "stubmail@gmail.com"
         }
 
     res = post(flask_client, "/users/", data)
     assert res.status_code == 200
-    result = db.users.find_one({"username":data["username"]})
-    assert result != None
-    assert result["email"] == data["email"]
+    dao = UserDAO()
+    result = dao.find_one({"username": data["username"]})
+    assert result is not None
+    assert result.email == data["email"]
+
 
 def test_register_duplicate_user(flask_client):
     data = {
-        "username": "jajanek",
-        "password": "12345678",
-        "email": "morenka@sweetnight.pl"
+        "username": "someUser",
+        "password": "123456789",
+        "email": "stubmail@gmail.com"
     }
     test_register_user(flask_client, data=data)
     res = post(flask_client, "/users/", data)
     assert res.status_code == 400
 
+
 def test_register_user_invalid_email(flask_client):
     data = {
-        "username": "jajanek",
-        "password": "12345678",
-        "email": "morenkasweetnight.com"
+        "username": "someUser",
+        "password": "123456789",
+        "email": "incorrectmail.com"
     }
     res = post(flask_client, "/users/", data)
     assert res.status_code == 400
 
+
 def test_register_user_missing_field(flask_client):
     data = json.dumps({
-        "username": "jajanek",
-        "email": "morenka@sweetnight.pl"
+        "username": "someUser",
+        "email": "stubmail@gmail.com"
     })
     res = post(flask_client, "/users/", data)
     assert res.status_code == 400
