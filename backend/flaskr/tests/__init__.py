@@ -32,10 +32,10 @@ def stub_user():
         "password": "123456789",
         "email": "stubmail@gmail.com"
     }
-    new_user = User(data)
+    new_user = User(dict(data))
     dao = UserDAO()
     dao.insert_one(new_user)
-    return new_user
+    return data
 
 
 def auth_token(username):

@@ -11,12 +11,14 @@ from ..auth import from_jwt
 # token acquire test
 def test_token_acquire(clear_db, flask_client, stub_user):
     data = {
-        "username": stub_user.username,
-        "password": stub_user.password,
+        "username": stub_user["username"],
+        "password": stub_user["password"],
     }
+    print("Acquiring by", data)
     res = post(flask_client, "/token/", data)
-    assert res.status_code == 200
     body = res.get_json()
+    print(body, flush=True)
+    assert res.status_code == 200
     assert "token" in body
     token = body["token"]
     decoded = from_jwt(token)
@@ -27,8 +29,8 @@ def test_token_acquire(clear_db, flask_client, stub_user):
 
 def test_token_acquire_invalid_password(clear_db, flask_client, stub_user):
     data = {
-        "username": stub_user.username,
-        "password": "totally invalid password",
+        "username": stub_user["username"],
+        "password": "van dame wali z obrotu, a segal lamie kosci",
     }
     res = post(flask_client, "/token/", data)
     assert res.status_code == 400
@@ -37,6 +39,7 @@ def test_token_acquire_invalid_password(clear_db, flask_client, stub_user):
 # get users list
 def test_users_list(clear_db, flask_client):
     results = get_with_auth(flask_client, "/users/")
+    print(results.get_json(), flush=True)
     assert results.status_code == 200
     body = results.get_json()
     assert "users" in body
@@ -44,7 +47,7 @@ def test_users_list(clear_db, flask_client):
 
 
 # user registration
-def test_register_user(flask_client, data=None):
+def test_register_user(clear_db, flask_client, data=None):
     if data is None:
         data = {
             "username": "someUser",
@@ -53,6 +56,7 @@ def test_register_user(flask_client, data=None):
         }
 
     res = post(flask_client, "/users/", data)
+    print(res.get_json(), flush=True)
     assert res.status_code == 200
     dao = UserDAO()
     result = dao.find_one({"username": data["username"]})
@@ -60,13 +64,13 @@ def test_register_user(flask_client, data=None):
     assert result.email == data["email"]
 
 
-def test_register_duplicate_user(flask_client):
+def test_register_duplicate_user(clear_db, flask_client):
     data = {
         "username": "someUser",
         "password": "123456789",
         "email": "stubmail@gmail.com"
     }
-    test_register_user(flask_client, data=data)
+    test_register_user(None, flask_client, data=data)
     res = post(flask_client, "/users/", data)
     assert res.status_code == 400
 
