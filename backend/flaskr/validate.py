@@ -1,4 +1,4 @@
-from flask import g, request, Response, jsonify
+from flask import g, request, jsonify
 from functools import wraps
 
 

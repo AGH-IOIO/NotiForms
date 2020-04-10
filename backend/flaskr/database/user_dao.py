@@ -1,5 +1,5 @@
 from . import db
-from ..model.user import create_user_from_dict
+from ..model.user import User
 
 
 class UserDAO:
@@ -8,36 +8,30 @@ class UserDAO:
 
     # Create
     def insert_one(self, user):
-        self.coll.insert_one(user.as_dict())
+        self.coll.insert_one(user.data)
 
     # Read
-    def find_one(self, query, as_json=False):
+    def find_one(self, query):
         user_data = self.coll.find_one(query)
-        if as_json:
-            return user_data
-        else:
-            return create_user_from_dict(user_data, password_hash=True)
+        return User(user_data, password_hash=True)
 
-    def find_one_by_id(self, _id, as_json=False):
+    def find_one_by_id(self, _id):
         query = {"_id": _id}
-        return self.find_one(query, as_json=as_json)
+        return self.find_one(query)
 
-    def find_one_by_user_object(self, user, as_json=False):
+    def find_one_by_user_object(self, user):
         query = {"_id": user._id}
-        return self.find_one(query, as_json=as_json)
+        return self.find_one(query)
 
-    def find(self, query, as_json=False):
+    def find(self, query):
         users_data = self.coll.find(query)
-        if as_json:
-            return list(users_data)
-        else:
-            return [create_user_from_dict(data, password_hash=True)
-                    for data
-                    in users_data]
+        return [User(data, password_hash=True)
+                for data
+                in users_data]
 
-    def find_all_users(self, as_json=False):
+    def find_all_users(self):
         query = {}
-        return self.find(query, as_json=as_json)
+        return self.find(query)
 
     def does_username_or_email_exist(self, username=None, email=None):
         query = {"$or": []}
@@ -45,7 +39,7 @@ class UserDAO:
             query["$or"].append({"username": username})
         if email:
             query["$or"].append({"email": email})
-        if self.find_one(query) is not None:
+        if self.coll.find_one(query):
             return True
         else:
             return False

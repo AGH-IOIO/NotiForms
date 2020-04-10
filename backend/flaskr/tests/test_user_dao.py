@@ -15,7 +15,7 @@ def stub_user():
         "password": "123456789",
         "email": "stubmail@gmail.com"
     }
-    new_user = User(**data)
+    new_user = User(data)
     return new_user
 
 
@@ -32,10 +32,10 @@ def test_empty_collection(clear_collection):
 
 def test_insert_one(clear_collection, stub_user):
     dao.insert_one(stub_user)
-    users = dao.find_all_users()
-    print(stub_user)
-    for user in users:
-        print(user)
+    assert dao.does_username_or_email_exist(
+        stub_user.username,
+        stub_user.email
+    ) is True
     user = dao.find_one_by_user_object(stub_user)
     assert user is not None
     assert user == stub_user

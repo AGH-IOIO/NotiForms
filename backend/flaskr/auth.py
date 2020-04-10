@@ -3,7 +3,7 @@ import jwt
 
 from functools import wraps
 
-from flask import g, request, redirect, url_for
+from flask import g, request
 from .validate import mk_error
 
 
@@ -29,6 +29,7 @@ def from_jwt(token):
         os.environ["JWT_SECRET"],
         algorithms=["HS256"]
     )
+
 
 def auth_required(f):
     """
