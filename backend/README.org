@@ -10,6 +10,11 @@ Rebuild will be required after Dockerfile change.
    #+begin_src bash
    docker-compose build && TEST=y docker-compose up
    #+end_src
+
+   To stop other containers after performing tests:
+   #+begin_src bash
+   docker-compose build && TEST=y docker-compose up --abort-on-container-exit
+   #+end_src
 * Default port mappings
   - 8080 for Flask application
   - 27017 for Mongo DB
