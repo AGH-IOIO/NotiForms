@@ -9,7 +9,6 @@ from ..database.user_dao import UserDAO
 
 import re
 
-
 users_bp = Blueprint('users', __name__)
 
 
@@ -48,8 +47,9 @@ def make_token():
 @auth_required
 def list_users():
     dao = UserDAO()
-    users = dao.find_all_users(as_json=True)
-    return jsonify({"users": users})
+    users = dao.find_all_users()
+    users_data = [user.data for user in users]
+    return jsonify({"users": users_data})
 
 
 @app.route("/users/", methods=["POST"])
@@ -88,11 +88,10 @@ def make_user():
     if error_res is not None:
         return error_res
 
-    new_user = User(
-        username=body["username"],
-        email=body["email"],
-        password=body["password"]
-    )
+    new_user_data = {"username": body["username"],
+                     "email": body["email"],
+                     "password": body["password"]}
+    new_user = User(new_user_data)
     dao = UserDAO()
 
     if dao.does_username_or_email_exist(body["username"], body["email"]):
@@ -100,4 +99,4 @@ def make_user():
     else:
         dao.insert_one(new_user)
 
-    return jsonify(new_user.as_dict())
+    return jsonify(new_user.data)
