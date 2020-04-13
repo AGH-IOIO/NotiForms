@@ -10,11 +10,11 @@ class User(object):
             self.data["password"] = generate_password_hash(data["password"])
 
     @property
-    def _id(self):
+    def id(self):
         return self.data["_id"]
 
-    @_id.setter
-    def _id(self, new_id):
+    @id.setter
+    def id(self, new_id):
         self.data["_id"] = new_id
 
     @property

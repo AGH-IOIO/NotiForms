@@ -3,7 +3,7 @@ from ..model.team import Team
 
 
 # TODO: add unique invite link creation and handling
-class UserDAO:
+class TeamDAO:
     def __init__(self):
         self.coll = db["teams"]
 
@@ -14,14 +14,17 @@ class UserDAO:
     # Read
     def find_one(self, query):
         data = self.coll.find_one(query)
-        return Team(data)
+        if data:
+            return Team(data)
+        else:
+            return None
 
     def find_one_by_id(self, _id):
         query = {"_id": _id}
         return self.find_one(query)
 
     def find_one_by_object(self, team):
-        query = {"_id": team._id}
+        query = {"_id": team.id}
         return self.find_one(query)
 
     def find_one_by_name(self, team_name):

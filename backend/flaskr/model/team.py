@@ -3,17 +3,17 @@ from .utils import parse_id
 
 class Team(object):
     def __init__(self, data):
-        self.data["_id"] = parse_id(data)
         self.data = data
+        self.data["_id"] = parse_id(data)
 
         # TODO: add unique invite link creation and handling
 
     @property
-    def _id(self):
+    def id(self):
         return self.data["_id"]
 
-    @_id.setter
-    def _id(self, new_id):
+    @id.setter
+    def id(self, new_id):
         self.data["_id"] = new_id
 
     @property
