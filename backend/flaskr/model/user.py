@@ -1,31 +1,20 @@
-from bson.objectid import ObjectId
 from werkzeug.security import generate_password_hash, check_password_hash
+from .utils import parse_id
 
 
 class User(object):
     def __init__(self, data, password_hash=False):
+        data["_id"] = parse_id(data)
         self.data = data
-        self._parse_id()
         if not password_hash:
             self.data["password"] = generate_password_hash(data["password"])
 
-    def _parse_id(self):
-        if "_id" not in self.data:
-            self.data["_id"] = ObjectId()
-        _id = self.data["_id"]
-        if isinstance(_id, str):
-            self.data["_id"] = ObjectId(_id)
-        elif isinstance(_id, ObjectId):
-            return
-        else:
-            raise ValueError("_id has to be of string or ObjectId type")
-
     @property
-    def _id(self):
+    def id(self):
         return self.data["_id"]
 
-    @_id.setter
-    def _id(self, new_id):
+    @id.setter
+    def id(self, new_id):
         self.data["_id"] = new_id
 
     @property
@@ -62,6 +51,34 @@ class User(object):
 
     def verify_password(self, password):
         return check_password_hash(self.password, password)
+
+    @property
+    def teams(self):
+        return self.data["teams"]
+
+    @teams.setter
+    def teams(self, new_teams):
+        self.data["teams"] = new_teams
+
+    def add_team(self, team_name):
+        if team_name not in self.data["teams"]:
+            self.data["teams"].append(team_name)
+
+    def remove_team(self, team_name):
+        try:
+            self.data["teams"].remove(team_name)
+        except ValueError:
+            pass
+
+    def change_team(self, old_team_name, new_team_name):
+        try:
+            index = self.data["teams"].index(old_team_name)
+            self.data["teams"][index] = new_team_name
+        except ValueError:
+            pass
+
+    def is_user_in_team(self, team_name):
+        return team_name in self.data["teams"]
 
     def __eq__(self, other):
         if self.__class__ != other.__class__:
