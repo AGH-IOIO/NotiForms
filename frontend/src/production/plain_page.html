@@ -4,9 +4,10 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <script src="production/js/jquery-3.4.1.min.js"></script>
     <script src="production/js/redirect.js"></script>
+    <script src="production/js/pages.js"></script>
     <script type="application/javascript">
       if (localStorage.getItem("token") === null){
-        document.location.href="/";
+        //document.location.href="/";
       }
     </script>
 
@@ -92,7 +93,7 @@
                       <span class="fa fa-chevron-down"></span
                     ></a>
                     <ul class="nav child_menu">
-                      <li><a href="form.html">General Form</a></li>
+                      <li><a href="#" onclick="showGenerator()">Create Form</a></li>
                       <li>
                         <a href="form_advanced.html">Advanced Components</a>
                       </li>
@@ -379,7 +380,11 @@
         <!-- /top navigation -->
 
         <!-- page content -->
-        <div class="right_col" role="main"></div>
+        <div class="right_col" role="main" id="main">
+
+          
+          
+        </div>
         <!-- /page content -->
 
         <!-- footer content -->
