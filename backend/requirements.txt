@@ -2,3 +2,5 @@ flask >= 1.1.1
 Flask-Cors >= 3.0.8
 PyJWT >= 1.7.1
 pymongo[srv] >= 3.9.0
+Werkzeug == 1.0.1
+pytest >= 5.4.1

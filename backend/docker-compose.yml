@@ -10,6 +10,8 @@ services:
       - ./flaskr:/app/flaskr
     env_file:
       - ./.config/flask.dev.env
+    environment:
+      - TEST=${TEST}
   mongo:
     image: mongo
     restart: always
