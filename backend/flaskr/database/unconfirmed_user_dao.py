@@ -96,21 +96,16 @@ class UserDAO:
             self.delete_one_by_link(link)
         return user
 
-    def confirm_user(self, username=None, email=None, _id=None):
-        if not username and not email and not _id:
-            raise ValueError("At least one of {username, email, _id} must be "
-                             "not None")
+    def confirm_user(self, link=None):
+        if not link:
+            raise ValueError("No registration link provided")
 
-        query = {}
-        if username:
-            query["user.username"] = username
-        if email:
-            query["user.email"] = email
-        if _id:
-            query["_id"] = _id
-
+        query = {"link": link}
         user = self.pop(query)
-        confirmed_user_data = user.user_data
-        confirmed_user = User(confirmed_user_data, password_hash=True)
-        confirmed_dao = ConfirmedUserDAO()
-        confirmed_dao.insert_one(confirmed_user)
+
+        if user:
+            confirmed_user_data = user.user_data
+            confirmed_user = User(confirmed_user_data, password_hash=True)
+            confirmed_dao = ConfirmedUserDAO()
+            confirmed_dao.insert_one(confirmed_user)
+        return user

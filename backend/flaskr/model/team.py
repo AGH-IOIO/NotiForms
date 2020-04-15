@@ -1,4 +1,7 @@
 from .utils import parse_id
+from ..auth import as_jwt
+from flask import url_for
+from ..email import send_email
 
 
 class Team:
@@ -10,11 +13,10 @@ class Team:
       users: list[string]  # usernames
     }
     """
+
     def __init__(self, data):
         self.data = data
         self.data["_id"] = parse_id(data)
-
-        # TODO: add unique invite link creation and handling
 
     @property
     def id(self):
@@ -49,6 +51,16 @@ class Team:
 
     def is_user_in_team(self, username):
         return username in self.data["users"]
+
+    def get_invitation_link(self, username):
+        token = as_jwt({"username": username,
+                        "team_name": self.name})
+        return url_for('confirm_team', token=token, _external=True)
+
+    def invite_user(self, user):
+        send_email(user.email, 'Confirm team invitation', 'invitation_email',
+                   username=user.username, link=self.get_invitation_link(user.username),
+                   team_name=self.name)
 
     def __eq__(self, other):
         if self.__class__ != other.__class__:

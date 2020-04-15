@@ -1,0 +1,10 @@
+Dear {{ username }},
+
+You have got an invitation to team {{ team_name }}.
+To confirm this, click the link provided below:
+{{ link }}
+
+Kind regards,
+NotiForms Team
+
+Message generated automatically, please do not respond to this e-mail.

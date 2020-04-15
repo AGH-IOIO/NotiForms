@@ -2,7 +2,6 @@ from . import db
 from ..model.team import Team
 
 
-# TODO: add unique invite link creation and handling
 class TeamDAO:
     def __init__(self):
         self.coll = db["teams"]
@@ -104,7 +103,7 @@ class TeamDAO:
 
     def change_name(self, new_team_name, old_team_name=None, _id=None):
         if not old_team_name and not _id:
-            raise ValueError("At least one of {old_team_name, _id} must be " 
+            raise ValueError("At least one of {old_team_name, _id} must be "
                              "not None")
 
         query = {}

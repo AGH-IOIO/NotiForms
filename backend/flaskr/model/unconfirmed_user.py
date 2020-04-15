@@ -15,6 +15,7 @@ class UnconfirmedUser:
       user: User document
     }
     """
+
     def __init__(self, data, password_hash=False):
         new_data = dict()
         new_data["_id"] = parse_id(data)
@@ -80,7 +81,7 @@ class UnconfirmedUser:
 
     @staticmethod
     def create_registration_link(username):
-        token = as_jwt({'username': username})
+        token = as_jwt({"username": username})
         return url_for('confirm', token=token, _external=True)
 
     @property

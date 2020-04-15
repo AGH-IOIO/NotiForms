@@ -1,4 +1,4 @@
-from flask import g, jsonify, Blueprint
+from flask import g, jsonify, Blueprint, url_for
 
 from .. import app
 from ..validate import Validator, mk_error, expect_mime, json_body
@@ -9,6 +9,7 @@ from ..model.user import User
 from ..model.unconfirmed_user import UnconfirmedUser
 from ..database.user_dao import UserDAO
 from ..database.unconfirmed_user_dao import UserDAO as UncofirmedUserDAO
+from ..database.team_dao import TeamDAO
 
 import re
 import os
@@ -115,10 +116,27 @@ def make_user():
 
 @app.route("/users/confirm/<token>")
 def confirm(token):
-    token_data = from_jwt(token)
     dao = UncofirmedUserDAO()
-    username = token_data["username"]
-    dao.confirm_user(username=username)
 
-    return jsonify(username)
+    link = url_for('confirm', token=token, _external=True)
+    if dao.confirm_user(link=link):
+        return jsonify({"confirmation": "OK"})
+    else:
+        return jsonify({"confirmation": "Error"})
     # TODO - redirect to main page
+
+
+@app.route("/users/confirm_team/<token>")
+def confirm_team(token):
+    token_data = from_jwt(token)
+    dao = TeamDAO()
+
+    username = token_data["username"]
+    team_name = token_data["team_name"]
+
+    if dao.is_user_in_team(username, team_name=team_name):
+        return jsonify({"confirmation": "Already confirmed"})
+    else:
+        dao.add_user(username, team_name=team_name)
+        return jsonify({"confirmation": "OK"})
+    # TODO - redirect somewhere
