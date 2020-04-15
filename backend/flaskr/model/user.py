@@ -2,7 +2,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from .utils import parse_id
 
 
-class User(object):
+class User:
     """
     JSON format:
     {

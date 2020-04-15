@@ -1,7 +1,7 @@
 from .utils import parse_id
 
 
-class Team(object):
+class Team:
     """
     JSON format:
     {

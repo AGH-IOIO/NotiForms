@@ -4,7 +4,7 @@ from .user import User
 from .utils import parse_id
 
 
-class UnconfirmedUser(object):
+class UnconfirmedUser:
     """
     JSON format:
     {
