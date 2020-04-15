@@ -3,7 +3,8 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <script src="production/js/jquery-3.4.1.min.js"></script>
-    <script src="production/js/redirect.js"></script>
+    <script src="production/js/pages.js"></script>
+    <script src="production/js/generator.js"></script>
     <script type="application/javascript">
         // if (localStorage.getItem("token") === null){
         //   document.location.href="/";
@@ -55,7 +56,10 @@
                         <h3>Ankiety</h3>
                         <ul class="nav side-menu">
                             <li>
-                                <button class="btn btn-success" style="width: 100%" type="submit">nowy szablon</button>
+                                <button class="btn btn-success" style="width: 100%" onclick="showGenerator()" type="submit">nowy szablon</button>
+                            </li>
+                            <li>
+                                <button class="btn btn-success" style="width: 100%" type="submit">przeprowadź ankietę</button>
                             </li>
                             <li>
                                 <a
@@ -325,8 +329,7 @@
         <!-- /top navigation -->
 
         <!-- page content -->
-        <div class="right_col" role="main"></div>
-        <!-- /page content -->
+        <div class="right_col" role="main" id="main">
 
         <!-- footer content -->
         <footer>
