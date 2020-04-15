@@ -1,5 +1,7 @@
 from . import db
 from ..model.unconfirmed_user import UnconfirmedUser
+from ..model.user import User
+from .user_dao import UserDAO as ConfirmedUserDAO
 
 
 # TODO: then the database will be properly created, set TTL (index with TTL) on this collection
@@ -48,9 +50,9 @@ class UserDAO:
 
         query = {}
         if username:
-            query["username"] = username
+            query["user.username"] = username
         if email:
-            query["email"] = email
+            query["user.email"] = email
         if self.coll.find_one(query):
             return True
         else:
@@ -94,3 +96,21 @@ class UserDAO:
             self.delete_one_by_link(link)
         return user
 
+    def confirm_user(self, username=None, email=None, _id=None):
+        if not username and not email and not _id:
+            raise ValueError("At least one of {username, email, _id} must be "
+                             "not None")
+
+        query = {}
+        if username:
+            query["user.username"] = username
+        if email:
+            query["user.email"] = email
+        if _id:
+            query["_id"] = _id
+
+        user = self.pop(query)
+        confirmed_user_data = user.user_data
+        confirmed_user = User(confirmed_user_data, password_hash=True)
+        confirmed_dao = ConfirmedUserDAO()
+        confirmed_dao.insert_one(confirmed_user)

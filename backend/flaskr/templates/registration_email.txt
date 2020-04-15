@@ -1,0 +1,10 @@
+Dear {{ username }},
+
+Welcome to NotiForms!
+To confirm your registration, click the link provided below:
+{{ link }}
+
+Kind regards,
+NotiForms Team
+
+Message generated automatically, please do not respond to this e-mail.

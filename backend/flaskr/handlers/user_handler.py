@@ -2,12 +2,16 @@ from flask import g, jsonify, Blueprint
 
 from .. import app
 from ..validate import Validator, mk_error, expect_mime, json_body
-from ..auth import as_jwt, auth_required
+from ..auth import as_jwt, auth_required, from_jwt
+from ..email import send_email
 
 from ..model.user import User
+from ..model.unconfirmed_user import UnconfirmedUser
 from ..database.user_dao import UserDAO
+from ..database.unconfirmed_user_dao import UserDAO as UncofirmedUserDAO
 
 import re
+import os
 
 users_bp = Blueprint('users', __name__)
 
@@ -91,12 +95,30 @@ def make_user():
     new_user_data = {"username": body["username"],
                      "email": body["email"],
                      "password": body["password"]}
-    new_user = User(new_user_data)
-    dao = UserDAO()
+
+    unconfirmed_user_data = {"link": UnconfirmedUser.create_registration_link(new_user_data["username"]),
+                             "user": new_user_data}
+    new_unconfirmed_user = UnconfirmedUser(unconfirmed_user_data)
+    dao = UncofirmedUserDAO()
 
     if dao.does_username_or_email_exist(body["username"], body["email"]):
         return mk_error("User with given name or email already exists.")
     else:
-        dao.insert_one(new_user)
+        dao.insert_one(new_unconfirmed_user)
 
-    return jsonify(new_user.data)
+        if os.environ["TEST"] != 'y':
+            send_email(new_unconfirmed_user.email, 'Confirm your registration', 'registration_email',
+                       username=new_unconfirmed_user.username, link=new_unconfirmed_user.link)
+
+    return jsonify(new_unconfirmed_user.data)
+
+
+@app.route("/users/confirm/<token>")
+def confirm(token):
+    token_data = from_jwt(token)
+    dao = UncofirmedUserDAO()
+    username = token_data["username"]
+    dao.confirm_user(username=username)
+
+    return jsonify(username)
+    # TODO - redirect to main page

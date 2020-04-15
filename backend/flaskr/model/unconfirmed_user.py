@@ -2,6 +2,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from .user import User
 from .utils import parse_id
+from ..auth import as_jwt
+from flask import url_for
 
 
 class UnconfirmedUser:
@@ -17,7 +19,7 @@ class UnconfirmedUser:
         new_data = dict()
         new_data["_id"] = parse_id(data)
         new_data["link"] = data["link"]
-        user = User(new_data["user"])
+        user = User(data["user"])
         new_data["user"] = user.data
         self.data = new_data
 
@@ -61,6 +63,10 @@ class UnconfirmedUser:
     def password(self, new_password):
         self.data["user"]["password"] = generate_password_hash(new_password)
 
+    @property
+    def user_data(self):
+        return self.data["user"]
+
     def set_hashed_password(self, password):
         """
         This method sets the password directly, without hashing it before. It
@@ -71,6 +77,11 @@ class UnconfirmedUser:
 
     def verify_password(self, password):
         return check_password_hash(self.password, password)
+
+    @staticmethod
+    def create_registration_link(username):
+        token = as_jwt({'username': username})
+        return url_for('confirm', token=token, _external=True)
 
     @property
     def teams(self):

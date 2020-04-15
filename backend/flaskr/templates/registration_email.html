@@ -1,0 +1,12 @@
+<p>Dear {{ username }},</p>
+
+<p>Welcome to <b>NotiForms</b>!</p>
+<p>To confirm your registration, please
+    <a href="{{ url_for('confirm', token=token, _external=True) }}">click here</a>.</p>
+<p>Alternatively, you can paste the following link in your browser's address bar:</p>
+<p>{{ link }}</p>
+
+<p>Kind regards,</p>
+<p>NotiForms Team</p>
+
+<p><small>Message generated automatically, please do not respond to this e-mail.</small></p>
