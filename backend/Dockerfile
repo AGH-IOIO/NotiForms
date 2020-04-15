@@ -1,6 +1,6 @@
 # Base image
 FROM archlinux:latest as base
-RUN pacman -Sy python3 python-pip --noconfirm
+RUN pacman -Sy python3 python-pip libffi --noconfirm
 WORKDIR /app
 COPY . .
 RUN pip install -r requirements.txt
