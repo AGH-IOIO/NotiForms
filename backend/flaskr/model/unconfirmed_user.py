@@ -1,23 +1,28 @@
 from werkzeug.security import generate_password_hash, check_password_hash
+
+from .user import User
 from .utils import parse_id
+from ..auth import as_jwt
+from flask import url_for
 
 
-class User:
+class UnconfirmedUser:
     """
     JSON format:
     {
       _id: ObjectId,
-      username: string,    # unique
-      email: string,       # unique
-      password: string     # hash, not plaintext
-      teams: list[string]  # team names
+      link: string,  # registration confirmation link, unique
+      user: User document
     }
     """
+
     def __init__(self, data, password_hash=False):
-        data["_id"] = parse_id(data)
-        self.data = data
-        if not password_hash:
-            self.data["password"] = generate_password_hash(data["password"])
+        new_data = dict()
+        new_data["_id"] = parse_id(data)
+        new_data["link"] = data["link"]
+        user = User(data["user"])
+        new_data["user"] = user.data
+        self.data = new_data
 
     @property
     def id(self):
@@ -28,28 +33,40 @@ class User:
         self.data["_id"] = new_id
 
     @property
+    def link(self):
+        return self.data["link"]
+
+    @link.setter
+    def link(self, new_link):
+        self.data["link"] = new_link
+
+    @property
     def username(self):
-        return self.data["username"]
+        return self.data["user"]["username"]
 
     @username.setter
     def username(self, new_username):
-        self.data["username"] = new_username
+        self.data["user"]["username"] = new_username
 
     @property
     def email(self):
-        return self.data["email"]
+        return self.data["user"]["email"]
 
     @email.setter
     def email(self, new_email):
-        self.data["email"] = new_email
+        self.data["user"]["email"] = new_email
 
     @property
     def password(self):
-        return self.data["password"]
+        return self.data["user"]["password"]
 
     @password.setter
     def password(self, new_password):
-        self.data["password"] = generate_password_hash(new_password)
+        self.data["user"]["password"] = generate_password_hash(new_password)
+
+    @property
+    def user_data(self):
+        return self.data["user"]
 
     def set_hashed_password(self, password):
         """
@@ -62,6 +79,11 @@ class User:
     def verify_password(self, password):
         return check_password_hash(self.password, password)
 
+    @staticmethod
+    def create_registration_link(username):
+        token = as_jwt({"username": username})
+        return url_for('confirm', token=token, _external=True)
+
     @property
     def teams(self):
         return self.data["teams"]
@@ -69,26 +91,6 @@ class User:
     @teams.setter
     def teams(self, new_teams):
         self.data["teams"] = new_teams
-
-    def add_team(self, team_name):
-        if team_name not in self.data["teams"]:
-            self.data["teams"].append(team_name)
-
-    def remove_team(self, team_name):
-        try:
-            self.data["teams"].remove(team_name)
-        except ValueError:
-            pass
-
-    def change_team(self, old_team_name, new_team_name):
-        try:
-            index = self.data["teams"].index(old_team_name)
-            self.data["teams"][index] = new_team_name
-        except ValueError:
-            pass
-
-    def is_user_in_team(self, team_name):
-        return team_name in self.data["teams"]
 
     def __eq__(self, other):
         if self.__class__ != other.__class__:

@@ -3,6 +3,8 @@ from datetime import datetime, date
 from flask import Flask
 from flask.json import JSONEncoder, JSONDecoder
 from flask_cors import CORS
+from flask_mail import Mail
+import os
 
 
 # custom MongoBD encoder and decoder for entire app
@@ -32,6 +34,13 @@ class MongoJSONDecoder(JSONDecoder):
 app = Flask(__name__)
 app.json_encoder = MongoJSONEncoder
 CORS(app)
+
+app.config["MAIL_SERVER"] = os.environ["MAIL_SERVER"]
+app.config["MAIL_PORT"] = int(os.environ["MAIL_PORT"])
+app.config["MAIL_USE_TLS"] = os.environ.get("MAIL_USE_TLS", "true").lower() in ["true", "on", "1"]
+app.config["MAIL_USERNAME"] = os.environ["MAIL_USERNAME"]
+app.config["MAIL_PASSWORD"] = os.environ["MAIL_PASSWORD"]
+mail = Mail(app)
 
 # Blueprints import
 from .handlers.user_handler import users_bp

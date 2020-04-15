@@ -124,3 +124,9 @@ def test_remove_user(clear_collection, stub_team):
     assert team.users is not None
     assert len(team.users) == 1
     assert team.users[0] == user_2
+
+
+def test_find_users_from_team(clear_collection, stub_team):
+    dao.insert_one(stub_team)
+    users = dao.find_users_from_team(stub_team.name)
+    assert stub_team.users == users
