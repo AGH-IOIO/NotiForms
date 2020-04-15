@@ -73,6 +73,23 @@ class TeamDAO:
         else:
             return True
 
+    def find_users_from_team(self, team_name=None, _id=None):
+        if not team_name and not _id:
+            raise ValueError("At least one of {team_name, _id} must be not "
+                             "None")
+
+        query = {}
+        if team_name:
+            query["name"] = team_name
+        if _id:
+            query["_id"] = _id
+
+        team = self.find_one(query)
+        if team:
+            return team.users
+        else:
+            return None
+
     # Update
     def update_one(self, query, update):
         self.coll.update_one(query, update)

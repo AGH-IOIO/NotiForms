@@ -2,6 +2,14 @@ from .utils import parse_id
 
 
 class Team(object):
+    """
+    JSON format:
+    {
+      _id: ObjectId,
+      name: string,        # unique
+      users: list[string]  # usernames
+    }
+    """
     def __init__(self, data):
         self.data = data
         self.data["_id"] = parse_id(data)
