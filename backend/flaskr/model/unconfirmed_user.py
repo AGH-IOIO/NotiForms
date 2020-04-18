@@ -20,7 +20,7 @@ class UnconfirmedUser:
         new_data = dict()
         new_data["_id"] = parse_id(data)
         new_data["link"] = data["link"]
-        user = User(data["user"])
+        user = User(data["user"], password_hash=password_hash)
         new_data["user"] = user.data
         self._data = new_data
 
@@ -76,13 +76,17 @@ class UnconfirmedUser:
     def user_data(self):
         return self._data["user"]
 
+    @user_data.setter
+    def user_data(self, new_user_data):
+        self._data["user"] = new_user_data
+
     @property
     def teams(self):
-        return self._data["teams"]
+        return self._data["user"]["teams"]
 
     @teams.setter
     def teams(self, new_teams):
-        self._data["teams"] = new_teams
+        self._data["user"]["teams"] = new_teams
 
     def set_hashed_password(self, password):
         """
@@ -90,15 +94,10 @@ class UnconfirmedUser:
         should be used ONLY when the password argument is a hash.
         :param password: hashed password
         """
-        self._data["password"] = password
+        self._data["user"]["password"] = password
 
     def verify_password(self, password):
         return check_password_hash(self.password, password)
-
-    @staticmethod
-    def create_registration_link(username):
-        token = as_jwt({"username": username})
-        return url_for('confirm', token=token, _external=True)
 
     def __eq__(self, other):
         if self.__class__ != other.__class__:

@@ -1,4 +1,7 @@
 from bson import ObjectId
+from flask import url_for
+
+from backend.flaskr.auth import as_jwt
 
 
 def parse_id(data):
@@ -19,3 +22,8 @@ def check_question_type(question_type):
     if question_type not in allowed_types:
         error_msg = "Question type \"" + question_type + "\" is not supported"
         raise ValueError(error_msg)
+
+
+def create_registration_link(username):
+    token = as_jwt({"username": username})
+    return url_for('confirm', token=token, _external=True)

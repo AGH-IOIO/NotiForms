@@ -5,7 +5,7 @@ from .user_dao import UserDAO as ConfirmedUserDAO
 
 
 # TODO: then the database will be properly created, set TTL (index with TTL) on this collection
-class UserDAO:
+class UnconfirmedUserDAO:
     def __init__(self):
         self.coll = db["unconfirmed_users"]
 
