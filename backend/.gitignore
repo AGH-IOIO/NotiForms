@@ -14,4 +14,3 @@ build/
 flaskr/database/db_credentials
 
 .idea/
-.config/mail.dev.env
