@@ -182,4 +182,4 @@ def test_confirm_invitation(clear_db, flask_client):
     assert res.get_json()["confirmation"] == "OK"
 
     team_from_db = team_dao.find_one_by_name(team.name)
-    assert user.username in team_from_db.users
+    assert user.username in team_from_db.members

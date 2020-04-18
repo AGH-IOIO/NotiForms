@@ -6,7 +6,7 @@ from ..auth import as_jwt, auth_required, from_jwt
 from ..email import send_email
 
 from ..model.unconfirmed_user import UnconfirmedUser
-from ..model.utils import create_registration_link
+from ..model.utils import create_user_registration_link
 from ..database.user_dao import UserDAO
 from ..database.unconfirmed_user_dao import UnconfirmedUserDAO
 from ..database.team_dao import TeamDAO
@@ -97,7 +97,7 @@ def make_user():
                      "email": body["email"],
                      "password": body["password"]}
 
-    unconfirmed_user_data = {"link": create_registration_link(
+    unconfirmed_user_data = {"link": create_user_registration_link(
                                      new_user_data["username"]),
                              "user": new_user_data}
     new_unconfirmed_user = UnconfirmedUser(unconfirmed_user_data)

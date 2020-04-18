@@ -85,7 +85,7 @@ class TeamDAO:
 
         team = self.find_one(query)
         if team:
-            return team.users
+            return team.members
         else:
             return None
 

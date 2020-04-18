@@ -1,6 +1,7 @@
 from bson import ObjectId
 from flask import url_for
 
+from ..email import send_email
 from backend.flaskr.auth import as_jwt
 
 
@@ -24,6 +25,21 @@ def check_question_type(question_type):
         raise ValueError(error_msg)
 
 
-def create_registration_link(username):
-    token = as_jwt({"username": username})
+def create_user_registration_link(user):
+    token = as_jwt({"username": user.name})
     return url_for('confirm', token=token, _external=True)
+
+
+def create_team_invitation_for_user_link(team, username):
+    token = as_jwt({"username": username,
+                    "team_name": team.name})
+    return url_for('confirm_team', token=token, _external=True)
+
+
+def invite_user_to_team(team, user):
+    send_email(user.email,
+               'Confirm team invitation',
+               'invitation_email',
+               username=user.username,
+               link=create_team_invitation_for_user_link(team, user.username),
+               team_name=team.name)
