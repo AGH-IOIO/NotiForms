@@ -1,0 +1,49 @@
+
+<!-- Generator page -->
+<div class="title_left">
+        <h3>New Form</h3>
+</div>
+
+<div class="x_panel">
+    <div class="x_content">
+    <br />
+    <form id="demo-form2" data-parsley-validate class="form-horizontal form-label-left" onsubmit="return generatorSubmit()">
+
+      <div class="item form-group">
+        <label class="col-form-label col-md-3 col-sm-3 label-align" for="input-form-name">Form Name <span class="required">*</span>
+        </label>
+        <div class="col-md-6 col-sm-6 ">
+          <input type="text" id="input-form-name" required="required" class="form-control ">
+        </div>
+      </div>
+
+
+      <div id="inquiry-fields">
+        
+      </div>
+      
+      
+      <div class="ln_solid"></div>
+      <div class="item form-group">
+        <div class="col-md-6 col-sm-6 offset-md-3">
+            <button type="button" class="btn btn-primary" id="button-add-text" onclick="addTextField()">
+                Add text field +
+              </button>
+              <button
+                type="button"
+                class="btn btn-danger"
+                id="button-remove-field"
+                onclick="removeField()"
+              >
+                Remove field -
+              </button>
+              <button class="btn btn-success" id="button-inquiry-create">
+                Save inquiry
+              </button>
+        </div>
+      </div>
+
+    </form>
+  </div>
+</div>
+
