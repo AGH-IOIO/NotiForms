@@ -5,12 +5,13 @@
     <script src="production/js/jquery-3.4.1.min.js"></script>
     <script src="production/js/pages.js"></script>
     <script src="production/js/generator.js"></script>
+    <script src="production/js/table.js"></script>
     <script type="application/javascript">
+
         // if (localStorage.getItem("token") === null){
         //   document.location.href="/";
         // }
     </script>
-    <script src="production/js/table.js"></script>
 
     <!-- Meta, title, CSS, favicons, etc. -->
     <meta charset="utf-8"/>
@@ -60,7 +61,7 @@
                                 <button class="btn btn-success" style="width: 100%" onclick="showGenerator()" type="submit">nowy szablon</button>
                             </li>
                             <li>
-                                <button class="btn btn-success" style="width: 100%" type="submit">przeprowadź ankietę</button>
+                                <button class="btn btn-success" style="width: 100%" onclick="showFormGenerator()" type="submit">przeprowadź ankietę</button>
                             </li>
                             <li>
                                 <a

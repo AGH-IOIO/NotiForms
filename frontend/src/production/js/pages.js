@@ -5,5 +5,10 @@ function showGenerator(){
 
 function showGroupGenerator(){
     $("#main").empty();
-    $("#main").load("/production/group_generator.html");
+    $("#main").load("/production/groupgenerator.html");
+}
+
+function showFormGenerator(){
+    $("#main").empty();
+    $("#main").load("/production/formgenerator.html");
 }
