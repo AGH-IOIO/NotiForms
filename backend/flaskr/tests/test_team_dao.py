@@ -101,9 +101,9 @@ def test_add_user(clear_collection, stub_team):
     dao.add_user(new_user, stub_team.name)
 
     team = dao.find_one_by_id(stub_team.id)
-    assert team.users is not None
-    assert len(team.users) == 1
-    assert team.users[0] == new_user
+    assert team.members is not None
+    assert len(team.members) == 1
+    assert team.members[0] == new_user
 
 
 def test_remove_user(clear_collection, stub_team):
@@ -114,19 +114,19 @@ def test_remove_user(clear_collection, stub_team):
     dao.add_user(user_2, stub_team.name)
 
     team = dao.find_one_by_id(stub_team.id)
-    assert team.users is not None
-    assert len(team.users) == 2
-    assert team.users[0] == user_1
-    assert team.users[1] == user_2
+    assert team.members is not None
+    assert len(team.members) == 2
+    assert team.members[0] == user_1
+    assert team.members[1] == user_2
 
     dao.remove_user(user_1, stub_team.name)
     team = dao.find_one_by_id(stub_team.id)
-    assert team.users is not None
-    assert len(team.users) == 1
-    assert team.users[0] == user_2
+    assert team.members is not None
+    assert len(team.members) == 1
+    assert team.members[0] == user_2
 
 
 def test_find_users_from_team(clear_collection, stub_team):
     dao.insert_one(stub_team)
     users = dao.find_users_from_team(stub_team.name)
-    assert stub_team.users == users
+    assert stub_team.members == users
