@@ -58,7 +58,7 @@ class TeamDAO:
         if _id:
             query["_id"] = _id
 
-        query["users"] = username
+        query["members"] = username
 
         if self.coll.find_one(query):
             return True
@@ -126,7 +126,7 @@ class TeamDAO:
         if _id:
             query["_id"] = _id
 
-        update = {"$push": {"users": username}}
+        update = {"$push": {"members": username}}
         self.coll.find_one_and_update(query, update)
 
     def remove_user(self, username, team_name=None, _id=None):
@@ -140,7 +140,7 @@ class TeamDAO:
         if _id:
             query["_id"] = _id
 
-        update = {"$pull": {"users": username}}
+        update = {"$pull": {"members": username}}
         self.coll.find_one_and_update(query, update)
 
     # Delete
