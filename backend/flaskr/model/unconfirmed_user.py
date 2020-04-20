@@ -2,8 +2,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from .user import User
 from .utils import parse_id
-from ..auth import as_jwt
-from flask import url_for
 
 
 class UnconfirmedUser:

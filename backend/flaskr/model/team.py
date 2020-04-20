@@ -1,6 +1,4 @@
 from .utils import parse_id
-from ..auth import as_jwt
-from flask import url_for
 
 
 class Team:

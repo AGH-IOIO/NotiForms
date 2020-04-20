@@ -1,4 +1,3 @@
-from .utils import parse_id
 from .questions import *
 
 
