@@ -1,7 +1,7 @@
 from bson import ObjectId
 from flask import url_for
 
-from ..auth import as_jwt
+from ..auth import as_jwt, mk_error
 from ..email import send_email
 
 
@@ -36,7 +36,7 @@ def create_team_invitation_for_user_link(team_name, username):
     return url_for('confirm_team', token=token, _external=True)
 
 
-def invite_user_to_team(team, username):
+def invite_user_to_team(team_name, username):
     from ..database.user_dao import UserDAO
 
     dao = UserDAO()
@@ -47,8 +47,8 @@ def invite_user_to_team(team, username):
                    'Confirm team invitation',
                    'invitation_email',
                    username=user.username,
-                   link=create_team_invitation_for_user_link(team.name, user.username),
-                   team_name=team.name)
+                   link=create_team_invitation_for_user_link(team_name, user.username),
+                   team_name=team_name)
     return user
 
 
@@ -70,3 +70,36 @@ def confirm_user(link=None):
         confirmed_dao = UserDAO()
         confirmed_dao.insert_one(confirmed_user)
     return user
+
+
+def add_user_to_team(username, team_name):
+    from ..database.user_dao import UserDAO
+    from ..database.team_dao import TeamDAO
+
+    team_dao = TeamDAO()
+    user_dao = UserDAO()
+
+    if not user_dao.does_username_or_email_exist(username=username):
+        return mk_error("User with given name does not exist")
+
+    team_dao.add_user(username, team_name=team_name)
+    user_dao.add_team(team_name, username=username)
+    return None
+
+
+def save_new_team(body):
+    from ..database.team_dao import TeamDAO
+    from ..model.team import Team
+
+    team_data = {
+        "name": body["name"],
+        "members": []
+    }
+    team = Team(team_data)
+    dao = TeamDAO()
+
+    if dao.does_team_name_exist(team.name):
+        return mk_error("Team with this name already exists!")
+    else:
+        dao.insert_one(team)
+        return None

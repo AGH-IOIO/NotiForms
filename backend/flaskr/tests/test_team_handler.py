@@ -26,14 +26,18 @@ def stub_user():
         "password": "123456789",
         "email": "stubmail@gmail.com"
     }
-    return user_data
+    dao = UserDAO()
+    user = User(user_data)
+    dao.insert_one(user)
+
+    return user
 
 
 def test_confirm_invitation(clear_db, flask_client, stub_team, stub_user, invitation_link=None):
     team_dao = TeamDAO()
     team = Team(stub_team)
     team_dao.insert_one(team)
-    username = stub_user["username"]
+    username = stub_user.username
 
     if invitation_link is None:
         with app.test_client(), app.test_request_context():
@@ -68,22 +72,22 @@ def create_duplicated_team(flask_client, team_data, link="/teams/create_team/"):
 
 
 def test_create_fast_team(clear_db, flask_client, stub_team, stub_user):
-    stub_team["members"].append(stub_user["username"])
+    stub_team["members"].append(stub_user.username)
     create_team(flask_client, stub_team, "/teams/create_team_fast/")
     team_dao = TeamDAO()
     team_from_db = team_dao.find_one_by_name(stub_team["name"])
-    username = stub_user["username"]
+
     assert team_from_db is not None
-    assert username in team_from_db.members
+    assert stub_user.username in team_from_db.members
 
 
 def test_create_fast_team_with_missing_data(flask_client):
     create_team_with_missing_data(flask_client, "/teams/create_team_fast/")
 
 
-def test_create_duplicated_fast_teams(clear_db, flask_client, stub_team):
+def test_create_duplicated_fast_teams(clear_db, flask_client, stub_team, stub_user):
     team_data = stub_team
-    team_data["members"].append("username")
+    team_data["members"].append(stub_user.username)
     create_duplicated_team(flask_client, team_data, "/teams/create_team_fast/")
 
 

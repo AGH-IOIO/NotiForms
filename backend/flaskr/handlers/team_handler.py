@@ -5,7 +5,7 @@ from flask import jsonify, Blueprint, g
 from .. import app
 from ..auth import from_jwt, auth_required
 from ..database.team_dao import TeamDAO
-from ..model.team import Team
+from ..model.utils import add_user_to_team, save_new_team
 from ..validate import expect_mime, json_body, Validator, mk_error
 
 team_bp = Blueprint('teams', __name__)
@@ -22,7 +22,10 @@ def confirm_team(token):
     if dao.is_user_in_team(username, team_name=team_name):
         return jsonify({"confirmation": "Already confirmed"})
     else:
-        dao.add_user(username, team_name=team_name)
+        error_res = add_user_to_team(username, team_name)
+        if error_res is not None:
+            return error_res
+
         return jsonify({"confirmation": "OK"})
     # TODO - redirect somewhere
 
@@ -44,17 +47,17 @@ def create_fast_team_with_users():
     if error_res is not None:
         return error_res
 
-    team_data = {
-        "name": body["name"],
-        "members": body["members"]
-    }
+    error_res = save_new_team(body)
+    if error_res is not None:
+        return error_res
 
-    team = Team(team_data)
-    dao = TeamDAO()
-    if dao.does_team_name_exist(team.name):
-        return mk_error("Team with this name already exists!")
+    team_name = body["name"]
+    invited_members = body["members"]
 
-    dao.insert_one(team)
+    for member_name in invited_members:
+        error_res = add_user_to_team(member_name, team_name)
+        if error_res is not None:
+            return error_res
 
     return jsonify({"confirmation": "OK"})
 
@@ -69,23 +72,17 @@ def create_team():
     if error_res is not None:
         return error_res
 
-    team_data = {
-        "name": body["name"],
-        "members": []
-    }
+    error_res = save_new_team(body)
+    if error_res is not None:
+        return error_res
+
+    team_name = body["name"]
     invited_members = body["members"]
-
-    team = Team(team_data)
-    dao = TeamDAO()
-    if dao.does_team_name_exist(team.name):
-        return mk_error("Team with this name already exists!")
-
-    dao.insert_one(team)
 
     from ..model.utils import invite_user_to_team
     for invited_member_name in invited_members:
         if os.environ["TEST"] != 'y':
-            if invite_user_to_team(team, invited_member_name) is None:
+            if invite_user_to_team(team_name, invited_member_name) is None:
                 return mk_error("User " + invited_member_name + " does not exist!")
 
     return jsonify({"confirmation": "OK"})

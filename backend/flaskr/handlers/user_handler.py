@@ -126,3 +126,15 @@ def confirm(token):
     else:
         return jsonify({"confirmation": "Error"})
     # TODO - redirect to main page
+
+
+@app.route("/users/get_teams/<username>")
+@auth_required
+def get_user_teams(username):
+    user_dao = UserDAO()
+    user = user_dao.find_one({"username": username})
+    if user is None:
+        return mk_error("User with given username does not exist!")
+
+    teams = user.teams
+    return jsonify({"teams": teams})
