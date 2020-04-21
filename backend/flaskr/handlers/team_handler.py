@@ -1,3 +1,5 @@
+import os
+
 from flask import jsonify, Blueprint, g
 
 from .. import app
@@ -25,16 +27,20 @@ def confirm_team(token):
     # TODO - redirect somewhere
 
 
-@app.route("/teams/create_team/", methods=["POST"])
-@expect_mime("application/json")
-@json_body
-def create_team_with_users():
-    body = g.body
+def validate_team_body(body):
     validator = Validator(body)
-
     validator.field_present("name")
     validator.field_present("members")
-    error_res = validator.error()
+    return validator.error()
+
+
+@app.route("/teams/create_team_fast/", methods=["POST"])
+@expect_mime("application/json")
+@json_body
+def create_fast_team_with_users():
+    body = g.body
+    error_res = validate_team_body(body)
+
     if error_res is not None:
         return error_res
 
@@ -49,6 +55,38 @@ def create_team_with_users():
         return mk_error("Team with this name already exists!")
 
     dao.insert_one(team)
+
+    return jsonify({"confirmation": "OK"})
+
+
+@app.route("/teams/create_team/", methods=["POST"])
+@expect_mime("application/json")
+@json_body
+def create_team():
+    body = g.body
+    error_res = validate_team_body(body)
+
+    if error_res is not None:
+        return error_res
+
+    team_data = {
+        "name": body["name"],
+        "members": []
+    }
+    invited_members = body["members"]
+
+    team = Team(team_data)
+    dao = TeamDAO()
+    if dao.does_team_name_exist(team.name):
+        return mk_error("Team with this name already exists!")
+
+    dao.insert_one(team)
+
+    from ..model.utils import invite_user_to_team
+    for invited_member_name in invited_members:
+        if os.environ["TEST"] != 'y':
+            if invite_user_to_team(team, invited_member_name) is None:
+                return mk_error("User " + invited_member_name + " does not exist!")
 
     return jsonify({"confirmation": "OK"})
 

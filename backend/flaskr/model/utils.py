@@ -30,19 +30,26 @@ def create_user_registration_link(username):
     return url_for('confirm', token=token, _external=True)
 
 
-def create_team_invitation_for_user_link(team, username):
+def create_team_invitation_for_user_link(team_name, username):
     token = as_jwt({"username": username,
-                    "team_name": team.name})
+                    "team_name": team_name})
     return url_for('confirm_team', token=token, _external=True)
 
 
-def invite_user_to_team(team, user):
-    send_email(user.email,
-               'Confirm team invitation',
-               'invitation_email',
-               username=user.username,
-               link=create_team_invitation_for_user_link(team, user.username),
-               team_name=team.name)
+def invite_user_to_team(team, username):
+    from ..database.user_dao import UserDAO
+
+    dao = UserDAO()
+    user = dao.find_one({"username": username})
+
+    if user is not None:
+        send_email(user.email,
+                   'Confirm team invitation',
+                   'invitation_email',
+                   username=user.username,
+                   link=create_team_invitation_for_user_link(team.name, user.username),
+                   team_name=team.name)
+    return user
 
 
 def confirm_user(link=None):
