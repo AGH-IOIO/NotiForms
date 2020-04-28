@@ -1,5 +1,7 @@
 fields = []
+let checked = []
 
+console.log("TEST");
 function addTextField(){
 
 	var fieldIndex = fields.length;
@@ -29,27 +31,52 @@ function addTextField(){
 	var inputDiv = $("<div>")
 		.addClass("col-md-6")
 		.addClass("col-sm-6");
-
+	
 	var field = $("<input>")
 		.attr("type", "text")
 		.addClass("form-control")
 		.attr("placeholder", "Question")
 		.attr("id",fieldID)
 		.attr("required","required");
+	
+	var check = $("<input>")
+		.attr("type", "checkbox")
+		.attr("id",fieldID);
+	
+	check.change(function () {
+		console.log("CHANGED");
+            const parent_id = $(this).parent().attr("id")
+            if ($(this).is(":checked")) {
+                checked.push(parent_id);
+            } else {
+                const index = checked.indexOf(parent_id);
+                if (index > -1) {
+                    checked.splice(index, 1);
+                }
+            }
+        }
+    )
+	
 	inputDiv.append(field);
 	fieldDiv.append(inputDiv);
+	fieldDiv.append(check);
+	
 
 	$("#inquiry-fields").append(fieldDiv);
 
 }
 
-function removeField(){
-	if(fields.length > 0){
-		var fieldID = "fieldDiv"+(fields.length-1);
-		$("#"+fieldID).remove();
-		fields.pop();
-	}
+const removeField = () => {
+	checked.forEach(fieldID => {
+		console.log(fieldID);
+		$("#" + fieldID).remove();
+        delete fields[fieldID];
+    })
+
+    checked = []
 }
+
+console.log(checked);
 
 function generatorSubmit(){
 	if(fields.length > 0){
