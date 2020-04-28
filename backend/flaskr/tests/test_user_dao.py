@@ -100,6 +100,13 @@ def test_insert_many(clear_collection, stub_user, stub_user_2):
         assert user == stub_user or user == stub_user_2
 
 
+def test_find_username_from_id(clear_collection, stub_user):
+    dao.insert_one(stub_user)
+
+    user = dao.find_username_from_id(stub_user.id)
+    print(user)
+
+
 def test_update(clear_collection, stub_user):
     dao.insert_one(stub_user)
     stub_user.password = generate_password_hash("987654321")

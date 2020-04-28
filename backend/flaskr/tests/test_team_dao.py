@@ -17,7 +17,7 @@ def clear_collection():
 def stub_team():
     data = {
         "name": "stub_team",
-        "users": []
+        "members": []
     }
     team = Team(data)
     return team
@@ -27,7 +27,7 @@ def stub_team():
 def stub_team_2():
     data = {
         "name": "stub_team_2",
-        "users": ["user_2"]
+        "members": ["user_2"]
     }
     team = Team(data)
     return team

@@ -31,6 +31,7 @@ class Template:
       questions: list[Question]  # list of Question documents
     }
     """
+
     def __init__(self, data):
         data["_id"] = parse_id(data)
         self._data = data

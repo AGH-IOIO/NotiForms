@@ -2,7 +2,7 @@ from bson import ObjectId
 from flask import url_for
 
 from ..email import send_email
-from backend.flaskr.auth import as_jwt
+from ..auth import as_jwt
 
 
 def parse_id(data):
@@ -25,8 +25,8 @@ def check_question_type(question_type):
         raise ValueError(error_msg)
 
 
-def create_user_registration_link(user):
-    token = as_jwt({"username": user.name})
+def create_user_registration_link(username):
+    token = as_jwt({"username": username})
     return url_for('confirm', token=token, _external=True)
 
 

@@ -51,6 +51,15 @@ class UserDAO:
         else:
             return False
 
+    def find_username_from_id(self, _id):
+        query = {"_id": _id}
+        projection = {"_id": False, "username": True}
+        result = self.coll.find_one(query, projection)
+        if result:
+            return result["username"]
+        else:
+            return None
+
     # Update
     def update_one(self, query, update):
         self.coll.update_one(query, update)

@@ -3,14 +3,15 @@ import json
 
 from . import get_with_auth, post, post_with_auth, flask_client, \
     stub_user, clear_db, get, app
-from ..database import db
 from ..database.user_dao import UserDAO
-from ..database.unconfirmed_user_dao import UserDAO as UnconfirmedUserDAO
+from ..database.unconfirmed_user_dao import UnconfirmedUserDAO
 from ..database.team_dao import TeamDAO
 from ..auth import from_jwt
 from ..model.user import User
 from ..model.team import Team
 from ..model.unconfirmed_user import UnconfirmedUser
+from ..model.utils import create_team_invitation_for_user_link, \
+    create_user_registration_link
 
 
 # token acquire test
@@ -108,7 +109,7 @@ def test_confirm_user(clear_db, flask_client):
 
     with app.test_client(), app.test_request_context():
         data = {
-            "link": UnconfirmedUser.create_registration_link(user_data["username"]),
+            "link": create_user_registration_link(user_data["username"]),
             "user": user_data
         }
 
@@ -135,7 +136,7 @@ def test_confirmed_user_confirm(clear_db, flask_client):
 
     with app.test_client(), app.test_request_context():
         data = {
-            "link": UnconfirmedUser.create_registration_link(user_data["username"]),
+            "link": create_user_registration_link(user_data["username"]),
             "user": user_data
         }
 
@@ -174,7 +175,8 @@ def test_confirm_invitation(clear_db, flask_client):
     team_dao.insert_one(team)
 
     with app.test_client(), app.test_request_context():
-        invitation_link = team.get_invitation_link(user.username)
+        invitation_link = create_team_invitation_for_user_link(team,
+                                                               user.username)
 
     token = invitation_link.split('/')[-1]
     res = get(flask_client, "/users/confirm_team/" + token)
