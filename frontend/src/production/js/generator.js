@@ -44,7 +44,6 @@ function addTextField(){
 		.attr("id",fieldID);
 	
 	check.change(function () {
-		console.log("CHANGED");
             const parent_id = $(this).parent().attr("id")
             if ($(this).is(":checked")) {
                 checked.push(parent_id);
@@ -68,7 +67,6 @@ function addTextField(){
 
 const removeField = () => {
 	checked.forEach(fieldID => {
-		console.log(fieldID);
 		$("#" + fieldID).remove();
         delete fields[fieldID];
     })
