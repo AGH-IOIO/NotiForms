@@ -1,8 +1,8 @@
 from bson import ObjectId
 from flask import url_for
 
+from ..auth import as_jwt, mk_error
 from ..email import send_email
-from backend.flaskr.auth import as_jwt
 
 
 def parse_id(data):
@@ -25,21 +25,81 @@ def check_question_type(question_type):
         raise ValueError(error_msg)
 
 
-def create_user_registration_link(user):
-    token = as_jwt({"username": user.name})
+def create_user_registration_link(username):
+    token = as_jwt({"username": username})
     return url_for('confirm', token=token, _external=True)
 
 
-def create_team_invitation_for_user_link(team, username):
+def create_team_invitation_for_user_link(team_name, username):
     token = as_jwt({"username": username,
-                    "team_name": team.name})
+                    "team_name": team_name})
     return url_for('confirm_team', token=token, _external=True)
 
 
-def invite_user_to_team(team, user):
-    send_email(user.email,
-               'Confirm team invitation',
-               'invitation_email',
-               username=user.username,
-               link=create_team_invitation_for_user_link(team, user.username),
-               team_name=team.name)
+def invite_user_to_team(team_name, username):
+    from ..database.user_dao import UserDAO
+
+    dao = UserDAO()
+    user = dao.find_one({"username": username})
+
+    if user is not None:
+        send_email(user.email,
+                   'Confirm team invitation',
+                   'invitation_email',
+                   username=user.username,
+                   link=create_team_invitation_for_user_link(team_name, user.username),
+                   team_name=team_name)
+    return user
+
+
+def confirm_user(link=None):
+    from ..database.unconfirmed_user_dao import UnconfirmedUserDAO
+    from ..database.user_dao import UserDAO
+    from ..model.user import User
+
+    if not link:
+        raise ValueError("No registration link provided")
+
+    unconfirmed_dao = UnconfirmedUserDAO()
+    query = {"link": link}
+    user = unconfirmed_dao.pop(query)
+
+    if user:
+        confirmed_user_data = user.user_data
+        confirmed_user = User(confirmed_user_data, password_hash=True)
+        confirmed_dao = UserDAO()
+        confirmed_dao.insert_one(confirmed_user)
+    return user
+
+
+def add_user_to_team(username, team_name):
+    from ..database.user_dao import UserDAO
+    from ..database.team_dao import TeamDAO
+
+    team_dao = TeamDAO()
+    user_dao = UserDAO()
+
+    if not user_dao.does_username_or_email_exist(username=username):
+        return mk_error("User with given name does not exist")
+
+    team_dao.add_user(username, team_name=team_name)
+    user_dao.add_team(team_name, username=username)
+    return None
+
+
+def save_new_team(body):
+    from ..database.team_dao import TeamDAO
+    from ..model.team import Team
+
+    team_data = {
+        "name": body["name"],
+        "members": []
+    }
+    team = Team(team_data)
+    dao = TeamDAO()
+
+    if dao.does_team_name_exist(team.name):
+        return mk_error("Team with this name already exists!")
+    else:
+        dao.insert_one(team)
+        return None

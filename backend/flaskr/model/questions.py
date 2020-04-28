@@ -100,7 +100,7 @@ class SingleChoiceQuestion(Question):
 
     def __init__(self, data):
         super().__init__(data)
-        if self.type != "open_text":
+        if self.type != "single_choice":
             error_msg = "Tried to assign question of type {} to a " + \
                         "SingleChoiceQuestion!".format(self.type)
             raise ValueError(error_msg)
@@ -134,7 +134,7 @@ class MultipleChoiceQuestion(Question):
     JSON format:
     {
       _id: ObjectId,
-      type: string,  # must be "single_choice"
+      type: string,  # must be "multiple_choice"
       title: string,
       choices: list[string],
       answer: list[int]  # indices of chosen choices, default: []
@@ -143,7 +143,7 @@ class MultipleChoiceQuestion(Question):
 
     def __init__(self, data):
         super().__init__(data)
-        if self.type != "open_text":
+        if self.type != "multiple_choice":
             error_msg = "Tried to assign question of type {} to a " + \
                         "MultipleChoiceQuestion!".format(self.type)
             raise ValueError(error_msg)

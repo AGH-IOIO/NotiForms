@@ -4,13 +4,14 @@ import json
 from . import get_with_auth, post, post_with_auth, flask_client, \
     stub_user, clear_db, get, app
 from ..database import db
-from ..database.user_dao import UserDAO
-from ..database.unconfirmed_user_dao import UserDAO as UnconfirmedUserDAO
 from ..database.team_dao import TeamDAO
+from ..database.user_dao import UserDAO
+from ..database.unconfirmed_user_dao import UnconfirmedUserDAO
 from ..auth import from_jwt
-from ..model.user import User
 from ..model.team import Team
 from ..model.unconfirmed_user import UnconfirmedUser
+from ..model.user import User
+from ..model.utils import create_user_registration_link, add_user_to_team
 
 
 # token acquire test
@@ -108,7 +109,7 @@ def test_confirm_user(clear_db, flask_client):
 
     with app.test_client(), app.test_request_context():
         data = {
-            "link": UnconfirmedUser.create_registration_link(user_data["username"]),
+            "link": create_user_registration_link(user_data["username"]),
             "user": user_data
         }
 
@@ -135,7 +136,7 @@ def test_confirmed_user_confirm(clear_db, flask_client):
 
     with app.test_client(), app.test_request_context():
         data = {
-            "link": UnconfirmedUser.create_registration_link(user_data["username"]),
+            "link": create_user_registration_link(user_data["username"]),
             "user": user_data
         }
 
@@ -153,33 +154,41 @@ def test_confirmed_user_confirm(clear_db, flask_client):
     assert res.get_json()["confirmation"] == "Error"
 
 
-def test_confirm_invitation(clear_db, flask_client):
-    team_data = {
-        "name": "test_team",
-        "users": []
-    }
-    team = Team(team_data)
+def test_get_user_teams(clear_db, flask_client):
+    team1_name = "team1"
+    team2_name = "team2"
+    username = "someUser"
 
     user_data = {
-        "username": "new_user",
+        "username": username,
         "password": "123456789",
         "email": "stubmail@gmail.com"
     }
+    team1_data = {
+        "name": team1_name,
+        "members": []
+    }
+    team2_data = {
+        "name": team2_name,
+        "members": []
+    }
+
     user = User(user_data)
+    team1 = Team(team1_data)
+    team2 = Team(team2_data)
 
     user_dao = UserDAO()
     team_dao = TeamDAO()
-
     user_dao.insert_one(user)
-    team_dao.insert_one(team)
+    team_dao.insert_one(team1)
+    team_dao.insert_one(team2)
 
-    with app.test_client(), app.test_request_context():
-        invitation_link = team.get_invitation_link(user.username)
+    add_user_to_team(user.username, team1.name)
+    add_user_to_team(user.username, team2.name)
 
-    token = invitation_link.split('/')[-1]
-    res = get(flask_client, "/users/confirm_team/" + token)
+    res = get_with_auth(flask_client, "/users/get_teams/" + user.username)
     assert res.status_code == 200
-    assert res.get_json()["confirmation"] == "OK"
 
-    team_from_db = team_dao.find_one_by_name(team.name)
-    assert user.username in team_from_db.members
+    teams = res.get_json()["teams"]
+    assert team1.name in teams
+    assert team2.name in teams
