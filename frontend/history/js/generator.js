@@ -7,6 +7,7 @@ function addTextField() {
 
     const fieldIndex = index;
     const fieldID = "field" + fieldIndex;
+    
 
     fields[fieldID] = {
         type: "open_text",
@@ -46,8 +47,7 @@ function addTextField() {
 }
 
 const removeField = () => {
-
-    checked.forEach(fieldID => {
+	checked.forEach(fieldID => {
         $("#" + fieldID).remove();
         delete fields[fieldID];
     })

@@ -1,16 +1,21 @@
-fields = []
+fields = {}
+checked = []
+
+let index = 0;
+
 
 function addTextField(){
 
-	var fieldIndex = fields.length;
+	var fieldIndex = index;
 	var fieldID = "field"+fieldIndex;
 	var fieldDivID = "fieldDiv"+fieldIndex;
 
-	fields.push({
-		type: "open_text",
+	
+	fields[fieldDivID] = {
+        type: "open_text",
 		title: "",
 		answer: ""
-	});
+    };
 
 	var fieldDiv = $("<div>")
 		.addClass("item")
@@ -29,48 +34,72 @@ function addTextField(){
 	var inputDiv = $("<div>")
 		.addClass("col-md-6")
 		.addClass("col-sm-6");
-
+	
 	var field = $("<input>")
 		.attr("type", "text")
 		.addClass("form-control")
 		.attr("placeholder", "Question")
 		.attr("id",fieldID)
 		.attr("required","required");
+	
+	var check = $("<input>")
+		.attr("type", "checkbox")
+		.attr("id",fieldID);
+	
+	check.change(function () {
+            const parent_id = $(this).parent().attr("id")
+            if ($(this).is(":checked")) {
+                checked.push(parent_id);
+            } else {
+                const index = checked.indexOf(parent_id);
+                if (index > -1) {
+                    checked.splice(index, 1);
+                }
+            }
+        }
+    )
+	
 	inputDiv.append(field);
 	fieldDiv.append(inputDiv);
+	fieldDiv.append(check);
+	
 
 	$("#inquiry-fields").append(fieldDiv);
-
+	index++;
 }
 
-function removeField(){
-	if(fields.length > 0){
-		var fieldID = "fieldDiv"+(fields.length-1);
-		$("#"+fieldID).remove();
-		fields.pop();
-	}
+const removeField = () => {
+	checked.forEach(fieldID => {
+		$("#" + fieldID).remove();
+		var id = parseInt(fieldID.slice(8));
+		delete fields[fieldID];
+    })
+
+    checked = []
 }
 
 function generatorSubmit(){
-	if(fields.length > 0){
-
-		//set questions
-		for(var i=0; i<fields.length; i++){
-			if(fields[i].type == "open_text"){
-				fields[i].title = $("#field"+i).val();
-			}
+	var fieldsArr = [];
+	Object.keys(fields).forEach(function (key) {
+        if (this[key].type === "open_text"){
+            this[key].title = $("#" + key).find("input[type='text']").val();
+			fieldsArr.push(this[key])
 		}
+    }, fields);
 
-		var inquiryName = $("#input-form-name").val();
-		var inquiry = {
-			title: inquiryName,
-			questions: fields
-		};
+    const inquiryName = $("#input-form-name").val();
+    const inquiry = {
+        title: inquiryName,
+        questions: fieldsArr
+    };
 
-		alert(JSON.stringify(inquiry));
-	}
+
+    alert(JSON.stringify(inquiry));
+    return false;
 	return false;
 }
+
+=======
 
 function showDeadlinePicker(){
 	var checkbox = $("#form-deadline-checkbox");
@@ -83,3 +112,4 @@ function showDeadlinePicker(){
 		picker.css("display", "none");
 	}
 }
+
