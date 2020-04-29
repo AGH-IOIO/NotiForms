@@ -3,7 +3,7 @@ from flask import jsonify, Blueprint, g
 from .. import app
 from ..auth import auth_required
 from ..database.templates_dao import TemplateDAO
-from ..model.form import Template
+from ..model.forms import Template
 from ..validate import expect_mime, json_body, Validator, mk_error
 
 template_bp = Blueprint('templates', __name__)

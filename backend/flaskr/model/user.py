@@ -13,6 +13,7 @@ class User:
       teams: list[string]  # team names
     }
     """
+
     def __init__(self, data, password_hash=False):
         data["_id"] = parse_id(data)
         self._data = data
