@@ -99,8 +99,6 @@ function generatorSubmit(){
 	return false;
 }
 
-=======
-
 function showDeadlinePicker(){
 	var checkbox = $("#form-deadline-checkbox");
 	var picker = $("#form-deadline-picker")
