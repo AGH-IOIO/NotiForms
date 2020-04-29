@@ -1,5 +1,5 @@
 from . import db
-from ..model.form import Template
+from ..model.forms import Template
 
 
 class TeamDAO:

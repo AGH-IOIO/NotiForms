@@ -15,8 +15,8 @@ class Message:
     """
 
     def __init__(self, data):
+        data["_id"] = parse_id(data)
         self._data = data
-        self._data["_id"] = parse_id(data)
 
     @property
     def data(self):
@@ -79,8 +79,8 @@ class MessageBox:
     """
 
     def __init__(self, data):
+        data["_id"] = parse_id(data)
         self._data = data
-        self._data["_id"] = parse_id(data)
 
     @property
     def data(self):

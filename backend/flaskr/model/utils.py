@@ -1,6 +1,7 @@
 from bson import ObjectId
 from flask import url_for
 
+from .questions import *
 from ..email import send_email
 from ..auth import as_jwt
 
@@ -23,6 +24,26 @@ def check_question_type(question_type):
     if question_type not in allowed_types:
         error_msg = "Question type \"" + question_type + "\" is not supported"
         raise ValueError(error_msg)
+
+
+def parse_questions(questions):
+    result = []
+    type_to_class = {"open_text": OpenTextQuestion,
+                     "single_choice": SingleChoiceQuestion,
+                     "multiple_choice": MultipleChoiceQuestion}
+                     #"single_date": SingleDateQuestion,
+                     #"multiple_date": MultipleDateQuestion}
+
+    for question in questions:
+        q_type = question.type
+        if q_type not in type_to_class:
+            raise ValueError("Question type {} not recognized".format(q_type))
+        else:
+            question_class = type_to_class[q_type]
+            question_object = question_class(question)
+            result.append(question_object)
+
+    return result
 
 
 def create_user_registration_link(username):
