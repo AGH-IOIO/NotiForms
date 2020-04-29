@@ -44,10 +44,22 @@ function submitGroup() {
         emails.push($(this).text())
     })
 
+    var deadline = ""
+    var checkbox = $("#form-deadline-checkbox");
+	var picker = $("#form-deadline-input")
+
+	if(checkbox.is(":checked")){
+        deadline = picker.val();
+    }
+
     const group = {
         name: $('#group_name').val(),
-        participants: emails
+        template: $("#form_template").val(),
+        participants: emails,
+        deadline: deadline
     }
+
+    
 
     alert(JSON.stringify(group));
     return false;

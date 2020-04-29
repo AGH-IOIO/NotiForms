@@ -2,7 +2,7 @@ from . import db
 from ..model.forms import Template
 
 
-class TeamDAO:
+class TemplateDAO:
     def __init__(self):
         self.coll = db["templates"]
 

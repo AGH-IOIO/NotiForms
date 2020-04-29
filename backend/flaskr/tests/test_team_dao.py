@@ -51,7 +51,7 @@ def test_insert_one(clear_collection, stub_team):
 def test_nonexistent_user(clear_collection):
     error_data = {
         "name": "false_team",
-        "users": []
+        "members": []
     }
     nonexistent_team = Team(error_data)
 
