@@ -179,7 +179,7 @@ def test_confirm_invitation(clear_db, flask_client):
                                                                user.username)
 
     token = invitation_link.split('/')[-1]
-    res = get(flask_client, "/users/confirm_team/" + token)
+    res = get(flask_client, "/teams/confirm_team/" + token)
     assert res.status_code == 200
     assert res.get_json()["confirmation"] == "OK"
 
