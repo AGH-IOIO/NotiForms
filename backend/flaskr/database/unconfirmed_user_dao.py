@@ -1,7 +1,5 @@
 from . import db
 from ..model.unconfirmed_user import UnconfirmedUser
-from ..model.user import User
-from .user_dao import UserDAO as ConfirmedUserDAO
 
 
 # TODO: then the database will be properly created, set TTL (index with TTL) on this collection
@@ -94,18 +92,4 @@ class UnconfirmedUserDAO:
         user = self.find_one_by_link(link)
         if user:
             self.delete_one_by_link(link)
-        return user
-
-    def confirm_user(self, link=None):
-        if not link:
-            raise ValueError("No registration link provided")
-
-        query = {"link": link}
-        user = self.pop(query)
-
-        if user:
-            confirmed_user_data = user.user_data
-            confirmed_user = User(confirmed_user_data, password_hash=True)
-            confirmed_dao = ConfirmedUserDAO()
-            confirmed_dao.insert_one(confirmed_user)
         return user

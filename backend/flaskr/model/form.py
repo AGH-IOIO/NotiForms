@@ -6,11 +6,11 @@ def parse_questions(questions):
     type_to_class = {"open_text": OpenTextQuestion,
                      "single_choice": SingleChoiceQuestion,
                      "multiple_choice": MultipleChoiceQuestion}
-                     #"single_date": SingleDateQuestion,
-                     #"multiple_date": MultipleDateQuestion}
+    # "single_date": SingleDateQuestion,
+    # "multiple_date": MultipleDateQuestion}
 
     for question in questions:
-        q_type = question.type
+        q_type = question["type"]
         if q_type not in type_to_class:
             raise ValueError("Question type {} not recognized".format(q_type))
         else:
@@ -31,6 +31,7 @@ class Template:
       questions: list[Question]  # list of Question documents
     }
     """
+
     def __init__(self, data):
         data["_id"] = parse_id(data)
         self._data = data

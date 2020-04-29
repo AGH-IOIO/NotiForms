@@ -1,18 +1,16 @@
+import os
+import re
+
 from flask import g, jsonify, Blueprint, url_for
 
 from .. import app
-from ..validate import Validator, mk_error, expect_mime, json_body
-from ..auth import as_jwt, auth_required, from_jwt
+from ..auth import as_jwt, auth_required
+from ..database.unconfirmed_user_dao import UnconfirmedUserDAO
+from ..database.user_dao import UserDAO
 from ..email import send_email
-
 from ..model.unconfirmed_user import UnconfirmedUser
 from ..model.utils import create_user_registration_link
-from ..database.user_dao import UserDAO
-from ..database.unconfirmed_user_dao import UnconfirmedUserDAO
-from ..database.team_dao import TeamDAO
-
-import re
-import os
+from ..validate import Validator, mk_error, expect_mime, json_body
 
 users_bp = Blueprint('users', __name__)
 
@@ -98,8 +96,8 @@ def make_user():
                      "password": body["password"]}
 
     unconfirmed_user_data = {"link": create_user_registration_link(
-                                     new_user_data["username"]),
-                             "user": new_user_data}
+        new_user_data["username"]),
+        "user": new_user_data}
     new_unconfirmed_user = UnconfirmedUser(unconfirmed_user_data)
     dao = UnconfirmedUserDAO()
 
@@ -120,27 +118,23 @@ def make_user():
 
 @app.route("/users/confirm/<token>")
 def confirm(token):
-    dao = UnconfirmedUserDAO()
+    from ..model.utils import confirm_user
 
     link = url_for('confirm', token=token, _external=True)
-    if dao.confirm_user(link=link):
+    if confirm_user(link=link):
         return jsonify({"confirmation": "OK"})
     else:
         return jsonify({"confirmation": "Error"})
     # TODO - redirect to main page
 
 
-@app.route("/users/confirm_team/<token>")
-def confirm_team(token):
-    token_data = from_jwt(token)
-    dao = TeamDAO()
+@app.route("/users/get_teams/<username>")
+@auth_required
+def get_user_teams(username):
+    user_dao = UserDAO()
+    user = user_dao.find_one({"username": username})
+    if user is None:
+        return mk_error("User with given username does not exist!")
 
-    username = token_data["username"]
-    team_name = token_data["team_name"]
-
-    if dao.is_user_in_team(username, team_name=team_name):
-        return jsonify({"confirmation": "Already confirmed"})
-    else:
-        dao.add_user(username, team_name=team_name)
-        return jsonify({"confirmation": "OK"})
-    # TODO - redirect somewhere
+    teams = user.teams
+    return jsonify({"teams": teams})
