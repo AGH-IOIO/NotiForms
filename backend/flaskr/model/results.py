@@ -1,5 +1,6 @@
 from bson import ObjectId
 from datetime import datetime
+from .utils import parse_id
 
 
 class FormResults:
@@ -10,6 +11,7 @@ class FormResults:
       _id: ObjectId,
       owner: string,  # username
       send_date: date,
+      deadline: date,
       not_filled_yet: list[string],  # usernames
       questions: list[
                    {
@@ -26,15 +28,25 @@ class FormResults:
     }
     """
 
-    def __init__(self, template, recipients):
+    def __init__(self, data, recipients=None, deadline=None, from_db=False):
+        if from_db:
+            self._data = data
+            self._data["_id"] = parse_id(data)
+            return
+
+        if not recipients:
+            raise ValueError("You must provide recipients when creating "
+                             "FormResults from a template (and not from db)")
+
         self._data = dict()
         self._data["_id"] = ObjectId()
-        self._data["owner"] = template.owner
+        self._data["owner"] = data.owner
         self._data["send_date"] = datetime.utcnow()
+        self._data["deadline"] = deadline
         self._data["not_filled_yet"] = recipients
         self._data["questions"] = [{"type": question.type,
                                     "title": question.title}
-                                   for question in template.questions]
+                                   for question in data.questions]
         self._data["answers"] = []
 
     @property
@@ -68,6 +80,14 @@ class FormResults:
     @send_date.setter
     def send_date(self, new_send_date):
         self._data["send_date"] = new_send_date
+
+    @property
+    def deadline(self):
+        return self._data["deadline"]
+
+    @deadline.setter
+    def deadline(self, new_deadline):
+        self._data["deadline"] = new_deadline
 
     @property
     def not_filled_yet(self):
