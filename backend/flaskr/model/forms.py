@@ -1,8 +1,8 @@
+from bson import ObjectId
 from datetime import datetime
 
-from bson import ObjectId
-
-from .utils import parse_id, parse_questions
+from .questions import parse_questions
+from .utils import parse_id
 
 
 class Template:
@@ -19,7 +19,7 @@ class Template:
 
     def __init__(self, data):
         data["_id"] = parse_id(data)
-        data["questions"] = parse_questions(self._data["questions"])
+        data["questions"] = parse_questions(data["questions"])
         self._data = data
 
     @property

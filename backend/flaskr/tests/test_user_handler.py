@@ -175,7 +175,7 @@ def test_confirm_invitation(clear_db, flask_client):
     team_dao.insert_one(team)
 
     with app.test_client(), app.test_request_context():
-        invitation_link = create_team_invitation_for_user_link(team,
+        invitation_link = create_team_invitation_for_user_link(team.name,
                                                                user.username)
 
     token = invitation_link.split('/')[-1]
