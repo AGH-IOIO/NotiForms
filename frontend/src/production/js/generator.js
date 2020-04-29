@@ -98,3 +98,18 @@ function generatorSubmit(){
     return false;
 	return false;
 }
+
+=======
+
+function showDeadlinePicker(){
+	var checkbox = $("#form-deadline-checkbox");
+	var picker = $("#form-deadline-picker")
+
+	if(checkbox.is(":checked")){
+		picker.css("display", "block");
+		$('#datetimepicker1').datetimepicker({format: "DD-MM-YYYY HH:mm"});
+	}else{
+		picker.css("display", "none");
+	}
+}
+
