@@ -44,11 +44,28 @@ function submitGroup() {
         emails.push($(this).text())
     })
 
+    const group = {
+        name: $('#group_name').val(),
+        members: emails,
+    }
+
+    alert(JSON.stringify(group));
+    return false;
+}
+
+function submitFrom() {
+
+    const emails = [];
+
+    $('.email').each(function (index) {
+        emails.push($(this).text())
+    })
+
     var deadline = ""
     var checkbox = $("#form-deadline-checkbox");
-	var picker = $("#form-deadline-input")
+    var picker = $("#form-deadline-input")
 
-	if(checkbox.is(":checked")){
+    if (checkbox.is(":checked")) {
         deadline = picker.val();
     }
 
@@ -58,8 +75,6 @@ function submitGroup() {
         participants: emails,
         deadline: deadline
     }
-
-    
 
     alert(JSON.stringify(group));
     return false;

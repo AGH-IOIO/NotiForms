@@ -96,7 +96,6 @@ function generatorSubmit(){
 
     alert(JSON.stringify(inquiry));
     return false;
-	return false;
 }
 
 function showDeadlinePicker(){
