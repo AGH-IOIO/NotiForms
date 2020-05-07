@@ -117,8 +117,8 @@ def test_confirm_user(clear_db, flask_client):
     unconfirmed_dao = UnconfirmedUserDAO()
     unconfirmed_dao.insert_one(user)
 
-    token = user.link.split('/')[-1]
-    res = get(flask_client, "/users/confirm/" + token)
+    token = user.link.split('/')[-2]
+    res = post(flask_client, "/users/confirm/%s/" % token)
     assert res.status_code == 200
     assert res.get_json()["confirmation"] == "OK"
 
@@ -144,12 +144,12 @@ def test_confirmed_user_confirm(clear_db, flask_client):
     unconfirmed_dao = UnconfirmedUserDAO()
     unconfirmed_dao.insert_one(user)
 
-    token = user.link.split('/')[-1]
-    res = get(flask_client, "/users/confirm/" + token)
+    token = user.link.split('/')[-2]
+    res = post(flask_client, "/users/confirm/%s/" % token)
     assert res.status_code == 200
     assert res.get_json()["confirmation"] == "OK"
 
-    res = get(flask_client, "/users/confirm/" + token)
+    res = post(flask_client, "/users/confirm/%s/" % token)
     assert res.status_code == 200
     assert res.get_json()["confirmation"] == "Error"
 
@@ -178,8 +178,8 @@ def test_confirm_invitation(clear_db, flask_client):
         invitation_link = create_team_invitation_for_user_link(team.name,
                                                                user.username)
 
-    token = invitation_link.split('/')[-1]
-    res = get(flask_client, "/teams/confirm_team/" + token)
+    token = invitation_link.split('/')[-2]
+    res = post(flask_client, "/teams/confirm_team/%s/" % token)
     assert res.status_code == 200
     assert res.get_json()["confirmation"] == "OK"
 

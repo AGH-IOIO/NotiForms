@@ -32,8 +32,8 @@ class MongoJSONDecoder(JSONDecoder):
 
 
 app = Flask(__name__)
-app.json_encoder = MongoJSONEncoder
 CORS(app)
+app.json_encoder = MongoJSONEncoder
 
 app.config["MAIL_SERVER"] = os.environ["MAIL_SERVER"]
 app.config["MAIL_PORT"] = int(os.environ["MAIL_PORT"])
