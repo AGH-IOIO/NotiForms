@@ -44,8 +44,7 @@ def test_confirm_invitation(clear_db, flask_client, stub_team, stub_user, invita
             invitation_link = create_team_invitation_for_user_link(team.name, username)
 
     token = invitation_link.split('/')[-2]
-    url  = "/teams/confirm_team/%s/" % token
-    res = post(flask_client, url) #"/teams/confirm_team/%s/" % token)
+    res = get(flask_client, "/teams/confirm_team/%s/" % token)
     assert res.status_code == 200
     assert res.get_json()["confirmation"] == "OK"
 
@@ -120,11 +119,11 @@ def test_create_team(clear_db, flask_client, stub_team):
         token1 = create_team_invitation_for_user_link(team_name, user1.username).split('/')[-2]
         token2 = create_team_invitation_for_user_link(team_name, user2.username).split('/')[-2]
 
-    res = post(flask_client, "/teams/confirm_team/%s/" % token1)
+    res = get(flask_client, "/teams/confirm_team/%s/" % token1)
     assert res.status_code == 200
     assert res.get_json()["confirmation"] == "OK"
 
-    res = post(flask_client, "/teams/confirm_team/%s/" % token2)
+    res = get(flask_client, "/teams/confirm_team/%s/" % token2)
     assert res.status_code == 200
     assert res.get_json()["confirmation"] == "OK"
 

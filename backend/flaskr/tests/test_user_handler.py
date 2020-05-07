@@ -118,7 +118,7 @@ def test_confirm_user(clear_db, flask_client):
     unconfirmed_dao.insert_one(user)
 
     token = user.link.split('/')[-2]
-    res = post(flask_client, "/users/confirm/%s/" % token)
+    res = get(flask_client, "/users/confirm/%s/" % token)
     assert res.status_code == 200
     assert res.get_json()["confirmation"] == "OK"
 
@@ -145,11 +145,11 @@ def test_confirmed_user_confirm(clear_db, flask_client):
     unconfirmed_dao.insert_one(user)
 
     token = user.link.split('/')[-2]
-    res = post(flask_client, "/users/confirm/%s/" % token)
+    res = get(flask_client, "/users/confirm/%s/" % token)
     assert res.status_code == 200
     assert res.get_json()["confirmation"] == "OK"
 
-    res = post(flask_client, "/users/confirm/%s/" % token)
+    res = get(flask_client, "/users/confirm/%s/" % token)
     assert res.status_code == 200
     assert res.get_json()["confirmation"] == "Error"
 
@@ -179,7 +179,7 @@ def test_confirm_invitation(clear_db, flask_client):
                                                                user.username)
 
     token = invitation_link.split('/')[-2]
-    res = post(flask_client, "/teams/confirm_team/%s/" % token)
+    res = get(flask_client, "/teams/confirm_team/%s/" % token)
     assert res.status_code == 200
     assert res.get_json()["confirmation"] == "OK"
 

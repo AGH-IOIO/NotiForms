@@ -116,7 +116,7 @@ def make_user():
     return jsonify(new_unconfirmed_user.data)
 
 
-@app.route("/users/confirm/<token>/", methods=["POST"])
+@app.route("/users/confirm/<token>/", methods=["GET"])
 def confirm(token):
     from ..model.utils import confirm_user
 

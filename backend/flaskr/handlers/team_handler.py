@@ -11,7 +11,7 @@ from ..validate import expect_mime, json_body, Validator, mk_error
 team_bp = Blueprint('teams', __name__)
 
 
-@app.route("/teams/confirm_team/<token>/", methods=["POST"])
+@app.route("/teams/confirm_team/<token>/", methods=["GET"])
 def confirm_team(token):
     token_data = from_jwt(token)
     dao = TeamDAO()
