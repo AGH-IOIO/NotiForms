@@ -55,7 +55,7 @@ def get_with_auth(client, path, username="pietrek"):
     return get(client, path, headers=headers)
 
 
-def post(client, path, data, headers=None):
+def post(client, path, data={}, headers=None):
     if headers is None:
         headers = {}
     return client.post(
