@@ -59,7 +59,7 @@ class MessageBoxDAO:
         if _id:
             query["_id"] = _id
 
-        update = {"$push": {"messages": msg}}
+        update = {"$push": {"messages": msg.data}}
         self.coll.find_one_and_update(query, update)
 
     def remove_message(self, msg_ref_id, owner=None, _id=None):

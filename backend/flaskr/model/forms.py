@@ -18,6 +18,7 @@ class Template:
     """
 
     def __init__(self, data):
+        print(data)
         data["_id"] = parse_id(data)
         data["questions"] = parse_questions(data["questions"])
         self._data = data
@@ -111,7 +112,7 @@ class Form:
         data["_id"] = parse_id(data)
         if "send_date" not in data:
             data["send_date"] = datetime.utcnow()
-        data["form"] = Template(data).data
+        #data["form"] = Template(data["form"]).data
         self._data = data
 
     @property
@@ -121,7 +122,7 @@ class Form:
         new_data["recipient"] = self.recipient
         new_data["send_date"] = self.send_date
         new_data["results_id"] = self.results_id
-        new_data["form"] = self.form.data
+        new_data["form"] = self.form
         return new_data
 
     @data.setter
