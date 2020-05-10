@@ -60,9 +60,10 @@ def assign_template_to_team():
     if error_res is not None:
         return mk_error("Invalid data")
 
-    # TODO check if owner exists
-
     team_dao = TeamDAO()
+    if not team_dao.is_user_in_team(body["owner"], team_name=body["team"]):
+        return mk_error("Given template owner is not a member of a team with given name")
+
     team_members = team_dao.find_users_from_team(team_name=body["team"])
     if team_members is None:
         return mk_error("Team with given name does not exist")

@@ -112,7 +112,6 @@ class Form:
         data["_id"] = parse_id(data)
         if "send_date" not in data:
             data["send_date"] = datetime.utcnow()
-        #data["form"] = Template(data["form"]).data
         self._data = data
 
     @property
