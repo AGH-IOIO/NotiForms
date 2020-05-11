@@ -90,14 +90,14 @@ def assign_template_to_team():
     pending_forms_dao = PendingFormsDAO()
     message_box_dao = MessageBoxDAO()
 
+    forms_to_insert = []
+
     for member in team_members:
-        print("Member: " + member)
         form = Form({"form": template.data})
         form.recipient = member
         form.results_id = results_id
 
-        pending_forms_dao.insert_one(form)
-
+        forms_to_insert.append(form)
         form_id = form.id
         message = Message({
             "text": "New form to fill",
@@ -105,5 +105,7 @@ def assign_template_to_team():
             "ref_id": form_id
         })
         message_box_dao.add_message(message, owner=member)
+
+    pending_forms_dao.insert_many(forms_to_insert)
 
     return jsonify({"confirmation": "OK"})
