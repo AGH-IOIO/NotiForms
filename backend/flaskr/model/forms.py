@@ -18,7 +18,6 @@ class Template:
     """
 
     def __init__(self, data):
-        print(data)
         data["_id"] = parse_id(data)
         data["questions"] = parse_questions(data["questions"])
         self._data = data
