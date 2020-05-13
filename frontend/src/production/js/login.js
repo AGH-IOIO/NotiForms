@@ -8,9 +8,11 @@ function loginSubmit() {
 
   localStorage.setItem("username", login);
 
+  const {backend} = window.glob;
+
   $.ajax({
     type: "POST",
-    url: "http://localhost:8080/token/",
+    url: `http://${backend}/token/`,
     data: jsonString,
     contentType: "application/json",
     dataType: "json",
@@ -40,7 +42,7 @@ function registerSubmit() {
 
   $.ajax({
     type: "POST",
-    url: "http://localhost:8080/users/",
+    url: `http://${backend}/users/`,
     data: jsonString,
     contentType: "application/json",
     dataType: "json",

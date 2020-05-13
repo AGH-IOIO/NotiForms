@@ -51,9 +51,13 @@ function submitGroup() {
 
     const groupJson = JSON.stringify(group);
 
+    alert(groupJson);
+
+    const {backend} = window.glob;
+
     $.ajax({
         type: "POST",
-        url: "http://localhost:8080/teams/create_team/",
+        url: `http://${backend}/teams/create_team/`,
         data: groupJson,
         contentType: "application/json",
         dataType: "json",
@@ -103,10 +107,13 @@ function refreshNavbar(){
 }
 
 function teamsApiCall(username, token) {
-    if (token && username) {
+
+    const {backend} = window.glob;
+
+    if (token && username && backend) {
         $.ajax({
             type: "GET",
-            url: `http://localhost:8080/users/get_teams/${username}/`,
+            url: `http://${backend}/users/get_teams/${username}/`,
             headers: {
                 "Authorization": token
             },
