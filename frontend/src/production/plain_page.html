@@ -3,10 +3,13 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <script src="production/js/jquery-3.4.1.min.js"></script>
+    <script src="production/js/config.js"></script>
     <script src="production/js/pages.js"></script>
     <script src="production/js/generator.js"></script>
     <script src="production/js/table.js"></script>
     <script type="application/javascript">
+        window.glob = options;
+        showMain();
         refreshNavbar();
         setInterval(refreshNavbar, 30000);
         // if (localStorage.getItem("token") === null){
