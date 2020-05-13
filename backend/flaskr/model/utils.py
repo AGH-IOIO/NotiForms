@@ -54,8 +54,10 @@ def invite_user_to_team(team_name, username):
 
 def confirm_user(link=None):
     from ..database.unconfirmed_user_dao import UnconfirmedUserDAO
+    from ..database.message_box_dao import MessageBoxDAO
     from ..database.user_dao import UserDAO
     from ..model.user import User
+    from ..model.message_box import MessageBox
 
     if not link:
         raise ValueError("No registration link provided")
@@ -69,6 +71,13 @@ def confirm_user(link=None):
         confirmed_user = User(confirmed_user_data, password_hash=True)
         confirmed_dao = UserDAO()
         confirmed_dao.insert_one(confirmed_user)
+
+        message_box = MessageBox({
+            "owner": user.username,
+            "messages": []
+        })
+        message_box_dao = MessageBoxDAO()
+        message_box_dao.insert_one(message_box)
     return user
 
 
