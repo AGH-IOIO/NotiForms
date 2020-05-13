@@ -6,6 +6,8 @@ function loginSubmit() {
     password: password,
   });
 
+  localStorage.setItem("username", login);
+
   $.ajax({
     type: "POST",
     url: "http://localhost:8080/token/",

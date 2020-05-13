@@ -49,11 +49,27 @@ function submitGroup() {
         members: emails,
     }
 
-    alert(JSON.stringify(group));
+    const groupJson = JSON.stringify(group);
+
+    $.ajax({
+        type: "POST",
+        url: "http://localhost:8080/teams/create_team/",
+        data: groupJson,
+        contentType: "application/json",
+        dataType: "json",
+        success: function (data) {
+            alert("udalo sie utworzyc grupe");
+            location.href = "/dashboard";
+        },
+        failure: function (errMsg) {
+            console.log(errMsg);
+        },
+    });
+
     return false;
 }
 
-function submitFrom() {
+function submitForm() {
 
     const emails = [];
 
@@ -78,4 +94,42 @@ function submitFrom() {
 
     alert(JSON.stringify(group));
     return false;
+}
+
+function refreshNavbar(){
+    token = localStorage.getItem("token");
+    username = localStorage.getItem("username");
+    teamsApiCall(username, token)
+}
+
+function teamsApiCall(username, token) {
+    if (token && username) {
+        $.ajax({
+            type: "GET",
+            url: `http://localhost:8080/users/get_teams/${username}/`,
+            headers: {
+                "Authorization": token
+            },
+            success: function (data) {
+                if(data.teams)
+                    refreshTeams(data.teams);
+            },
+            failure: function (errMsg) {
+                console.log(errMsg);
+            },
+        });
+    }
+}
+
+function refreshTeams(teams) {
+    $('#group_list > .custom').remove();
+    teams.map( t => addNavBarItem(t));
+}
+
+function addNavBarItem(teamName) {
+    const li = $('#list_template').clone(true,true);
+    li.css('display', '');
+    li.addClass('custom');
+    li.find('#title').text(teamName);
+    $("#group_list").append(li);
 }
