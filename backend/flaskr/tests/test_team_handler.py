@@ -13,6 +13,7 @@ from ..model.utils import create_team_invitation_for_user_link
 @pytest.fixture
 def stub_team():
     data = {
+        "owner": "team_owner",
         "name": "stub_team",
         "members": []
     }
@@ -78,6 +79,7 @@ def test_create_fast_team(clear_db, flask_client, stub_team, stub_user):
     team_from_db = team_dao.find_one_by_name(stub_team["name"])
 
     assert team_from_db is not None
+    assert "team_owner" in team_from_db.members
     assert stub_user.username in team_from_db.members
 
 
@@ -133,6 +135,7 @@ def test_create_team(clear_db, flask_client, stub_team):
 
     assert user1.username in members
     assert user2.username in members
+    assert "team_owner" in members
 
 
 def test_create_team_with_missing_data(flask_client):

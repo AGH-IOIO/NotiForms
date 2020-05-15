@@ -102,7 +102,7 @@ def save_new_team(body):
 
     team_data = {
         "name": body["name"],
-        "members": []
+        "members": [body["owner"]]
     }
     team = Team(team_data)
     dao = TeamDAO()
