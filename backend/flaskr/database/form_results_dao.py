@@ -56,7 +56,8 @@ class FormResultsDAO:
         query = {"_id": _id}
         target = {"username": username,
                   "answers": answers}
-        update = {"$push": {"answers": target}}
+        update = {"$push": {"answers": target},
+                  "$pull": {"not_filled_yet": username}}
         self.coll.find_one_and_update(query, update)
 
     # Delete

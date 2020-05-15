@@ -25,6 +25,23 @@ def check_question_type(question_type):
         raise ValueError(error_msg)
 
 
+def check_answer_type(question_type, answer):
+    if question_type == "open_text":
+        if isinstance(answer, str):
+            return True
+    elif question_type == "single_choice":
+        if isinstance(answer, int):
+            return True
+    elif question_type == "multiple_choice":
+        if isinstance(answer, list):
+            for element in answer:
+                if not isinstance(element, int):
+                    return False
+            return True
+
+    return False
+
+
 def create_user_registration_link(username):
     token = as_jwt({"username": username})
     return url_for('confirm', token=token, _external=True)

@@ -169,7 +169,7 @@ class Form:
 
     @property
     def questions(self):
-        return self.form.questions
+        return self.form["questions"]
 
     def __eq__(self, other):
         if self.__class__ != other.__class__:

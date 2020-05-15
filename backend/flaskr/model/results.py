@@ -118,7 +118,7 @@ class FormResults:
 
     def add_answers_from_form(self, form):
         username = form.recipient
-        answers = [question.answer for question in form.questions]
+        answers = [question["answer"] for question in form.questions]
         self._data["not_filled_yet"].remove(username)
         self._data["answers"] = {"username": username,
                                  "answers": answers}
