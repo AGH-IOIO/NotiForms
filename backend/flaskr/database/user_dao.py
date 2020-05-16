@@ -26,6 +26,10 @@ class UserDAO:
         query = {"_id": user.id}
         return self.find_one(query)
 
+    def find_one_by_username(self, username):
+        query = {"username": username}
+        return self.find_one(query)
+
     def find(self, query):
         all_data = self.coll.find(query)
         return [User(data, password_hash=True)

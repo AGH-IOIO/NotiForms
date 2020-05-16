@@ -7,6 +7,7 @@ from .. import app
 from ..auth import auth_required
 from ..database.form_results_dao import FormResultsDAO
 from ..database.pending_forms_dao import PendingFormsDAO
+from ..database.user_dao import UserDAO
 from ..model.utils import check_answer_type
 from ..validate import expect_mime, json_body, Validator, mk_error
 
@@ -54,3 +55,18 @@ def fill_form():
 
     forms_dao.delete_one_by_id(form_id)
     return jsonify({"confirmation": "OK"})
+
+
+@app.route("/forms/pending/<username>/", methods=["GET"])
+@auth_required
+def get_forms(username):
+    '''
+    Returns pending forms of currently logged in user.
+    '''
+    user = UserDAO().find_one_by_username(username)
+    if user is None:
+        return mk_error("Invalid username")
+
+    forms = PendingFormsDAO().find_all_for_user(username)
+    forms_dict = [form.data for form in forms]
+    return jsonify({"forms": forms_dict})
