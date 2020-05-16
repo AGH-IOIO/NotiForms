@@ -1,0 +1,29 @@
+version: '3.4'
+services:
+  flask:
+    build:
+      context: ./backend
+      target: dev
+    ports:
+      - 8080:8080
+    volumes:
+      - ./backend/flaskr:/app/flaskr
+    env_file:
+      - ./backend/.config/flask.dev.env
+      - ./backend/.config/mail.dev.env
+    environment:
+      - TEST=${TEST}
+  nginx:
+    image: nginx
+    volumes:
+      - ./frontend/src:/usr/share/nginx/html:ro
+      - ./frontend/conf:/etc/nginx/conf.d
+    ports:
+      - 8081:80
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    env_file:
+      - ./backend/.config/mongo.dev.env

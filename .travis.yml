@@ -5,7 +5,7 @@ services:
 
 env:
   DOCKER_COMPOSE_VERSION: 1.25.4
-  DOCKER_COMPOSE_BACKEND_YML: backend/docker-compose.yml
+  DOCKER_COMPOSE_YML: ./docker-compose.yml
 
 # This installs docker-compose
 before_install:
@@ -15,7 +15,7 @@ before_install:
   - sudo mv docker-compose /usr/local/bin
 
 before_script:
-  - docker-compose -f ${DOCKER_COMPOSE_BACKEND_YML} build
+  - docker-compose -f ${DOCKER_COMPOSE_YML} build
 
 script:
-  - TEST=y docker-compose -f ${DOCKER_COMPOSE_BACKEND_YML} up --abort-on-container-exit
+  - TEST=y docker-compose -f ${DOCKER_COMPOSE_YML} up --abort-on-container-exit
