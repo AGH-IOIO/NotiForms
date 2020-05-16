@@ -6,8 +6,6 @@ function loginSubmit() {
     password: password,
   });
 
-  localStorage.setItem("username", login);
-
   const {backend} = window.glob;
 
   $.ajax({
@@ -19,6 +17,7 @@ function loginSubmit() {
     success: function (data) {
       console.log(data["token"]);
       localStorage.setItem("token", data["token"]);
+      localStorage.setItem("username", login);
       alert("udalo sie zalogowac");
       location.href = "/dashboard";
     },
@@ -39,6 +38,8 @@ function registerSubmit() {
     password: password,
     email: email,
   });
+
+  const {backend} = window.glob;
 
   $.ajax({
     type: "POST",
