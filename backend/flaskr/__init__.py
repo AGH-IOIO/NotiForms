@@ -46,8 +46,10 @@ mail = Mail(app)
 from .handlers.user_handler import users_bp
 from .handlers.team_handler import team_bp
 from .handlers.template_handler import template_bp
+from .handlers.form_handler import form_bp
 
 # Blueprints registration
 app.register_blueprint(users_bp)
 app.register_blueprint(team_bp)
 app.register_blueprint(template_bp)
+app.register_blueprint(form_bp)

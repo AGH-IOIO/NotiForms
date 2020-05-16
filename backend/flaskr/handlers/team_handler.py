@@ -34,6 +34,7 @@ def validate_team_body(body):
     validator = Validator(body)
     validator.field_present("name")
     validator.field_present("members")
+    validator.field_present("owner")
     return validator.error()
 
 
