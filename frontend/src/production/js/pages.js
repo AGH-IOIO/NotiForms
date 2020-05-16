@@ -23,3 +23,8 @@ function showSummary(e){
     $("#main").empty();
     $("#main").load("/production/summary.html");
 }
+
+function showMain(){
+    $("#main").empty();
+    $("#main").load("/production/main.html");
+}
