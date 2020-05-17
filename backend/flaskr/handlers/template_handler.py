@@ -112,6 +112,7 @@ def assign_template_to_team():
 
 
 @app.route("/templates/get_templates/<username>/", methods=["GET"])
+@auth_required
 def get_user_templates(username):
     template_dao = TemplateDAO()
     user_templates = template_dao.find_all_for_owner(username)
