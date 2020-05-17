@@ -109,3 +109,11 @@ def assign_template_to_team():
     pending_forms_dao.insert_many(forms_to_insert)
 
     return jsonify({"confirmation": "OK"})
+
+
+@app.route("/templates/get_templates/<username>/", methods=["GET"])
+def get_user_templates(username):
+    template_dao = TemplateDAO()
+    user_templates = template_dao.find_all_for_owner(username)
+
+    return jsonify({"templates": [x.data for x in user_templates]})

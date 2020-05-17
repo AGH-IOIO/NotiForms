@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 import pytest
 
-from . import post_with_auth, flask_client, stub_user, clear_db
+from . import post_with_auth, get_with_auth, flask_client, stub_user, clear_db
 from ..database import db
 from ..database.user_dao import UserDAO
 from ..database.message_box_dao import MessageBoxDAO
@@ -125,3 +125,56 @@ def test_assign_template_to_team(clear_db, flask_client, stub_user):
     pending_form = pending_forms_dao.find_all_for_user(stub_user.username)[0]
 
     assert message["ref_id"] == pending_form.id
+
+
+def test_get_user_templates(clear_db, flask_client, stub_user):
+    question1 = {
+        "type": "single_choice",
+        "title": "Single choice1?",
+        "choices": ["Of course", "Yes"]
+    }
+    question2 = {
+        "type": "single_choice",
+        "title": "Single choice2?",
+        "choices": ["Of course", "Yes"]
+    }
+    question3 = {
+        "type": "single_choice",
+        "title": "Single choice3?",
+        "choices": ["Of course", "Yes"]
+    }
+
+    template1_data = {
+        "owner": stub_user.username,
+        "title": "My template1",
+        "questions": [question1, question2]
+    }
+
+    template2_data = {
+        "owner": stub_user.username,
+        "title": "My template2",
+        "questions": [question3]
+    }
+
+    template1 = Template(template1_data)
+    template2 = Template(template2_data)
+    template_dao = TemplateDAO()
+    template_dao.insert_one(template1)
+    template_dao.insert_one(template2)
+
+    res = get_with_auth(flask_client, "/templates/get_templates/" + stub_user.username + "/")
+    assert res.status_code == 200
+
+    templates = res.get_json()["templates"]
+    titles = list(map(lambda x: x["title"], templates))
+
+    assert template1.title in titles
+    assert template2.title in titles
+
+
+def test_get_user_templates_with_no_templates(clear_db, flask_client, stub_user):
+    res = get_with_auth(flask_client, "/templates/get_templates/" + stub_user.username + "/")
+    assert res.status_code == 200
+
+    templates = res.get_json()["templates"]
+    assert len(templates) == 0

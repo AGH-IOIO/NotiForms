@@ -185,3 +185,39 @@ def test_confirm_invitation(clear_db, flask_client):
 
     team_from_db = team_dao.find_one_by_name(team.name)
     assert user.username in team_from_db.members
+
+
+def test_get_user_teams(clear_db, flask_client):
+    user_data = {
+        "username": "new_user",
+        "password": "123456789",
+        "email": "stubmail@gmail.com",
+        "teams": ["test_team"]
+    }
+    user = User(user_data)
+
+    team_data = {
+        "name": "test_team",
+        "users": [user.username]
+    }
+    team = Team(team_data)
+
+    user_dao = UserDAO()
+    team_dao = TeamDAO()
+
+    user_dao.insert_one(user)
+    team_dao.insert_one(team)
+
+    res = get_with_auth(flask_client, "/users/get_teams/" + user.username + "/")
+    assert res.status_code == 200
+    assert team.name in res.get_json()["teams"]
+
+
+def test_get_user_teams_with_no_teams(clear_db, flask_client, stub_user):
+    user = User(stub_user)
+    user_dao = UserDAO()
+    user_dao.insert_one(user)
+
+    res = get_with_auth(flask_client, "/users/get_teams/" + user.username + "/")
+    assert res.status_code == 200
+    assert len(res.get_json()["teams"]) == 0
