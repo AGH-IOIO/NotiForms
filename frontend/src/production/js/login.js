@@ -10,7 +10,7 @@ function loginSubmit() {
 
   $.ajax({
     type: "POST",
-    url: `http://${backend}/token/`,
+    url: `${backend}/token/`,
     data: jsonString,
     contentType: "application/json",
     dataType: "json",
@@ -43,7 +43,7 @@ function registerSubmit() {
 
   $.ajax({
     type: "POST",
-    url: `http://${backend}/users/`,
+    url: `${backend}/users/`,
     data: jsonString,
     contentType: "application/json",
     dataType: "json",

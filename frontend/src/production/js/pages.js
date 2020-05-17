@@ -1,16 +1,25 @@
 function showGenerator(){
     $("#main").empty();
     $("#main").load("/production/generator.html");
+
+    if(location.pathname !== "/dashboard")
+        location.pathname = "/dashboard"
 }
 
 function showGroupGenerator(){
     $("#main").empty();
     $("#main").load("/production/groupgenerator.html");
+
+    if(location.pathname !== "/dashboard")
+        location.pathname = "/dashboard"
 }
 
 function showFormGenerator(){
     $("#main").empty();
     $("#main").load("/production/formgenerator.html");
+
+    if(location.pathname !== "/dashboard")
+        location.pathname = "/dashboard"
 }
 
 function showSummary(e){
@@ -22,9 +31,19 @@ function showSummary(e){
 
     $("#main").empty();
     $("#main").load("/production/summary.html");
+    if(location.pathname !== "/dashboard")
+        location.pathname = "/dashboard"
 }
 
 function showMain(){
     $("#main").empty();
     $("#main").load("/production/main.html");
+
+    if(location.pathname !== "/dashboard")
+        location.pathname = "/dashboard"
+}
+
+function showForm(id) {
+    $("#main").empty();
+    $("#main").load("/production/uploadForm.html");
 }
