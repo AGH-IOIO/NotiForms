@@ -136,5 +136,8 @@ def get_user_teams(username):
     if user is None:
         return mk_error("User with given username does not exist!")
 
-    teams = user.teams
-    return jsonify({"teams": teams})
+    try:
+        teams = user.teams
+        return jsonify({"teams": teams})
+    except KeyError:
+        return jsonify({"teams": []})
