@@ -53,7 +53,7 @@ def create_fast_team_with_users():
         return error_res
 
     team_name = body["name"]
-    invited_members = body["members"]
+    invited_members = set(filter(lambda x: x != body["owner"], body["members"]))
 
     for member_name in invited_members:
         error_res = add_user_to_team(member_name, team_name)
@@ -78,7 +78,7 @@ def create_team():
         return error_res
 
     team_name = body["name"]
-    invited_members = body["members"]
+    invited_members = set(filter(lambda x: x != body["owner"], body["members"]))
 
     from ..model.utils import invite_user_to_team
     for invited_member_name in invited_members:
