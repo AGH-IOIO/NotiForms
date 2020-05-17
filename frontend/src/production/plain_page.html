@@ -1,15 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script type="application/javascript">
+        console.log(window.location.href);
+    </script>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <script src="production/js/jquery-3.4.1.min.js"></script>
-    <script src="production/js/config.js"></script>
-    <script src="production/js/pages.js"></script>
-    <script src="production/js/generator.js"></script>
-    <script src="production/js/table.js"></script>
+    <script src="/production/js/jquery-3.4.1.min.js"></script>
+    <script src="/production/js/config.js"></script>
+    <script src="/production/js/pages.js"></script>
+    <script src="/production/js/generator.js"></script>
+    <script src="/production/js/table.js"></script>
     <script type="application/javascript">
         window.glob = options;
-        showMain();
+
+        if(location.pathname === "/dashboard")
+            showMain();
         refreshNavbar();
         setInterval(refreshNavbar, 30000);
         // if (localStorage.getItem("token") === null){
@@ -18,6 +23,7 @@
     </script>
 
     <!-- Meta, title, CSS, favicons, etc. -->
+    <base id="base" href="http://localhost:8081/">
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -261,19 +267,31 @@
             <!-- /footer content -->
         </div>
     </div>
-    <script src="production/js/notifications.js"></script>
+
+    <script type="application/javascript">
+        const regex = "^/dashboard/form/[1-9][0-9]*$"
+        const {pathname} = window.location;
+        if(pathname.match(regex)) {
+            const id = pathname.match("(\\d+)");
+            console.log(id[0]);
+            showForm(id[0]);
+        }
+    </script>
+
+
+    <script src="/production/js/notifications.js"></script>
     <!-- jQuery -->
-    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <script src="/../vendors/jquery/dist/jquery.min.js"></script>
     <!-- Bootstrap -->
-    <script src="../vendors/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/../vendors/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <!-- FastClick -->
-    <script src="../vendors/fastclick/lib/fastclick.js"></script>
+    <script src="/../vendors/fastclick/lib/fastclick.js"></script>
     <!-- NProgress -->
-    <script src="../vendors/nprogress/nprogress.js"></script>
+    <script src="/../vendors/nprogress/nprogress.js"></script>
 
     <!-- Custom Theme Scripts -->
-    <script src="../build/js/custom.min.js"></script>
-    <script type="text/javascript" src="../vendors/moment2.22/moment.min.js"></script>
-    <script type="text/javascript" src="../vendors/tempodusdominus/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="/../build/js/custom.min.js"></script>
+    <script type="text/javascript" src="/../vendors/moment2.22/moment.min.js"></script>
+    <script type="text/javascript" src="/../vendors/tempodusdominus/tempusdominus-bootstrap-4.min.js"></script>
 </body>
 </html>
