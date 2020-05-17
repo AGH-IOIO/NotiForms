@@ -1,6 +1,6 @@
 function insertQuestionResults(index){
 	//alert(summaryData.questions[index].type)
-	let entry = $('<a class="panel-heading" role="tab" id="heading'+index+'" data-parent="#accordion" href="#collapse'+index+'" aria-expanded="true" aria-controls="collapseNotYet" onclick="collapse(this)">\
+	let entry = $('<a class="panel-heading" role="tab" id="heading'+index+'" data-parent="#collapse'+index+'" href="javascript:;" aria-expanded="true" aria-controls="collapseNotYet" onclick="collapse(this)">\
       <h4 class="panel-title">'+summaryData.questions[index].title+'</h4>\
     </a>\
 \
@@ -38,7 +38,7 @@ function insertQuestionResults(index){
 }
 
 function collapse(elem) {
-	let id = $(elem).attr("href");
+	let id = $(elem).attr("data-parent");
 	$(id).toggleClass("show");
 }
 
