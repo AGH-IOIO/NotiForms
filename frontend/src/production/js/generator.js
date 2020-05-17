@@ -6,6 +6,7 @@ let index = 0;
 
 function addTextField(){
 
+
 	var fieldIndex = index;
 	var fieldID = "field"+fieldIndex;
 	var fieldDivID = "fieldDiv"+fieldIndex;
@@ -96,10 +97,8 @@ function generatorSubmit(){
 
     alert(JSON.stringify(inquiry));
     return false;
-	return false;
 }
 
-=======
 
 function showDeadlinePicker(){
 	var checkbox = $("#form-deadline-checkbox");
