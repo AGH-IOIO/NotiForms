@@ -105,7 +105,7 @@ function generatorSubmit(){
 
 	$.ajax({
 		type: "POST",
-		url: `http://${backend}/templates/create/`,
+		url: `${backend}/templates/create/`,
 		data: inquiryJson,
 		headers: {
 			"Authorization": token

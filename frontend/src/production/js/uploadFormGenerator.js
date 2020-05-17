@@ -63,6 +63,24 @@ function formSubmit(){
 	for (var i = 0; i < questionDivId; i++) {
         fields.questions[i].answer = $("#" + i).find("input[type='text']").val();
     }
-    alert(JSON.stringify(fields));
+
+    const answerJson = JSON.stringify(fields);
+	alert(answerJson);
+
+	// const {backend} = window.glob;
+	//
+	// $.ajax({
+	// 	type: "POST",
+	// 	url: `${backend}/users/`,
+	// 	data: answerJson,
+	// 	contentType: "application/json",
+	// 	dataType: "json",
+	// 	success: function (data) {
+	// 		alert("Udalo sie wypelnic anikete");
+	// 	},
+	// 	failure: function (errMsg) {
+	// 		console.log(errMsg);
+	// 	},
+	// });
 }
 

@@ -63,7 +63,7 @@ function submitGroup() {
 
     $.ajax({
         type: "POST",
-        url: `http://${backend}/teams/create_team/`,
+        url: `${backend}/teams/create_team/`,
         data: groupJson,
         contentType: "application/json",
         dataType: "json",
@@ -119,7 +119,7 @@ function teamsApiCall(username, token) {
     if (token && username && backend) {
         $.ajax({
             type: "GET",
-            url: `http://${backend}/users/get_teams/${username}/`,
+            url: `${backend}/users/get_teams/${username}/`,
             headers: {
                 "Authorization": token
             },
