@@ -44,11 +44,48 @@ function submitGroup() {
         emails.push($(this).text())
     })
 
+    const group = {
+        name: $('#group_name').val(),
+        members: emails,
+    }
+
+    const groupJson = JSON.stringify(group);
+
+    alert(groupJson);
+
+    const {backend} = window.glob;
+
+    $.ajax({
+        type: "POST",
+        url: `http://${backend}/teams/create_team/`,
+        data: groupJson,
+        contentType: "application/json",
+        dataType: "json",
+        success: function (data) {
+            alert("udalo sie utworzyc grupe");
+            location.href = "/dashboard";
+        },
+        failure: function (errMsg) {
+            console.log(errMsg);
+        },
+    });
+
+    return false;
+}
+
+function submitForm() {
+
+    const emails = [];
+
+    $('.email').each(function (index) {
+        emails.push($(this).text())
+    })
+
     var deadline = ""
     var checkbox = $("#form-deadline-checkbox");
-	var picker = $("#form-deadline-input")
+    var picker = $("#form-deadline-input")
 
-	if(checkbox.is(":checked")){
+    if (checkbox.is(":checked")) {
         deadline = picker.val();
     }
 
@@ -59,8 +96,47 @@ function submitGroup() {
         deadline: deadline
     }
 
-    
-
     alert(JSON.stringify(group));
     return false;
+}
+
+function refreshNavbar(){
+    token = localStorage.getItem("token");
+    username = localStorage.getItem("username");
+    teamsApiCall(username, token)
+}
+
+function teamsApiCall(username, token) {
+
+    const {backend} = window.glob;
+
+    if (token && username && backend) {
+        $.ajax({
+            type: "GET",
+            url: `http://${backend}/users/get_teams/${username}/`,
+            headers: {
+                "Authorization": token
+            },
+            success: function (data) {
+                if(data.teams)
+                    refreshTeams(data.teams);
+            },
+            failure: function (errMsg) {
+                console.log(errMsg);
+            },
+        });
+    }
+}
+
+function refreshTeams(teams) {
+    $('#group_list > .custom').remove();
+    teams.map( t => addNavBarItem(t));
+}
+
+function addNavBarItem(teamName) {
+    const li = $('#list_template').clone(true,true);
+    li.css('display', '');
+    li.addClass('custom');
+    li.find('#title').text(teamName);
+    $("#group_list").append(li);
 }

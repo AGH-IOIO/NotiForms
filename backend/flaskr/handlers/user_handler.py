@@ -116,7 +116,7 @@ def make_user():
     return jsonify(new_unconfirmed_user.data)
 
 
-@app.route("/users/confirm/<token>")
+@app.route("/users/confirm/<token>/", methods=["GET"])
 def confirm(token):
     from ..model.utils import confirm_user
 
@@ -128,7 +128,7 @@ def confirm(token):
     # TODO - redirect to main page
 
 
-@app.route("/users/get_teams/<username>")
+@app.route("/users/get_teams/<username>/", methods=["GET"])
 @auth_required
 def get_user_teams(username):
     user_dao = UserDAO()

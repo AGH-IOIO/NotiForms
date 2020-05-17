@@ -13,6 +13,7 @@ from ..model.utils import create_team_invitation_for_user_link
 @pytest.fixture
 def stub_team():
     data = {
+        "owner": "team_owner",
         "name": "stub_team",
         "members": []
     }
@@ -43,8 +44,8 @@ def test_confirm_invitation(clear_db, flask_client, stub_team, stub_user, invita
         with app.test_client(), app.test_request_context():
             invitation_link = create_team_invitation_for_user_link(team.name, username)
 
-    token = invitation_link.split('/')[-1]
-    res = get(flask_client, "/teams/confirm_team/" + token)
+    token = invitation_link.split('/')[-2]
+    res = get(flask_client, "/teams/confirm_team/%s/" % token)
     assert res.status_code == 200
     assert res.get_json()["confirmation"] == "OK"
 
@@ -78,6 +79,7 @@ def test_create_fast_team(clear_db, flask_client, stub_team, stub_user):
     team_from_db = team_dao.find_one_by_name(stub_team["name"])
 
     assert team_from_db is not None
+    assert "team_owner" in team_from_db.members
     assert stub_user.username in team_from_db.members
 
 
@@ -116,14 +118,14 @@ def test_create_team(clear_db, flask_client, stub_team):
     create_team(flask_client, stub_team)
 
     with app.test_client(), app.test_request_context():
-        token1 = create_team_invitation_for_user_link(team_name, user1.username).split('/')[-1]
-        token2 = create_team_invitation_for_user_link(team_name, user2.username).split('/')[-1]
+        token1 = create_team_invitation_for_user_link(team_name, user1.username).split('/')[-2]
+        token2 = create_team_invitation_for_user_link(team_name, user2.username).split('/')[-2]
 
-    res = get(flask_client, "/teams/confirm_team/" + token1)
+    res = get(flask_client, "/teams/confirm_team/%s/" % token1)
     assert res.status_code == 200
     assert res.get_json()["confirmation"] == "OK"
 
-    res = get(flask_client, "/teams/confirm_team/" + token2)
+    res = get(flask_client, "/teams/confirm_team/%s/" % token2)
     assert res.status_code == 200
     assert res.get_json()["confirmation"] == "OK"
 
@@ -133,6 +135,7 @@ def test_create_team(clear_db, flask_client, stub_team):
 
     assert user1.username in members
     assert user2.username in members
+    assert "team_owner" in members
 
 
 def test_create_team_with_missing_data(flask_client):
@@ -161,7 +164,7 @@ def test_get_team_members_list(clear_db, flask_client, stub_team):
     dao = TeamDAO()
     dao.insert_one(team)
 
-    res = get_with_auth(flask_client, "/teams/get_members/" + team.name)
+    res = get_with_auth(flask_client, "/teams/get_members/%s/" % team.name )
     assert res.status_code == 200
 
     members_list = res.get_json()["members"]
@@ -170,5 +173,5 @@ def test_get_team_members_list(clear_db, flask_client, stub_team):
 
 
 def test_get_non_existing_team_members_list(clear_db, flask_client):
-    res = get_with_auth(flask_client, "/teams/get_members/team")
+    res = get_with_auth(flask_client, "/teams/get_members/team/")
     assert res.status_code == 400

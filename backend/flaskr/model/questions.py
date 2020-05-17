@@ -1,6 +1,25 @@
 from abc import ABC, abstractmethod
+from .utils import parse_id, check_question_type
 
-from .utils import *
+
+def parse_questions(questions):
+    result = []
+    type_to_class = {"open_text": OpenTextQuestion,
+                     "single_choice": SingleChoiceQuestion,
+                     "multiple_choice": MultipleChoiceQuestion}
+                     #"single_date": SingleDateQuestion,
+                     #"multiple_date": MultipleDateQuestion}
+
+    for question in questions:
+        q_type = question["type"]
+        if q_type not in type_to_class:
+            raise ValueError("Question type {} not recognized".format(q_type))
+        else:
+            question_class = type_to_class[q_type]
+            question_object = question_class(question)
+            result.append(question_object)
+
+    return result
 
 
 class Question(ABC):

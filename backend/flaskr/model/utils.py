@@ -25,6 +25,23 @@ def check_question_type(question_type):
         raise ValueError(error_msg)
 
 
+def check_answer_type(question_type, answer):
+    if question_type == "open_text":
+        if isinstance(answer, str):
+            return True
+    elif question_type == "single_choice":
+        if isinstance(answer, int):
+            return True
+    elif question_type == "multiple_choice":
+        if isinstance(answer, list):
+            for element in answer:
+                if not isinstance(element, int):
+                    return False
+            return True
+
+    return False
+
+
 def create_user_registration_link(username):
     token = as_jwt({"username": username})
     return url_for('confirm', token=token, _external=True)
@@ -54,8 +71,10 @@ def invite_user_to_team(team_name, username):
 
 def confirm_user(link=None):
     from ..database.unconfirmed_user_dao import UnconfirmedUserDAO
+    from ..database.message_box_dao import MessageBoxDAO
     from ..database.user_dao import UserDAO
     from ..model.user import User
+    from ..model.message_box import MessageBox
 
     if not link:
         raise ValueError("No registration link provided")
@@ -69,6 +88,13 @@ def confirm_user(link=None):
         confirmed_user = User(confirmed_user_data, password_hash=True)
         confirmed_dao = UserDAO()
         confirmed_dao.insert_one(confirmed_user)
+
+        message_box = MessageBox({
+            "owner": user.username,
+            "messages": []
+        })
+        message_box_dao = MessageBoxDAO()
+        message_box_dao.insert_one(message_box)
     return user
 
 
@@ -93,7 +119,7 @@ def save_new_team(body):
 
     team_data = {
         "name": body["name"],
-        "members": []
+        "members": [body["owner"]]
     }
     team = Team(team_data)
     dao = TeamDAO()

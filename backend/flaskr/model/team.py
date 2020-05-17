@@ -12,8 +12,8 @@ class Team:
     """
 
     def __init__(self, data):
+        data["_id"] = parse_id(data)
         self._data = data
-        self._data["_id"] = parse_id(data)
 
     @property
     def data(self):

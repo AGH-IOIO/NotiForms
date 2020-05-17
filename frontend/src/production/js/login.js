@@ -6,15 +6,18 @@ function loginSubmit() {
     password: password,
   });
 
+  const {backend} = window.glob;
+
   $.ajax({
     type: "POST",
-    url: "http://localhost:8080/token/",
+    url: `http://${backend}/token/`,
     data: jsonString,
     contentType: "application/json",
     dataType: "json",
     success: function (data) {
       console.log(data["token"]);
       localStorage.setItem("token", data["token"]);
+      localStorage.setItem("username", login);
       alert("udalo sie zalogowac");
       location.href = "/dashboard";
     },
@@ -36,9 +39,11 @@ function registerSubmit() {
     email: email,
   });
 
+  const {backend} = window.glob;
+
   $.ajax({
     type: "POST",
-    url: "http://localhost:8080/users/",
+    url: `http://${backend}/users/`,
     data: jsonString,
     contentType: "application/json",
     dataType: "json",

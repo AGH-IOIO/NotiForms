@@ -3,11 +3,15 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <script src="production/js/jquery-3.4.1.min.js"></script>
+    <script src="production/js/config.js"></script>
     <script src="production/js/pages.js"></script>
     <script src="production/js/generator.js"></script>
     <script src="production/js/table.js"></script>
     <script type="application/javascript">
-
+        window.glob = options;
+        showMain();
+        refreshNavbar();
+        setInterval(refreshNavbar, 30000);
         // if (localStorage.getItem("token") === null){
         //   document.location.href="/";
         // }
@@ -86,6 +90,7 @@
                                     ></a>
                                 <ul class="nav child_menu">
                                     <li><a href="form.html">Wyświetl wszystkie</a></li>
+                                    <li><a href="#" id="ankieta001" onclick="showSummary(this)">Ankieta 1</a></li>
                                     <li>
                                         <a href="form_advanced.html">Advanced Components</a>
                                     </li>
@@ -130,50 +135,21 @@
                     </div>
                     <div class="menu_section">
                         <h3>Grupy</h3>
-                        <ul class="nav side-menu">
+                        <ul class="nav side-menu" id="group_list">
                             <li>
                                 <button class="p-1 btn btn-success" style="width: 100%" onclick="showGroupGenerator()"
                                         type="submit"><i class="fa fa-plus"></i>grupy
                                 </button>
                             </li>
 
-                            <li>
+                            <li id="list_template" style="display: none">
                                 <a
-                                ><i class="fa fa-bug"></i> Grupa A
+                                ><i class="fa fa-bug"></i> <p id="title" style="display:inline">Grupa A</p>
                                     <span class="fa fa-chevron-down"></span
                                     ></a>
                                 <ul class="nav child_menu">
                                     <li><a href="e_commerce.html">Szczegóły</a></li>
-                                    <li>
-                                        <a>Członkowie<span class="fa fa-chevron-down"></span></a>
-                                        <ul class="nav child_menu">
-                                            <li class="sub_menu">
-                                                <a href="level2.html">Mireczek</a>
-                                            </li>
-                                            <li><a href="#level2_1">Mireczek</a></li>
-                                            <li><a href="#level2_2">Mireczek</a></li>
-                                        </ul>
-                                    </li>
-                                    <li>
-                                        <a>Ankiety<span class="fa fa-chevron-down"></span></a>
-                                        <ul class="nav child_menu">
-                                            <li class="sub_menu">
-                                                <a href="level2.html">Mireczek</a>
-                                            </li>
-                                            <li><a href="#level2_1">Mireczek</a></li>
-                                            <li><a href="#level2_2">Mireczek</a></li>
-                                        </ul>
-                                    </li>
-                                    <li><a href="profile.html">Usuń</a></li>
                                 </ul>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0)"
-                                ><i class="fa fa-laptop"></i> Landing Page
-                                    <span class="label label-success pull-right"
-                                    >Coming Soon</span
-                                    ></a
-                                >
                             </li>
                         </ul>
                     </div>
@@ -260,75 +236,9 @@
                                     class="dropdown-menu list-unstyled msg_list"
                                     role="menu"
                                     aria-labelledby="navbarDropdown1"
+                                    style="overflow-y: scroll; height: 30rem"
+                                    id="notification-center"
                             >
-                                <li class="nav-item">
-                                    <a class="dropdown-item">
-                        <span class="image"
-                        ><img src="images/img.jpg" alt="Profile Image"
-                        /></span>
-                                        <span>
-                          <span>John Smith</span>
-                          <span class="time">3 mins ago</span>
-                        </span>
-                                        <span class="message">
-                          Film festivals used to be do-or-die moments for movie
-                          makers. They were where...
-                        </span>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="dropdown-item">
-                        <span class="image"
-                        ><img src="images/img.jpg" alt="Profile Image"
-                        /></span>
-                                        <span>
-                          <span>John Smith</span>
-                          <span class="time">3 mins ago</span>
-                        </span>
-                                        <span class="message">
-                          Film festivals used to be do-or-die moments for movie
-                          makers. They were where...
-                        </span>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="dropdown-item">
-                        <span class="image"
-                        ><img src="images/img.jpg" alt="Profile Image"
-                        /></span>
-                                        <span>
-                          <span>John Smith</span>
-                          <span class="time">3 mins ago</span>
-                        </span>
-                                        <span class="message">
-                          Film festivals used to be do-or-die moments for movie
-                          makers. They were where...
-                        </span>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="dropdown-item">
-                        <span class="image"
-                        ><img src="images/img.jpg" alt="Profile Image"
-                        /></span>
-                                        <span>
-                          <span>John Smith</span>
-                          <span class="time">3 mins ago</span>
-                        </span>
-                                        <span class="message">
-                          Film festivals used to be do-or-die moments for movie
-                          makers. They were where...
-                        </span>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <div class="text-center">
-                                        <a class="dropdown-item">
-                                            <strong>See All Alerts</strong>
-                                            <i class="fa fa-angle-right"></i>
-                                        </a>
-                                    </div>
-                                </li>
                             </ul>
                         </li>
                     </ul>
@@ -351,7 +261,7 @@
             <!-- /footer content -->
         </div>
     </div>
-
+    <script src="production/js/notifications.js"></script>
     <!-- jQuery -->
     <script src="../vendors/jquery/dist/jquery.min.js"></script>
     <!-- Bootstrap -->

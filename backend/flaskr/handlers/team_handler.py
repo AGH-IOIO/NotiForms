@@ -11,7 +11,7 @@ from ..validate import expect_mime, json_body, Validator, mk_error
 team_bp = Blueprint('teams', __name__)
 
 
-@app.route("/teams/confirm_team/<token>")
+@app.route("/teams/confirm_team/<token>/", methods=["GET"])
 def confirm_team(token):
     token_data = from_jwt(token)
     dao = TeamDAO()
@@ -34,6 +34,7 @@ def validate_team_body(body):
     validator = Validator(body)
     validator.field_present("name")
     validator.field_present("members")
+    validator.field_present("owner")
     return validator.error()
 
 
@@ -88,7 +89,7 @@ def create_team():
     return jsonify({"confirmation": "OK"})
 
 
-@app.route("/teams/get_members/<team_name>")
+@app.route("/teams/get_members/<team_name>/", methods=["GET"])
 @auth_required
 def get_team_members(team_name):
     dao = TeamDAO()

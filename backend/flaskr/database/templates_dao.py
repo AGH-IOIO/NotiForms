@@ -1,5 +1,5 @@
 from . import db
-from ..model.form import Template
+from ..model.forms import Template
 
 
 class TemplateDAO:
@@ -32,8 +32,8 @@ class TemplateDAO:
                 for data
                 in all_data]
 
-    def find_all_from_user(self, username):
-        query = {"owner": username}
+    def find_all_for_owner(self, owner_username):
+        query = {"owner": owner_username}
         return self.find(query)
 
     # Update

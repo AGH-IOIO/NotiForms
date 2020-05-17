@@ -26,6 +26,10 @@ class UserDAO:
         query = {"_id": user.id}
         return self.find_one(query)
 
+    def find_one_by_username(self, username):
+        query = {"username": username}
+        return self.find_one(query)
+
     def find(self, query):
         all_data = self.coll.find(query)
         return [User(data, password_hash=True)
@@ -50,6 +54,15 @@ class UserDAO:
             return True
         else:
             return False
+
+    def find_username_from_id(self, _id):
+        query = {"_id": _id}
+        projection = {"_id": False, "username": True}
+        result = self.coll.find_one(query, projection)
+        if result:
+            return result["username"]
+        else:
+            return None
 
     # Update
     def update_one(self, query, update):
