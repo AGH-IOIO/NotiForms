@@ -40,6 +40,11 @@ function submitGroup() {
 
     const emails = [];
 
+    const owner = localStorage.getItem("username");
+
+    if (!owner)
+        return false;
+
     $('.email').each(function (index) {
         emails.push($(this).text())
     })
@@ -47,6 +52,7 @@ function submitGroup() {
     const group = {
         name: $('#group_name').val(),
         members: emails,
+        owner: owner
     }
 
     const groupJson = JSON.stringify(group);
@@ -100,7 +106,7 @@ function submitForm() {
     return false;
 }
 
-function refreshNavbar(){
+function refreshNavbar() {
     token = localStorage.getItem("token");
     username = localStorage.getItem("username");
     teamsApiCall(username, token)
@@ -118,7 +124,7 @@ function teamsApiCall(username, token) {
                 "Authorization": token
             },
             success: function (data) {
-                if(data.teams)
+                if (data.teams)
                     refreshTeams(data.teams);
             },
             failure: function (errMsg) {
@@ -130,11 +136,11 @@ function teamsApiCall(username, token) {
 
 function refreshTeams(teams) {
     $('#group_list > .custom').remove();
-    teams.map( t => addNavBarItem(t));
+    teams.map(t => addNavBarItem(t));
 }
 
 function addNavBarItem(teamName) {
-    const li = $('#list_template').clone(true,true);
+    const li = $('#list_template').clone(true, true);
     li.css('display', '');
     li.addClass('custom');
     li.find('#title').text(teamName);

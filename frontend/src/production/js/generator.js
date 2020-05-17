@@ -13,9 +13,8 @@ function addTextField(){
 	
 	fields[fieldDivID] = {
         type: "open_text",
-		title: "",
-		answer: ""
-    };
+		title: ""
+	};
 
 	var fieldDiv = $("<div>")
 		.addClass("item")
@@ -88,13 +87,39 @@ function generatorSubmit(){
     }, fields);
 
     const inquiryName = $("#input-form-name").val();
-    const inquiry = {
-        title: inquiryName,
-        questions: fieldsArr
-    };
 
+	const {backend} = window.glob;
+	const owner = localStorage.getItem("username");
+	const token = localStorage.getItem("token");
 
-    alert(JSON.stringify(inquiry));
+	if(!(owner && token && backend))
+		return false;
+
+	const inquiryJson = JSON.stringify({
+		owner: owner,
+		title: inquiryName,
+		questions: fieldsArr
+	});
+
+	alert(inquiryJson);
+
+	$.ajax({
+		type: "POST",
+		url: `http://${backend}/templates/create/`,
+		data: inquiryJson,
+		headers: {
+			"Authorization": token
+		},
+		contentType: "application/json",
+		dataType: "json",
+		success: function (data) {
+			console.log("template has been added with success")
+		},
+		failure: function (errMsg) {
+			console.log(errMsg);
+		},
+	});
+
     return false;
 }
 
