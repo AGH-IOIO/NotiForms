@@ -113,13 +113,14 @@ def add_user_to_team(username, team_name):
     return None
 
 
-def save_new_team(body):
+def save_new_team(body, invited_members):
     from ..database.team_dao import TeamDAO
     from ..model.team import Team
 
     team_data = {
         "name": body["name"],
-        "members": [body["owner"]]
+        "members": [body["owner"]],
+        "invited": invited_members
     }
     team = Team(team_data)
     dao = TeamDAO()

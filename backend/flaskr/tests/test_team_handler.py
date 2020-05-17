@@ -15,7 +15,8 @@ def stub_team():
     data = {
         "owner": "team_owner",
         "name": "stub_team",
-        "members": []
+        "members": [],
+        "invited": []
     }
     return data
 
@@ -51,6 +52,7 @@ def test_confirm_invitation(clear_db, flask_client, stub_team, stub_user, invita
 
     team_from_db = team_dao.find_one_by_name(team.name)
     assert username in team_from_db.members
+    assert username not in team_from_db.invited
 
 
 def create_team(flask_client, team_data, link="/teams/create_team/"):
@@ -81,6 +83,7 @@ def test_create_fast_team(clear_db, flask_client, stub_team, stub_user):
     assert team_from_db is not None
     assert "team_owner" in team_from_db.members
     assert stub_user.username in team_from_db.members
+    assert len(team_from_db.invited) == 0
 
 
 def test_create_fast_team_with_missing_data(flask_client):
@@ -117,6 +120,15 @@ def test_create_team(clear_db, flask_client, stub_team):
     team_name = stub_team["name"]
     create_team(flask_client, stub_team)
 
+    dao = TeamDAO()
+    team_from_db = dao.find_one_by_name(team_name)
+    invited = team_from_db.invited
+    members = team_from_db.members
+
+    assert user1.username in invited
+    assert user2.username in invited
+    assert "team_owner" in members
+
     with app.test_client(), app.test_request_context():
         token1 = create_team_invitation_for_user_link(team_name, user1.username).split('/')[-2]
         token2 = create_team_invitation_for_user_link(team_name, user2.username).split('/')[-2]
@@ -129,7 +141,6 @@ def test_create_team(clear_db, flask_client, stub_team):
     assert res.status_code == 200
     assert res.get_json()["confirmation"] == "OK"
 
-    dao = TeamDAO()
     team_from_db = dao.find_one_by_name(team_name)
     members = team_from_db.members
 
@@ -164,7 +175,7 @@ def test_get_team_members_list(clear_db, flask_client, stub_team):
     dao = TeamDAO()
     dao.insert_one(team)
 
-    res = get_with_auth(flask_client, "/teams/get_members/%s/" % team.name )
+    res = get_with_auth(flask_client, "/teams/get_members/%s/" % team.name)
     assert res.status_code == 200
 
     members_list = res.get_json()["members"]

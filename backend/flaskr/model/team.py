@@ -8,6 +8,7 @@ class Team:
       _id: ObjectId,
       name: string,        # unique
       members: list[string]  # usernames
+      invited: list[string]  # usernames of uncofirmed members
     }
     """
 
@@ -47,9 +48,20 @@ class Team:
     def members(self, new_members):
         self._data["members"] = new_members
 
+    @property
+    def invited(self):
+        return self._data["invited"]
+
+    @invited.setter
+    def invited(self, new_invited):
+        self._data["invited"] = new_invited
+
     def add_user(self, username):
         if username not in self._data["members"]:
             self._data["members"].append(username)
+
+        if username in self._data["invited"]:
+            self._data["invited"].remove(username)
 
     def remove_user(self, username):
         self._data["members"].remove(username)
