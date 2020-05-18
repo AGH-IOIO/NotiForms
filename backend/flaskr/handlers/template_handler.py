@@ -25,41 +25,7 @@ def validate_template(body):
     return validator.error()
 
 
-@app.route("/templates/create/", methods=["POST"])
-@expect_mime("application/json")
-@json_body
-@auth_required
-def create_template():
-    body = g.body
-    error_res = validate_template(body)
-    if error_res is not None:
-        return mk_error("Invalid data")
-
-    try:
-        template = Template(body)
-    except ValueError:
-        return mk_error("Invalid question types")
-
-    dao = TemplateDAO()
-    dao.insert_one(template)
-    return jsonify({"confirmation": "OK"})
-
-
-@app.route("/templates/assign/", methods=["POST"])
-@expect_mime("application/json")
-@json_body
-@auth_required
-def assign_template_to_team():
-    body = g.body
-    validator = Validator(body)
-    validator.field_present("team")
-    validator.field_present("owner")
-    validator.field_present("template_title")
-    validator.field_present("deadline")
-    error_res = validator.error()
-    if error_res is not None:
-        return mk_error("Invalid data")
-
+def send_forms_to_db(body):
     team_dao = TeamDAO()
     if not team_dao.is_user_in_team(body["owner"], team_name=body["team"]):
         return mk_error("Given template owner is not a member of a team with given name")
@@ -107,6 +73,47 @@ def assign_template_to_team():
         message_box_dao.add_message(message, owner=member)
 
     pending_forms_dao.insert_many(forms_to_insert)
+    return None
+
+
+@app.route("/templates/create/", methods=["POST"])
+@expect_mime("application/json")
+@json_body
+@auth_required
+def create_template():
+    body = g.body
+    error_res = validate_template(body)
+    if error_res is not None:
+        return mk_error("Invalid data")
+
+    try:
+        template = Template(body)
+    except ValueError:
+        return mk_error("Invalid question types")
+
+    dao = TemplateDAO()
+    dao.insert_one(template)
+    return jsonify({"confirmation": "OK"})
+
+
+@app.route("/templates/assign/", methods=["POST"])
+@expect_mime("application/json")
+@json_body
+@auth_required
+def assign_template_to_team():
+    body = g.body
+    validator = Validator(body)
+    validator.field_present("team")
+    validator.field_present("owner")
+    validator.field_present("template_title")
+    validator.field_present("deadline")
+    error_res = validator.error()
+    if error_res is not None:
+        return mk_error("Invalid data")
+
+    result = send_forms_to_db(body)
+    if result is not None:
+        return result
 
     return jsonify({"confirmation": "OK"})
 

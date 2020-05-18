@@ -6,11 +6,14 @@ import pytest
 
 from . import post_with_auth, get_with_auth, flask_client, stub_user, clear_db
 from ..database import db
+from ..database.message_box_dao import MessageBoxDAO
 from ..database.templates_dao import TemplateDAO
 from ..database.form_results_dao import FormResultsDAO
 from ..database.pending_forms_dao import PendingFormsDAO
 from ..model.forms import Template, Form
 from ..model.results import FormResults
+from ..model.message_box import MessageBox
+
 
 @pytest.fixture
 def stub_template_form():
@@ -58,6 +61,7 @@ def stub_template_form():
 
     return template, results, form
 
+
 def test_fill_form(clear_db, flask_client, stub_user, stub_template_form):
     _, results, form = stub_template_form
     user = stub_user
@@ -68,6 +72,18 @@ def test_fill_form(clear_db, flask_client, stub_user, stub_template_form):
         "answers": answers,
         "recipient": user["username"]
     }
+
+    message_box_dao = MessageBoxDAO()
+    message_box_data = {
+        "owner": user["username"],
+        "messages": [{
+            "text": "AAAAAAAAAAAAAAAA",
+            "send_date": datetime.utcnow(),
+            "ref_id": form.id
+        }]
+    }
+    message_box = MessageBox(message_box_data)
+    message_box_dao.insert_one(message_box)
 
     # dumps used to be able to JSON serialize ObjectID
     res = post_with_auth(flask_client, "/forms/fill/", dumps(post_data))
@@ -80,6 +96,10 @@ def test_fill_form(clear_db, flask_client, stub_user, stub_template_form):
 
     users_with_answers = list(map(lambda x: x["username"], results.answers))
     assert user["username"] in users_with_answers
+
+    messages = message_box_dao.find_all_for_user(user["username"])[0].messages
+    filtered_messages = list(filter(lambda x: x["ref_id"] == form.id, messages))
+    assert len(filtered_messages) == 0
 
     forms_dao = PendingFormsDAO()
     form = forms_dao.find_one_by_id(form.id)

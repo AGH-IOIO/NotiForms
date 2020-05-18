@@ -48,12 +48,12 @@ def create_fast_team_with_users():
     if error_res is not None:
         return error_res
 
-    error_res = save_new_team(body)
+    error_res = save_new_team(body, [])
     if error_res is not None:
         return error_res
 
     team_name = body["name"]
-    invited_members = set(filter(lambda x: x != body["owner"], body["members"]))
+    invited_members = list(filter(lambda x: x != body["owner"], body["members"]))
 
     for member_name in invited_members:
         error_res = add_user_to_team(member_name, team_name)
@@ -73,12 +73,11 @@ def create_team():
     if error_res is not None:
         return error_res
 
-    error_res = save_new_team(body)
+    team_name = body["name"]
+    invited_members = list(filter(lambda x: x != body["owner"], body["members"]))
+    error_res = save_new_team(body, invited_members)
     if error_res is not None:
         return error_res
-
-    team_name = body["name"]
-    invited_members = set(filter(lambda x: x != body["owner"], body["members"]))
 
     from ..model.utils import invite_user_to_team
     for invited_member_name in invited_members:
@@ -96,5 +95,8 @@ def get_team_members(team_name):
     if not dao.does_team_name_exist(team_name):
         return mk_error("Team with given name does not exist!")
 
-    members = dao.find_users_from_team(team_name)
-    return jsonify({"members": members})
+    team = dao.find_one_by_name(team_name)
+    return jsonify({
+        "members": team.members,
+        "invited": team.invited
+    })
