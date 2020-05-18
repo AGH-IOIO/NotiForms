@@ -109,7 +109,8 @@ function submitForm() {
 function refreshNavbar() {
     token = localStorage.getItem("token");
     username = localStorage.getItem("username");
-    teamsApiCall(username, token)
+    teamsApiCall(username, token);
+    templatesApiCall(username, token);
 }
 
 function teamsApiCall(username, token) {
@@ -124,14 +125,54 @@ function teamsApiCall(username, token) {
                 "Authorization": token
             },
             success: function (data) {
-                if (data.teams)
+                if (data.teams){
+                    window.glob.teams = data.teams;
                     refreshTeams(data.teams);
+                }
             },
             failure: function (errMsg) {
                 console.log(errMsg);
             },
         });
     }
+}
+
+function templatesApiCall(username, token) {
+
+    const {backend} = window.glob;
+
+    $.ajax({
+        type: "GET",
+        url: `${backend}/templates/get_templates/${username}/`,
+        headers: {
+            "Authorization": token
+        },
+        contentType: "application/json",
+        dataType: "json",
+        success: function (data) {
+            if(data.templates){
+                window.glob.templates = data.templates
+                refreshTemplates(data.templates);
+            }
+        },
+        failure: function (errMsg) {
+            console.log(errMsg);
+        },
+    });
+}
+
+function refreshTemplates(templates) {
+    $('#template-list').empty();
+    templates.map(t => addNavBarTemplate(t));
+}
+
+function addNavBarTemplate(t) {
+    $('#template-list').append(
+        $('<li>').append(
+            $('<a>')
+                .text(t.title)
+        )
+    );
 }
 
 function refreshTeams(teams) {
