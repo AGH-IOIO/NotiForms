@@ -115,6 +115,7 @@ def add_user_to_team(username, team_name):
 
 def save_new_team(body, invited_members):
     from ..database.team_dao import TeamDAO
+    from ..database.user_dao import UserDAO
     from ..model.team import Team
 
     team_data = {
@@ -123,10 +124,12 @@ def save_new_team(body, invited_members):
         "invited": invited_members
     }
     team = Team(team_data)
-    dao = TeamDAO()
+    team_dao = TeamDAO()
+    user_dao = UserDAO()
 
-    if dao.does_team_name_exist(team.name):
+    if team_dao.does_team_name_exist(team.name):
         return mk_error("Team with this name already exists!")
     else:
-        dao.insert_one(team)
+        team_dao.insert_one(team)
+        user_dao.add_team(team.name, body["owner"])
         return None
