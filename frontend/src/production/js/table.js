@@ -1,3 +1,15 @@
+function loadFormGenerator() {
+    loadSelectForm('#form-template-dropdown', window.glob.templates, t => t.title);
+    loadSelectForm('#form-team-dropdown', window.glob.teams, t => t);
+}
+
+function loadSelectForm(id, values, fetch) {
+    const addOption = (t) => $(id).append($('<option>', {value: fetch(t), text: fetch(t)}));
+    if (values) {
+        values.map(t => addOption(t));
+    }
+}
+
 function addParticipant() {
 
     const table = $('#participantsTable')
@@ -81,35 +93,51 @@ function submitGroup() {
 
 function submitForm() {
 
-    const emails = [];
+    const team = $("#form-team-dropdown").val();
+    const template = $("#form-template-dropdown").val();
+    const owner = localStorage.getItem("username");
+    const token = localStorage.getItem("token");
+    const {backend} = window.glob;
 
-    $('.email').each(function (index) {
-        emails.push($(this).text())
-    })
+    if (!(owner && token && backend))
+        return false;
 
-    var deadline = ""
-    var checkbox = $("#form-deadline-checkbox");
-    var picker = $("#form-deadline-input")
+    const formJson = JSON.stringify({
+        team: team,
+        owner: owner,
+        template_title: template,
+        deadline: ""
+    });
 
-    if (checkbox.is(":checked")) {
-        deadline = picker.val();
-    }
+    alert(formJson);
 
-    const group = {
-        name: $('#group_name').val(),
-        template: $("#form_template").val(),
-        participants: emails,
-        deadline: deadline
-    }
 
-    alert(JSON.stringify(group));
+    // $.ajax({
+    //     type: "POST",
+    //     url: `${backend}/templates/assign/`,
+    //     data: formJson,
+    //     headers: {
+    //         "Authorization": token
+    //     },
+    //     contentType: "application/json",
+    //     dataType: "json",
+    //     success: function (data) {
+    //         alert("udalo sie utworzyc grupe");
+    //         location.href = "/dashboard";
+    //     },
+    //     failure: function (errMsg) {
+    //         console.log(errMsg);
+    //     },
+    // });
+
     return false;
 }
 
 function refreshNavbar() {
     token = localStorage.getItem("token");
     username = localStorage.getItem("username");
-    teamsApiCall(username, token)
+    teamsApiCall(username, token);
+    templatesApiCall(username, token);
 }
 
 function teamsApiCall(username, token) {
@@ -124,14 +152,54 @@ function teamsApiCall(username, token) {
                 "Authorization": token
             },
             success: function (data) {
-                if (data.teams)
+                if (data.teams) {
+                    window.glob.teams = data.teams;
                     refreshTeams(data.teams);
+                }
             },
             failure: function (errMsg) {
                 console.log(errMsg);
             },
         });
     }
+}
+
+function templatesApiCall(username, token) {
+
+    const {backend} = window.glob;
+
+    $.ajax({
+        type: "GET",
+        url: `${backend}/templates/get_templates/${username}/`,
+        headers: {
+            "Authorization": token
+        },
+        contentType: "application/json",
+        dataType: "json",
+        success: function (data) {
+            if (data.templates) {
+                window.glob.templates = data.templates
+                refreshTemplates(data.templates);
+            }
+        },
+        failure: function (errMsg) {
+            console.log(errMsg);
+        },
+    });
+}
+
+function refreshTemplates(templates) {
+    $('#template-list').empty();
+    templates.map(t => addNavBarTemplate(t));
+}
+
+function addNavBarTemplate(t) {
+    $('#template-list').append(
+        $('<li>').append(
+            $('<a>')
+                .text(t.title)
+        )
+    );
 }
 
 function refreshTeams(teams) {
