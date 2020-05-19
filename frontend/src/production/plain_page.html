@@ -12,8 +12,9 @@
     <script src="/production/js/table.js"></script>
     <script type="application/javascript">
         window.glob = options;
+        window.glob.rerenderPage = () => (console.log(""));
 
-        if(location.pathname === "/dashboard")
+        if (location.pathname === "/dashboard")
             showMain();
         refreshNavbar();
         setInterval(refreshNavbar, 30000);
@@ -45,7 +46,7 @@
 
     <!-- Custom Theme Style -->
     <link href="../build/css/custom.min.css" rel="stylesheet"/>
-    <link rel="stylesheet" href="../vendors/tempodusdominus/tempusdominus-bootstrap-4.min.css" />
+    <link rel="stylesheet" href="../vendors/tempodusdominus/tempusdominus-bootstrap-4.min.css"/>
 </head>
 
 <body class="nav-md">
@@ -96,7 +97,8 @@
                                     ></a>
                                 <ul class="nav child_menu">
                                     <li><a href="form.html">Wyświetl wszystkie</a></li>
-                                    <li><a href="javascript:;" id="ankieta001" onclick="showSummary(this)">Ankieta 1</a></li>
+                                    <li><a href="javascript:;" id="ankieta001" onclick="showSummary(this)">Ankieta 1</a>
+                                    </li>
                                     <li>
                                         <a href="form_advanced.html">Advanced Components</a>
                                     </li>
@@ -110,21 +112,13 @@
                             </li>
                             <li>
                                 <a
-                                ><i class="fa fa-desktop"></i> Zaplanowane ankiety
+                                ><i class="fa fa-desktop"></i> Ankiety do wypełnienia
                                     <span class="fa fa-chevron-down"></span
                                     ></a>
-                                <ul class="nav child_menu">
+                                <ul class="nav child_menu" id="form-list">
                                     <li>
-                                        <a href="general_elements.html">Wyświetl wszystkie</a>
+                                        <a href="dashboard/form/1">Wyświetl wszystkie</a>
                                     </li>
-                                    <li><a href="media_gallery.html">Media Gallery</a></li>
-                                    <li><a href="typography.html">Typography</a></li>
-                                    <li><a href="icons.html">Icons</a></li>
-                                    <li><a href="glyphicons.html">Glyphicons</a></li>
-                                    <li><a href="widgets.html">Widgets</a></li>
-                                    <li><a href="invoice.html">Invoice</a></li>
-                                    <li><a href="inbox.html">Inbox</a></li>
-                                    <li><a href="calendar.html">Calendar</a></li>
                                 </ul>
                             </li>
                             <li>
@@ -150,7 +144,8 @@
 
                             <li id="list_template" style="display: none">
                                 <a
-                                ><i class="fa fa-bug"></i> <p id="title" style="display:inline">Grupa A</p>
+                                ><i class="fa fa-bug"></i>
+                                    <p id="title" style="display:inline">Grupa A</p>
                                     <span class="fa fa-chevron-down"></span
                                     ></a>
                                 <ul class="nav child_menu">
@@ -267,31 +262,32 @@
             <!-- /footer content -->
         </div>
     </div>
+</div>
 
-    <script type="application/javascript">
-        const regex = "^/dashboard/form/[1-9][0-9]*$"
-        const {pathname} = window.location;
-        if(pathname.match(regex)) {
-            const id = pathname.match("(\\d+)");
-            console.log(id[0]);
-            showForm(id[0]);
-        }
-    </script>
+<script type="application/javascript">
+    const regex = "^/dashboard/form/[1-9][0-9]*$"
+    const {pathname} = window.location;
+    if (pathname.match(regex)) {
+        const id = pathname.match("(\\d+)");
+        console.log(id[0]);
+        showForm(id[0]);
+    }
+</script>
 
 
-    <script src="/production/js/notifications.js"></script>
-    <!-- jQuery -->
-    <script src="/../vendors/jquery/dist/jquery.min.js"></script>
-    <!-- Bootstrap -->
-    <script src="/../vendors/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- FastClick -->
-    <script src="/../vendors/fastclick/lib/fastclick.js"></script>
-    <!-- NProgress -->
-    <script src="/../vendors/nprogress/nprogress.js"></script>
+<script src="/production/js/notifications.js"></script>
+<!-- jQuery -->
+<script src="/../vendors/jquery/dist/jquery.min.js"></script>
+<!-- Bootstrap -->
+<script src="/../vendors/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<!-- FastClick -->
+<script src="/../vendors/fastclick/lib/fastclick.js"></script>
+<!-- NProgress -->
+<script src="/../vendors/nprogress/nprogress.js"></script>
 
-    <!-- Custom Theme Scripts -->
-    <script src="/../build/js/custom.min.js"></script>
-    <script type="text/javascript" src="/../vendors/moment2.22/moment.min.js"></script>
-    <script type="text/javascript" src="/../vendors/tempodusdominus/tempusdominus-bootstrap-4.min.js"></script>
+<!-- Custom Theme Scripts -->
+<script src="/../build/js/custom.min.js"></script>
+<script type="text/javascript" src="/../vendors/moment2.22/moment.min.js"></script>
+<script type="text/javascript" src="/../vendors/tempodusdominus/tempusdominus-bootstrap-4.min.js"></script>
 </body>
 </html>

@@ -1,4 +1,3 @@
-
 <!-- Upload form page -->
 
 <!--<head>-->
@@ -6,38 +5,35 @@
 <!--    -->
 <!--</head>-->
 <div class="title_left">
-        <h3>Upload Form</h3>
+    <h3>Upload Form</h3>
 </div>
 
 <script src="/production/js/uploadFormGenerator.js"></script>
 
 <div class="x_panel">
     <div class="x_content">
+        <form id="demo-form2" data-parsley-validate class="form-horizontal form-label-left"
+              onsubmit="return formSubmit()">
+            <button type="button" class="btn btn-primary" id="button-upload_form" onclick="generate()">
+                Upload form +
+            </button>
 
-    <form id="demo-form2" data-parsley-validate class="form-horizontal form-label-left" onsubmit="return formSubmit()">
-        <button type="button" class="btn btn-primary" id="button-upload_form" onclick="generate()">
-            Upload form +
-        </button>
+            <div class="title_left" id="form_title"></div>
 
-      <div class="title_left" id="form_title">
+            <div id="inquiry-fields"></div>
 
-      </div>
-
-
-      <div id="inquiry-fields">
-
-      </div>
-
-      <div class="ln_solid"></div>
-      <div class="item form-group">
-        <div class="col-md-6 col-sm-6 offset-md-3">
-
-              <button class="btn btn-success" id="button-inquiry-save">
-                Save
-              </button>
-        </div>
-      </div>
-
-    </form>
-  </div>
+            <div class="ln_solid"></div>
+            <div class="item form-group">
+                <div class="col-md-6 col-sm-6 offset-md-3">
+                    <button class="btn btn-success" id="button-inquiry-save">
+                        Save
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
+
+<script type="application/javascript">
+    loadForm();
+</script>

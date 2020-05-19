@@ -1,9 +1,15 @@
 function loadFormGenerator() {
     loadSelectForm('#form-template-dropdown', window.glob.templates, t => t.title);
     loadSelectForm('#form-team-dropdown', window.glob.teams, t => t);
+    setDateFormat("YYYY-MM-DD HH:mm");
+}
+
+function setDateFormat(format){
+    $('#datetimepicker1').datetimepicker({format: format});
 }
 
 function loadSelectForm(id, values, fetch) {
+    $(id).empty();
     const addOption = (t) => $(id).append($('<option>', {value: fetch(t), text: fetch(t)}));
     if (values) {
         values.map(t => addOption(t));
@@ -98,15 +104,16 @@ function submitForm() {
     const owner = localStorage.getItem("username");
     const token = localStorage.getItem("token");
     const {backend} = window.glob;
+    const deadline = $('#form-deadline-input').val();
 
-    if (!(owner && token && backend))
+    if (!(owner && token && backend && deadline))
         return false;
 
     const formJson = JSON.stringify({
         team: team,
         owner: owner,
         template_title: template,
-        deadline: ""
+        deadline: deadline
     });
 
     alert(formJson);
@@ -138,6 +145,8 @@ function refreshNavbar() {
     username = localStorage.getItem("username");
     teamsApiCall(username, token);
     templatesApiCall(username, token);
+    formsApiCall(username, token);
+    window.glob.rerenderPage();
 }
 
 function teamsApiCall(username, token) {
@@ -213,4 +222,44 @@ function addNavBarItem(teamName) {
     li.addClass('custom');
     li.find('#title').text(teamName);
     $("#group_list").append(li);
+}
+
+function formsApiCall(username, token) {
+    const {backend} = window.glob;
+    $.ajax({
+        type: "GET",
+        url: `${backend}/forms/pending/${username}/`,
+        headers: {
+            "Authorization": token
+        },
+        contentType: "application/json",
+        dataType: "json",
+        success: function (data) {
+            if (data.forms) {
+                window.glob.forms = data.forms
+                console.log(data.forms);
+                refreshForms(data.forms);
+                // refreshTemplates(data.templates);
+            }
+        },
+        failure: function (errMsg) {
+            console.log(errMsg);
+        },
+    });
+}
+
+function refreshForms(forms) {
+    console.log("emano");
+    $("#form-list").empty();
+    forms.map(f => addNavbarForm(f));
+}
+
+function addNavbarForm(form){
+    $("#form-list").append(
+        $('<li>').append(
+            $('<a>')
+                .attr("href","dashboard/form/12")
+                .text("example")
+        )
+    )
 }

@@ -33,6 +33,7 @@
                 </select>
             </div>
 
+
 <!--            <div class="col-md-12 col-sm-12 ">-->
 <!--                <div class="x_panel">-->
 <!--                    <div class="x_title">-->
@@ -98,27 +99,28 @@
 
                     <div class="x_content">
 
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group row">
-                                    <div class="checkbox">
-                                        <label>
-                                            <input type="checkbox" class="icheckbox_flat-green" value=""
-                                                   id="form-deadline-checkbox" onchange="showDeadlinePicker()"> Ankieta
-                                            ograniczona czasowo
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+<!--                        <div class="row">-->
+<!--                            <div class="col-md-6">-->
+<!--                                <div class="form-group row">-->
+<!--                                    <div class="checkbox">-->
+<!--                                        <label>-->
+<!--                                            <input type="checkbox" class="icheckbox_flat-green" value=""-->
+<!--                                                   id="form-deadline-checkbox" onchange="showDeadlinePicker()"> Ankieta-->
+<!--                                            ograniczona czasowo-->
+<!--                                        </label>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
 
 
-                        <div class="row" id="form-deadline-picker" style="display:none;">
+                        <div class="row" id="form-deadline-picker">
+                            <label class="col-form-label col-md-3 col-sm-3 label-align">Pick deadline</label>
                             <div class="col-sm-6">
                                 <div class="form-group">
                                     <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
                                         <input type="text" class="form-control datetimepicker-input"
-                                               data-target="#datetimepicker1" id="form-deadline-input"/>
+                                               data-target="#datetimepicker1" id="form-deadline-input" required/>
                                         <div class="input-group-append" data-target="#datetimepicker1"
                                              data-toggle="datetimepicker">
                                             <div class="input-group-text"><i class="fa fa-calendar"></i></div>
@@ -147,6 +149,7 @@
 
 <script type="application/javascript">
     loadFormGenerator();
+    window.glob.rerenderPage = loadFormGenerator;
 </script>
 
 <script src="/production/js/generator.js"></script>

@@ -3,7 +3,6 @@ checked = []
 
 let index = 0;
 
-
 function addTextField(){
 
 	var fieldIndex = index;

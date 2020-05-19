@@ -9,6 +9,16 @@ fields = {"title":"Would you please answer some questions about the meeting","qu
 
 questionDivId = 0;
 
+function loadForm() {
+	const {pathname} = window.location;
+	const id = pathname.match("(\\d+)");
+	if(id) {
+		console.log(id)
+		// TODO: set fields
+		generate();
+	}
+}
+
 function generate(){
 	console.log("TESTIK");
 	if (Object.keys(fields).length !== 0){
