@@ -24,7 +24,7 @@ def validate_form_body(body):
 
 
 def insert_answers_to_db(body):
-    form_id = ObjectId(body["form_id"]["$oid"])
+    form_id = ObjectId(body["form_id"])
     recipient = body["recipient"]
 
     forms_dao = PendingFormsDAO()

@@ -52,6 +52,7 @@ def stub_template_form():
     results_dao.insert_one(results)
 
     form_data = {
+        "title": "AAAAA",
         "recipient": "stubUser",
         "results_id": results.id,
         "form": template.data
@@ -68,7 +69,7 @@ def test_fill_form(clear_db, flask_client, stub_user, stub_template_form):
 
     answers = [1, "aaaa", [0, 2]]
     post_data = {
-        "form_id": form.id,
+        "form_id": str(form.id),
         "answers": answers,
         "recipient": user["username"]
     }
@@ -86,7 +87,7 @@ def test_fill_form(clear_db, flask_client, stub_user, stub_template_form):
     message_box_dao.insert_one(message_box)
 
     # dumps used to be able to JSON serialize ObjectID
-    res = post_with_auth(flask_client, "/forms/fill/", dumps(post_data))
+    res = post_with_auth(flask_client, "/forms/fill/", post_data)
     assert res.status_code == 200
 
     results_dao = FormResultsDAO()
@@ -135,11 +136,11 @@ def test_get_pending_forms(clear_db, flask_client, stub_user, stub_template_form
 
     # Fillup form
     post_data = {
-        "form_id": form.id,
+        "form_id": str(form.id),
         "answers": [1, "aaaa", [0, 2]],
         "recipient": user["username"]
     }
-    res = post_with_auth(flask_client, "/forms/fill/", dumps(post_data))
+    res = post_with_auth(flask_client, "/forms/fill/", post_data)
     assert res.status_code == 200
 
     # Make sure it's not longer in pending

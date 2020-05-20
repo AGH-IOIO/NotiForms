@@ -58,9 +58,13 @@ def send_forms_to_db(body):
     message_box_dao = MessageBoxDAO()
 
     forms_to_insert = []
+    form_title = body["title"]
 
     for member in team_members:
-        form = Form({"form": template.data})
+        form = Form({
+            "title": form_title,
+            "form": template.data
+        })
         form.recipient = member
         form.results_id = results_id
 
@@ -104,6 +108,7 @@ def create_template():
 def assign_template_to_team():
     body = g.body
     validator = Validator(body)
+    validator.field_present("title")
     validator.field_present("team")
     validator.field_present("owner")
     validator.field_present("template_title")
