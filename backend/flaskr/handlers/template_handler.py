@@ -44,7 +44,7 @@ def send_forms_to_db(body):
         return mk_error("Template with given owner and title does not exist")
 
     try:
-        results = FormResults(template, team_members, datetime.strptime(body["deadline"], "%Y-%m-%d %H:%M:%S.%f"))
+        results = FormResults(template, team_members, datetime.strptime(body["deadline"], "%Y-%m-%d %H:%M"))
     except ValueError:
         return mk_error("Error with creating form results object, team members list is not correct")
 

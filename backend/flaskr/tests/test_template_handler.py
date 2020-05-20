@@ -110,7 +110,7 @@ def test_assign_template_to_team(clear_db, flask_client, stub_user):
         "team": "stub_team",
         "owner": "team_owner",
         "template_title": template.title,
-        "deadline": (datetime.utcnow() + timedelta(days=1.0)).strftime("%Y-%m-%d %H:%M:%S.%f")
+        "deadline": (datetime.utcnow() + timedelta(days=1.0)).strftime("%Y-%m-%d %H:%M")
     }
 
     res = post_with_auth(flask_client, "/templates/assign/", post_data)

@@ -101,6 +101,7 @@ class Form:
     {
       _id: ObjectId,
       recipient: string,  # username
+      title: string,
       send_date: date,
       results_id: ObjectId,  # FormResults id
       form: Template  # with filled answer fields in questions
@@ -142,6 +143,14 @@ class Form:
     @recipient.setter
     def recipient(self, new_recipient):
         self._data["recipient"] = new_recipient
+
+    @property
+    def title(self):
+        return self._data["title"]
+
+    @title.setter
+    def title(self, new_title):
+        self._data["title"] = new_title
 
     @property
     def send_date(self):
