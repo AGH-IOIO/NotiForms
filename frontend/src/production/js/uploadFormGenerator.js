@@ -72,11 +72,10 @@ function formSubmit(){
     }
 
 	const answers = fields.questions.map(q => q.answer);
-	const _id = {"$oid": form._id};
 	const username = localStorage.getItem("username");
 
 	const answerJson = JSON.stringify({
-		form_id: _id,
+		form_id: form._id,
 		answers: answers,
 		recipient: username
 	});
@@ -97,7 +96,7 @@ function formSubmit(){
 			dataType: "json",
 			success: function (data) {
 				refreshNavbar();
-				console.log("Udalo sie wypelnic anikete");
+				window.location.href = "/dashboard";
 			},
 			failure: function (errMsg) {
 				console.log(errMsg);

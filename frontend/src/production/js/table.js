@@ -301,7 +301,7 @@ function addNavbarForm(form){
         $('<li>').append(
             $('<a>')
                 .attr("href",`dashboard/form/${form._id}`)
-                .text(form.form.title)
+                .text(form.title)
         )
     )
 }

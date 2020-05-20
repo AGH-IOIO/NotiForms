@@ -123,6 +123,7 @@ function generatorSubmit(){
     return false;
 }
 
+// function not used
 function showDeadlinePicker(){
 	var checkbox = $("#form-deadline-checkbox");
 	var picker = $("#form-deadline-picker")
