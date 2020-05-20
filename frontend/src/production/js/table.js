@@ -8,6 +8,49 @@ function setDateFormat(format){
     $('#datetimepicker1').datetimepicker({format: format});
 }
 
+function refreshMemberTable(selectVal) {
+    const table = $('#participants-table');
+    $(".tableRow").remove();
+    const token = localStorage.getItem("token");
+    const {backend} = window.glob;
+
+    if(backend && token){
+        $.ajax({
+            type: "GET",
+            url: `${backend}/teams/get_members/${selectVal.value}/`,
+            headers: {
+                "Authorization": token
+            },
+            contentType: "application/json",
+            dataType: "json",
+            success: function (data) {
+                if (data.members) {
+                    data.members.map(name => addParticipantRow(name, table));
+                }
+            },
+            failure: function (errMsg) {
+                console.log(errMsg);
+            },
+        });
+    }
+}
+
+
+function addParticipantRow(name, table) {
+    const fieldDiv = $("<tr>")
+        .addClass("tableRow")
+        .append(
+        $('<td>').append($('<input>')
+            .attr('type', 'checkbox')
+            .attr('class', 'check-participant')
+        ),
+        $('<td>')
+            .attr('class', 'name')
+            .text(name)
+    )
+    table.append(fieldDiv);
+}
+
 function loadSelectForm(id, values, fetch) {
     $(id).empty();
     const addOption = (t) => $(id).append($('<option>', {value: fetch(t), text: fetch(t)}));
@@ -35,7 +78,6 @@ function addParticipant() {
 }
 
 function deleteSelected() {
-    console.log('selected')
 
     let counter = 0;
 
@@ -87,7 +129,7 @@ function submitGroup() {
         dataType: "json",
         success: function (data) {
             alert("udalo sie utworzyc grupe");
-            location.href = "/dashboard";
+            refreshNavbar();
         },
         failure: function (errMsg) {
             console.log(errMsg);
@@ -105,11 +147,13 @@ function submitForm() {
     const token = localStorage.getItem("token");
     const {backend} = window.glob;
     const deadline = $('#form-deadline-input').val();
+    const title = $('#form-title').val();
 
-    if (!(owner && token && backend && deadline))
+    if (!(owner && token && backend && deadline && title))
         return false;
 
     const formJson = JSON.stringify({
+        title: title,
         team: team,
         owner: owner,
         template_title: template,
@@ -118,24 +162,24 @@ function submitForm() {
 
     alert(formJson);
 
-
-    // $.ajax({
-    //     type: "POST",
-    //     url: `${backend}/templates/assign/`,
-    //     data: formJson,
-    //     headers: {
-    //         "Authorization": token
-    //     },
-    //     contentType: "application/json",
-    //     dataType: "json",
-    //     success: function (data) {
-    //         alert("udalo sie utworzyc grupe");
-    //         location.href = "/dashboard";
-    //     },
-    //     failure: function (errMsg) {
-    //         console.log(errMsg);
-    //     },
-    // });
+    $.ajax({
+        type: "POST",
+        url: `${backend}/templates/assign/`,
+        data: formJson,
+        headers: {
+            "Authorization": token
+        },
+        contentType: "application/json",
+        dataType: "json",
+        success: function (data) {
+            refreshNavbar();
+            alert("udalo sie utworzyc grupe");
+            location.href = "/dashboard";
+        },
+        failure: function (errMsg) {
+            console.log(errMsg);
+        },
+    });
 
     return false;
 }
@@ -237,9 +281,7 @@ function formsApiCall(username, token) {
         success: function (data) {
             if (data.forms) {
                 window.glob.forms = data.forms
-                console.log(data.forms);
                 refreshForms(data.forms);
-                // refreshTemplates(data.templates);
             }
         },
         failure: function (errMsg) {
@@ -249,17 +291,17 @@ function formsApiCall(username, token) {
 }
 
 function refreshForms(forms) {
-    console.log("emano");
     $("#form-list").empty();
     forms.map(f => addNavbarForm(f));
 }
 
 function addNavbarForm(form){
+    console.log(form)
     $("#form-list").append(
         $('<li>').append(
             $('<a>')
-                .attr("href","dashboard/form/12")
-                .text("example")
+                .attr("href",`dashboard/form/${form._id}`)
+                .text(form.form.title)
         )
     )
 }

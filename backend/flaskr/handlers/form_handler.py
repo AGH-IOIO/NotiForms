@@ -57,7 +57,7 @@ def insert_answers_to_db(body):
 @auth_required
 def fill_form():
     # json.loads needed to correctly deserialize ObjectId
-    body = json.loads(g.body)
+    body = g.body
     error_res = validate_form_body(body)
 
     if error_res is not None:

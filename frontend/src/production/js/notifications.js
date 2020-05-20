@@ -65,3 +65,30 @@ function descripctionDiv(desc) {
         .addClass("day")
         .text(desc);
 }
+
+function pushNotification(msg){
+
+    addNotification(12,"april", "witam", "michal", "tralalal wypelnij anikete prosze ja ciebie bo bedzie zle");
+
+    let push = function (msg){
+        new Notification('NotiForms', {
+            body: msg,
+            icon: "https://img.icons8.com/ultraviolet/80/000000/survey.png"
+        });
+    }
+
+    if(!window.Notification){
+        console.log('Browser does not support notifications.');
+
+    } else if (Notification.permission === 'granted') {
+        push(msg);
+    } else{
+        Notification.requestPermission().then(function(p) {
+            if(p === 'granted') {
+                push(msg);
+            }
+        });
+    }
+
+
+}

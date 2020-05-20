@@ -112,6 +112,7 @@ function generatorSubmit(){
 		contentType: "application/json",
 		dataType: "json",
 		success: function (data) {
+			refreshNavbar();
 			console.log("template has been added with success")
 		},
 		failure: function (errMsg) {

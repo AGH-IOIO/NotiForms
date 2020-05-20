@@ -80,6 +80,11 @@
                                 </button>
                             </li>
                             <li>
+                                <button class="p-1 btn btn-success" style="width: 100%" onclick="pushNotification('Powiadomienie')"
+                                        type="submit"><i class="fa fa-plus"></i>push
+                                </button>
+                            </li>
+                            <li>
                                 <a
                                 ><i class="fa fa-home"></i> Szablony
                                     <span class="fa fa-chevron-down"></span
@@ -263,7 +268,7 @@
 </div>
 
 <script type="application/javascript">
-    const regex = "^/dashboard/form/[1-9][0-9]*$"
+    const regex = "^/dashboard/form/[1-9a-z][a-z0-9]*$"
     const {pathname} = window.location;
     if (pathname.match(regex)) {
         const id = pathname.match("(\\d+)");
