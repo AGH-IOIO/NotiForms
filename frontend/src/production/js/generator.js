@@ -3,7 +3,6 @@ checked = []
 
 let index = 0;
 
-
 function addTextField(){
 
 	var fieldIndex = index;
@@ -113,6 +112,7 @@ function generatorSubmit(){
 		contentType: "application/json",
 		dataType: "json",
 		success: function (data) {
+			refreshNavbar();
 			console.log("template has been added with success")
 		},
 		failure: function (errMsg) {
@@ -123,6 +123,7 @@ function generatorSubmit(){
     return false;
 }
 
+// function not used
 function showDeadlinePicker(){
 	var checkbox = $("#form-deadline-checkbox");
 	var picker = $("#form-deadline-picker")

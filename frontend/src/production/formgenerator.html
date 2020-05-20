@@ -1,9 +1,11 @@
 <!-- Generator page -->
 <div class="title_left">
-    <h3>Przeprowadź anikete!</h3>
+    <h3>Przeprowadź ankiete!</h3>
 </div>
 
 <link rel="stylesheet" type="text/css" href="production/css/main.css">
+
+<script src="/production/js/table.js"></script>
 
 <div class="x_panel">
     <div class="x_content">
@@ -14,21 +16,24 @@
             <div class="form-group row">
                 <label class="col-form-label col-md-3 col-sm-3 label-align">Nazwa formularza</label>
                 <div class="col-md-6 col-sm-6">
-                    <input type="text" class="form-control" required id="group_name"> </input>
+                    <input type="text" class="form-control" required id="form-title"> </input>
                     <span class="fa fa-user form-control-feedback right" aria-hidden="true"></span>
                 </div>
             </div>
 
             <div class="form-group row">
                 <label class="col-form-label col-md-3 col-sm-3 label-align">Nazwa ankiety</label>
-                <select class="form-control col-md-6 col-sm-6" id="form_template">
-                    <option>Choose option</option>
-                    <option>Option one</option>
-                    <option>Option two</option>
-                    <option>Option three</option>
-                    <option>Option four</option>
+                <select class="form-control col-md-6 col-sm-6" id="form-template-dropdown" required>
                 </select>
             </div>
+
+            <div class="form-group row">
+                <label class="col-form-label col-md-3 col-sm-3 label-align">Pick team</label>
+                <select class="form-control col-md-6 col-sm-6" id="form-team-dropdown" onchange="refreshMemberTable(this);" required>
+                    <option disabled selected value>Empty</option>
+                </select>
+            </div>
+
 
             <div class="col-md-12 col-sm-12 ">
                 <div class="x_panel">
@@ -55,13 +60,13 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="card-box table-responsive">
-                                    <table id="participantsTable"
+                                    <table id="participants-table"
                                            class="dataTable table table-striped table-bordered bulk_action"
                                            style="width:100%">
                                         <thead>
                                         <tr>
                                             <th><input type="checkbox" id="check-all" onclick="setAll(this);"></th>
-                                            <th>Nick</th>
+                                            <th>Członkowie</th>
                                         </tr>
                                         </thead>
                                     </table>
@@ -95,55 +100,57 @@
 
                     <div class="x_content">
 
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group row">
-                                    <div class="checkbox">
-                                    <label>
-                                        <input type="checkbox" class="icheckbox_flat-green" value="" id="form-deadline-checkbox" onchange="showDeadlinePicker()"> Ankieta ograniczona czasowo
-                                    </label>
+<!--                        <div class="row">-->
+<!--                            <div class="col-md-6">-->
+<!--                                <div class="form-group row">-->
+<!--                                    <div class="checkbox">-->
+<!--                                        <label>-->
+<!--                                            <input type="checkbox" class="icheckbox_flat-green" value=""-->
+<!--                                                   id="form-deadline-checkbox" onchange="showDeadlinePicker()"> Ankieta-->
+<!--                                            ograniczona czasowo-->
+<!--                                        </label>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+
+
+                        <div class="row" id="form-deadline-picker">
+                            <label class="col-form-label col-md-3 col-sm-3 label-align">Pick deadline</label>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+                                        <input type="text" class="form-control datetimepicker-input"
+                                               data-target="#datetimepicker1" id="form-deadline-input" required/>
+                                        <div class="input-group-append" data-target="#datetimepicker1"
+                                             data-toggle="datetimepicker">
+                                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-
-                        <div class="row" id="form-deadline-picker" style="display:none;">
-                                <div class="col-sm-6">
-                                        <div class="form-group">
-                                          <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
-                                            <input type="text" class="form-control datetimepicker-input" data-target="#datetimepicker1" id="form-deadline-input" />
-                                            <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
-                                              <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                            </div>  
-                        </div>
-
-                        
-
-                        
                     </div>
-                    <div class="row">
-                            <div class="ln_solid"></div>
-                            <div class="item form-group">
-                                <div class="col-md-6 col-sm-6">
-                                    
-                                    <button class="btn btn-success" id="button-inquiry-create">
-                                        Przeprowadź
-                                    </button>
-                                </div>
-                            </div>
+                </div>
+                <div class="row">
+                    <div class="ln_solid"></div>
+                    <div class="item form-group">
+                        <div class="col-md-6 col-sm-6">
+
+                            <button class="btn btn-success" id="button-inquiry-create">
+                                Przeprowadź
+                            </button>
                         </div>
+                    </div>
                 </div>
             </div>
-
-
         </form>
     </div>
 </div>
 
+<script type="application/javascript">
+    loadFormGenerator();
+    window.glob.rerenderPage = loadFormGenerator;
+</script>
 
 <script src="/production/js/generator.js"></script>

@@ -1,3 +1,64 @@
+function loadFormGenerator() {
+    loadSelectForm('#form-template-dropdown', window.glob.templates, t => t.title);
+    loadSelectForm('#form-team-dropdown', window.glob.teams, t => t);
+    setDateFormat("YYYY-MM-DD HH:mm");
+}
+
+function setDateFormat(format){
+    $('#datetimepicker1').datetimepicker({format: format});
+}
+
+function refreshMemberTable(selectVal) {
+    const table = $('#participants-table');
+    $(".tableRow").remove();
+    const token = localStorage.getItem("token");
+    const {backend} = window.glob;
+
+    if(backend && token){
+        $.ajax({
+            type: "GET",
+            url: `${backend}/teams/get_members/${selectVal.value}/`,
+            headers: {
+                "Authorization": token
+            },
+            contentType: "application/json",
+            dataType: "json",
+            success: function (data) {
+                if (data.members) {
+                    data.members.map(name => addParticipantRow(name, table));
+                }
+            },
+            failure: function (errMsg) {
+                console.log(errMsg);
+            },
+        });
+    }
+}
+
+
+function addParticipantRow(name, table) {
+    const fieldDiv = $("<tr>")
+        .addClass("tableRow")
+        .append(
+        $('<td>').append($('<input>')
+            .attr('type', 'checkbox')
+            .attr('class', 'check-participant')
+        ),
+        $('<td>')
+            .attr('class', 'name')
+            .text(name)
+    )
+    table.append(fieldDiv);
+}
+
+function loadSelectForm(id, values, fetch) {
+    $(id).empty();
+    const addOption = (t) => $(id).append($('<option>', {value: fetch(t), text: fetch(t)}));
+    if (values) {
+        values.map(t => addOption(t));
+    }
+}
+
 function addParticipant() {
 
     const table = $('#participantsTable')
@@ -17,7 +78,6 @@ function addParticipant() {
 }
 
 function deleteSelected() {
-    console.log('selected')
 
     let counter = 0;
 
@@ -69,7 +129,7 @@ function submitGroup() {
         dataType: "json",
         success: function (data) {
             alert("udalo sie utworzyc grupe");
-            location.href = "/dashboard";
+            refreshNavbar();
         },
         failure: function (errMsg) {
             console.log(errMsg);
@@ -81,28 +141,46 @@ function submitGroup() {
 
 function submitForm() {
 
-    const emails = [];
+    const team = $("#form-team-dropdown").val();
+    const template = $("#form-template-dropdown").val();
+    const owner = localStorage.getItem("username");
+    const token = localStorage.getItem("token");
+    const {backend} = window.glob;
+    const deadline = $('#form-deadline-input').val();
+    const title = $('#form-title').val();
 
-    $('.email').each(function (index) {
-        emails.push($(this).text())
-    })
+    if (!(owner && token && backend && deadline && title))
+        return false;
 
-    var deadline = ""
-    var checkbox = $("#form-deadline-checkbox");
-    var picker = $("#form-deadline-input")
-
-    if (checkbox.is(":checked")) {
-        deadline = picker.val();
-    }
-
-    const group = {
-        name: $('#group_name').val(),
-        template: $("#form_template").val(),
-        participants: emails,
+    const formJson = JSON.stringify({
+        title: title,
+        team: team,
+        owner: owner,
+        template_title: template,
         deadline: deadline
-    }
+    });
 
-    alert(JSON.stringify(group));
+    alert(formJson);
+
+    $.ajax({
+        type: "POST",
+        url: `${backend}/templates/assign/`,
+        data: formJson,
+        headers: {
+            "Authorization": token
+        },
+        contentType: "application/json",
+        dataType: "json",
+        success: function (data) {
+            refreshNavbar();
+            alert("udalo sie utworzyc grupe");
+            location.href = "/dashboard";
+        },
+        failure: function (errMsg) {
+            console.log(errMsg);
+        },
+    });
+
     return false;
 }
 
@@ -111,6 +189,8 @@ function refreshNavbar() {
     username = localStorage.getItem("username");
     teamsApiCall(username, token);
     templatesApiCall(username, token);
+    formsApiCall(username, token);
+    window.glob.rerenderPage();
 }
 
 function teamsApiCall(username, token) {
@@ -125,7 +205,7 @@ function teamsApiCall(username, token) {
                 "Authorization": token
             },
             success: function (data) {
-                if (data.teams){
+                if (data.teams) {
                     window.glob.teams = data.teams;
                     refreshTeams(data.teams);
                 }
@@ -150,7 +230,7 @@ function templatesApiCall(username, token) {
         contentType: "application/json",
         dataType: "json",
         success: function (data) {
-            if(data.templates){
+            if (data.templates) {
                 window.glob.templates = data.templates
                 refreshTemplates(data.templates);
             }
@@ -186,4 +266,42 @@ function addNavBarItem(teamName) {
     li.addClass('custom');
     li.find('#title').text(teamName);
     $("#group_list").append(li);
+}
+
+function formsApiCall(username, token) {
+    const {backend} = window.glob;
+    $.ajax({
+        type: "GET",
+        url: `${backend}/forms/pending/${username}/`,
+        headers: {
+            "Authorization": token
+        },
+        contentType: "application/json",
+        dataType: "json",
+        success: function (data) {
+            if (data.forms) {
+                window.glob.forms = data.forms
+                refreshForms(data.forms);
+            }
+        },
+        failure: function (errMsg) {
+            console.log(errMsg);
+        },
+    });
+}
+
+function refreshForms(forms) {
+    $("#form-list").empty();
+    forms.map(f => addNavbarForm(f));
+}
+
+function addNavbarForm(form){
+    console.log(form)
+    $("#form-list").append(
+        $('<li>').append(
+            $('<a>')
+                .attr("href",`dashboard/form/${form._id}`)
+                .text(form.title)
+        )
+    )
 }

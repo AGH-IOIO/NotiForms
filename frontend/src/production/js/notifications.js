@@ -67,6 +67,9 @@ function descripctionDiv(desc) {
 }
 
 function pushNotification(msg){
+
+    addNotification(12,"april", "witam", "michal", "tralalal wypelnij anikete prosze ja ciebie bo bedzie zle");
+
     let push = function (msg){
         new Notification('NotiForms', {
             body: msg,

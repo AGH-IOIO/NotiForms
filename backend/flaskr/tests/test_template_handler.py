@@ -107,6 +107,7 @@ def test_assign_template_to_team(clear_db, flask_client, stub_user):
     template_dao.insert_one(template)
 
     post_data = {
+        "title": "test_form",
         "team": "stub_team",
         "owner": "team_owner",
         "template_title": template.title,
