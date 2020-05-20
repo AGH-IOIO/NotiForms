@@ -46,7 +46,7 @@ def send_forms_to_db(body):
     try:
         results = FormResults(template, team_members, datetime.strptime(body["deadline"], "%Y-%m-%d %H:%M"))
     except ValueError:
-        return mk_error("Error with creating form results object, team members list is not correct")
+        return mk_error("Error with creating form results object, team members list is empty")
 
     results_dao = FormResultsDAO()
     results_dao.insert_one(results)
