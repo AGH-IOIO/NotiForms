@@ -118,6 +118,7 @@ class Form:
     def data(self):
         new_data = dict()
         new_data["_id"] = self.id
+        new_data["title"] = self.title
         new_data["recipient"] = self.recipient
         new_data["send_date"] = self.send_date
         new_data["results_id"] = self.results_id
