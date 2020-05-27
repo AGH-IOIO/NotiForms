@@ -72,7 +72,7 @@ def fill_form():
 
 @app.route("/forms/pending/<username>/", methods=["GET"])
 @auth_required
-def get_forms(username):
+def get_user_pending_forms(username):
     '''
     Returns pending forms of currently logged in user.
     '''
