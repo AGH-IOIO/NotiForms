@@ -18,10 +18,14 @@ function loginSubmit() {
       console.log(data["token"]);
       localStorage.setItem("token", data["token"]);
       localStorage.setItem("username", login);
-      alert("udalo sie zalogowac");
       location.href = "/dashboard";
+      showLoginInfo("Logged in", false);
+    },
+    error: function (data){
+      showLoginInfo(data.responseJSON.error, true);
     },
     failure: function (errMsg) {
+      showLoginInfo("Login error: "+errMsg, true);
       console.log(errMsg);
     },
   });
@@ -48,12 +52,37 @@ function registerSubmit() {
     contentType: "application/json",
     dataType: "json",
     success: function (data) {
-      alert("Udalo sie zarejestrowac");
+      showLoginInfo("Registration completed successfully, please check your email", false);
+      $("#register-input-login").val("");
+      $("#register-input-password").val("");
+      $("#register-input-email").val("");
     },
     failure: function (errMsg) {
       console.log(errMsg);
     },
+    error: function (data) {
+      showLoginInfo(data.responseJSON.error, true);
+    }
   });
 
   return false;
+}
+
+function showLoginInfo(message, isError){
+  $(".alert").remove();
+  let box = $("<div>").addClass("alert")
+    .css("position", "absolute")
+    .css("top", 0).css("left", 0).css("right", 0)
+    .append($("<strong>").text(message).css("color","white"));
+
+  if(isError){
+    box.addClass("alert-danger");
+  }else{
+    box.addClass("alert-success");
+  }
+  box.hide();
+  $("body.login").prepend(box);
+  box.fadeIn(300);
+
+  setTimeout(function () { box.fadeOut(300); }, 3000)
 }
