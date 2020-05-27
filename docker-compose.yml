@@ -18,8 +18,11 @@ services:
     volumes:
       - ./frontend/src:/usr/share/nginx/html:ro
       - ./frontend/conf:/etc/nginx/conf.d
+      - ./frontend/certs/notiforms.crt:/etc/nginx/notiforms.crt
+      - ./frontend/certs/notiforms.key:/etc/nginx/notiforms.key
     ports:
       - 8081:80
+      - 443:443
   mongo:
     image: mongo
     restart: always
