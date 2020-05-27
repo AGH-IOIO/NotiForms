@@ -45,11 +45,11 @@ class UserDAO:
             raise ValueError("At least one of {username, email} must be not "
                              "None")
 
-        query = {}
+        query = {"$or": []}
         if username:
-            query["username"] = username
+            query["$or"].append({"username": username})
         if email:
-            query["email"] = email
+            query["$or"].append({"email": email})
         if self.coll.find_one(query):
             return True
         else:
