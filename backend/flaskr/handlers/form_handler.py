@@ -98,3 +98,19 @@ def get_form_results(results_id):
         return mk_error("Invalid results_id")
 
     return jsonify({"results": results.data})
+
+
+@app.route("/forms/owned/<username>/", methods=["GET"])
+@auth_required
+def get_forms_owned_by_user(username):
+    """
+    Returns list of results objects owned by given user - in fact it is a list of forms made by this user
+    """
+    results_dao = FormResultsDAO()
+
+    results_list = results_dao.find_all_for_owner(username)
+    if results_list is None:
+        return mk_error("User does not exist or does not own any forms yet")
+
+    results_data = [result.data for result in results_list]
+    return jsonify({"forms": results_data})

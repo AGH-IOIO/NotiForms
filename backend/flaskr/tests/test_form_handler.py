@@ -171,3 +171,20 @@ def test_get_form_results(clear_db, flask_client, stub_user, stub_template_form)
     res_answers = results["answers"][0]
     assert res_answers["username"] == user["username"]
     assert res_answers["answers"] == answers
+
+
+def test_get_forms_owned_by_user(clear_db, flask_client, stub_template_form):
+    template, results, _ = stub_template_form
+
+    results_dao = FormResultsDAO()
+    deadline = datetime.utcnow() + timedelta(days=5.0)
+
+    results2 = FormResults(template, recipients=["stubUser"], deadline=deadline)
+    results_dao.insert_one(results2)
+
+    res = get_with_auth(flask_client, "/forms/owned/{}/".format("team_owner"))
+    assert res.status_code == 200
+
+    res_json = res.get_json()
+    results = res_json["forms"]
+    assert len(results) == 2
