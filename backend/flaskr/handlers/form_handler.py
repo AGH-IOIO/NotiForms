@@ -83,3 +83,18 @@ def get_user_pending_forms(username):
     forms = PendingFormsDAO().find_all_for_user(username)
     forms_dict = [form.data for form in forms]
     return jsonify({"forms": forms_dict})
+
+
+@app.route("/forms/results/<results_id>/", methods=["GET"])
+@auth_required
+def get_form_results(results_id):
+    """
+    Returns results of a given form
+    """
+    results_dao = FormResultsDAO()
+
+    results = results_dao.find_one_by_id(ObjectId(results_id))
+    if results is None:
+        return mk_error("Invalid results_id")
+
+    return jsonify({"results": results.data})

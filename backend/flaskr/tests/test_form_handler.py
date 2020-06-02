@@ -150,3 +150,24 @@ def test_get_pending_forms(clear_db, flask_client, stub_user, stub_template_form
     assert "forms" in res_json
     res_forms = res_json["forms"]
     assert len(res_forms) == 0
+
+
+def test_get_form_results(clear_db, flask_client, stub_user, stub_template_form):
+    _, results, form = stub_template_form
+    user = stub_user
+
+    results_dao = FormResultsDAO()
+    answers = [0, "AAA", [0, 2]]
+    results_dao.add_answers_from_user(answers, user["username"], results.id)
+
+    res = get_with_auth(flask_client, "/forms/results/{}/".format(str(results.id)))
+    assert res.status_code == 200
+
+    res_json = res.get_json()
+    results = res_json["results"]
+    assert len(results["not_filled_yet"]) == 0
+    assert len(results["answers"]) == 1
+
+    res_answers = results["answers"][0]
+    assert res_answers["username"] == user["username"]
+    assert res_answers["answers"] == answers
