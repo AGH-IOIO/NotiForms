@@ -55,7 +55,7 @@ def stub_template_form():
         "title": "AAAAA",
         "recipient": "stubUser",
         "results_id": results.id,
-        "form": template.data
+        "template": template.data
     }
     form = Form(form_data)
     PendingFormsDAO().insert_one(form)

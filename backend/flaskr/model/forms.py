@@ -104,7 +104,7 @@ class Form:
       title: string,
       send_date: date,
       results_id: ObjectId,  # FormResults id
-      form: Template  # with filled answer fields in questions
+      template: Template  # with filled answer fields in questions
     }
     """
 
@@ -122,7 +122,7 @@ class Form:
         new_data["recipient"] = self.recipient
         new_data["send_date"] = self.send_date
         new_data["results_id"] = self.results_id
-        new_data["form"] = self.form
+        new_data["template"] = self.template
         return new_data
 
     @data.setter
@@ -170,16 +170,16 @@ class Form:
         self._data["results_id"] = new_results_id
 
     @property
-    def form(self):
-        return self._data["form"]
+    def template(self):
+        return self._data["template"]
 
-    @form.setter
-    def form(self, new_form):
-        self._data["form"] = new_form
+    @template.setter
+    def template(self, new_template):
+        self._data["template"] = new_template
 
     @property
     def questions(self):
-        return self.form["questions"]
+        return self.template["questions"]
 
     def __eq__(self, other):
         if self.__class__ != other.__class__:
