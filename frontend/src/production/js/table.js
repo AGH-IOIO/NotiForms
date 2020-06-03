@@ -176,7 +176,7 @@ function submitForm() {
             alert("udalo sie utworzyc grupe");
             location.href = "/dashboard";
         },
-        failure: function (errMsg) {
+        error: function (errMsg) {
             console.log(errMsg);
         },
     });
@@ -190,6 +190,7 @@ function refreshNavbar() {
     teamsApiCall(username, token);
     templatesApiCall(username, token);
     formsApiCall(username, token);
+    ownedFormsApiCall(username, token);
     window.glob.rerenderPage();
 }
 
@@ -211,6 +212,30 @@ function teamsApiCall(username, token) {
                 }
             },
             failure: function (errMsg) {
+                console.log(errMsg);
+            },
+        });
+    }
+}
+
+function ownedFormsApiCall(username, token) {
+
+    const {backend} = window.glob;
+
+    if (token && username && backend) {
+        $.ajax({
+            type: "GET",
+            url: `${backend}/forms/owned/${username}/`,
+            headers: {
+                "Authorization": token
+            },
+            success: function (data) {
+                if (data.forms) {
+                    window.glob.ownedForms = data.forms;
+                    refreshOwnedForms(data.forms);
+                }
+            },
+            error: function (errMsg) {
                 console.log(errMsg);
             },
         });
@@ -266,6 +291,21 @@ function addNavBarItem(teamName) {
     li.addClass('custom');
     li.find('#title').text(teamName);
     $("#group_list").append(li);
+}
+
+function refreshOwnedForms(forms) {
+    $('#owned_list > .custom').remove();
+    forms.map(t => addOwnedFormItem(t));
+}
+
+function addOwnedFormItem(form) {
+    const li = $('#owned_template').clone(true, true);
+    li.css('display', '');
+    li.addClass('custom');
+    li.find('a').text(form["_id"]);
+    li.find('a').attr("id", form["_id"]);
+    console.log(li)
+    $("#owned_list").append(li);
 }
 
 function formsApiCall(username, token) {
