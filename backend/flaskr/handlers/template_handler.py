@@ -63,7 +63,7 @@ def send_forms_to_db(body):
     for member in team_members:
         form = Form({
             "title": form_title,
-            "form": template.data
+            "template": template.data
         })
         form.recipient = member
         form.results_id = results_id
