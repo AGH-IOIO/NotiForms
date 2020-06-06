@@ -13,6 +13,7 @@ services:
       - ./backend/.config/mail.dev.env
     environment:
       - TEST=${TEST}
+      - SEED=${SEED}
   nginx:
     image: nginx
     volumes:

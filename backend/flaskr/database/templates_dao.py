@@ -49,6 +49,9 @@ class TemplateDAO:
         self.coll.update_one(query, update)
 
     # Delete
+    def delete(self, query):
+        self.coll.delete_many(query)
+
     def delete_one(self, query):
         self.coll.delete_one(query)
 
