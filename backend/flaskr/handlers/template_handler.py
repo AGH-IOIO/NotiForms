@@ -44,7 +44,7 @@ def send_forms_to_db(body):
         return mk_error("Template with given owner and title does not exist")
 
     try:
-        results = FormResults(template, team_members, datetime.strptime(body["deadline"], "%Y-%m-%d %H:%M"))
+        results = FormResults(template, team_members)
     except ValueError:
         return mk_error("Error with creating form results object, team members list is empty (maybe you are trying to "
                         "send form only to yourself?)")
@@ -53,6 +53,8 @@ def send_forms_to_db(body):
     results_dao.insert_one(results)
     results_id = results.id
     send_date = datetime.utcnow()
+    deadline = datetime.strptime(body["deadline"], "%Y-%m-%d %H:%M")
+    print("Inserting " + str(deadline), flush=True)
 
     pending_forms_dao = PendingFormsDAO()
     message_box_dao = MessageBoxDAO()
@@ -63,7 +65,8 @@ def send_forms_to_db(body):
     for member in team_members:
         form = Form({
             "title": form_title,
-            "template": template.data
+            "template": template.data,
+            "deadline": deadline
         })
         form.recipient = member
         form.results_id = results_id

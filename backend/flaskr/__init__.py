@@ -4,6 +4,7 @@ from flask import Flask
 from flask.json import JSONEncoder, JSONDecoder
 from flask_cors import CORS
 from flask_mail import Mail
+from .sched import scheduler
 import os
 
 
@@ -32,9 +33,19 @@ class MongoJSONDecoder(JSONDecoder):
 
 
 app = Flask(__name__)
+
+# Allow Cross-Origin requests.
 CORS(app)
+
+# Store JSON encoder
 app.json_encoder = MongoJSONEncoder
 
+# APScheduler config
+if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+    scheduler.init_app(app)
+    scheduler.start()
+
+# Mail config
 app.config["MAIL_SERVER"] = os.environ["MAIL_SERVER"]
 app.config["MAIL_PORT"] = int(os.environ["MAIL_PORT"])
 app.config["MAIL_USE_TLS"] = os.environ.get("MAIL_USE_TLS", "true").lower() in ["true", "on", "1"]

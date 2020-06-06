@@ -103,6 +103,7 @@ class Form:
       recipient: string,  # username
       title: string,
       send_date: date,
+      deadline: date,
       results_id: ObjectId,  # FormResults id
       template: Template  # with filled answer fields in questions
     }
@@ -121,6 +122,7 @@ class Form:
         new_data["title"] = self.title
         new_data["recipient"] = self.recipient
         new_data["send_date"] = self.send_date
+        new_data["deadline"] = self.deadline
         new_data["results_id"] = self.results_id
         new_data["template"] = self.template
         return new_data
@@ -160,6 +162,14 @@ class Form:
     @send_date.setter
     def send_date(self, new_send_date):
         self._data["send_date"] = new_send_date
+
+    @property
+    def deadline(self):
+        return self._data["deadline"]
+
+    @deadline.setter
+    def deadline(self, new_deadline):
+        self._data["deadline"] = new_deadline
 
     @property
     def results_id(self):

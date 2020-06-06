@@ -47,7 +47,7 @@ def stub_template_form():
     send_date = datetime.utcnow()
     deadline = send_date + timedelta(days=1.0)
 
-    results = FormResults(template, recipients=["stubUser"], deadline=deadline)
+    results = FormResults(template, recipients=["stubUser"])
     results_dao = FormResultsDAO()
     results_dao.insert_one(results)
 
@@ -55,7 +55,8 @@ def stub_template_form():
         "title": "AAAAA",
         "recipient": "stubUser",
         "results_id": results.id,
-        "template": template.data
+        "template": template.data,
+        "deadline": deadline
     }
     form = Form(form_data)
     PendingFormsDAO().insert_one(form)
@@ -129,9 +130,11 @@ def test_get_pending_forms(clear_db, flask_client, stub_user, stub_template_form
     # That's way I have to use nasty tricks such as:
     l = PendingFormsDAO().find_one_by_id(ObjectId(res_form["_id"])).data
     r = form.data
-    # Side effects in Form constructor fuck everyting up
+    # Can't compare dates.
     del l["send_date"]
     del r["send_date"]
+    del l["deadline"]
+    del r["deadline"]
     assert l == r
 
     # Fillup form
@@ -179,7 +182,7 @@ def test_get_forms_owned_by_user(clear_db, flask_client, stub_template_form):
     results_dao = FormResultsDAO()
     deadline = datetime.utcnow() + timedelta(days=5.0)
 
-    results2 = FormResults(template, recipients=["stubUser"], deadline=deadline)
+    results2 = FormResults(template, recipients=["stubUser"])
     results_dao.insert_one(results2)
 
     res = get_with_auth(flask_client, "/forms/owned/{}/".format("team_owner"))
