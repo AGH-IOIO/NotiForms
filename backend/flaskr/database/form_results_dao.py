@@ -65,6 +65,9 @@ class FormResultsDAO:
         self.coll.find_one_and_update(query, update)
 
     # Delete
+    def delete(self, query):
+        self.coll.delete_many(query)
+
     def delete_one(self, query):
         self.coll.delete_one(query)
 
