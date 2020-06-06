@@ -104,6 +104,8 @@ class Form:
       title: string,
       send_date: date,
       deadline: date,
+      last_notify: data,     # date of last notification
+      notify_period: int,    # number of seconds to wait before sending next periodic notification(after exceeding deadline)
       results_id: ObjectId,  # FormResults id
       template: Template  # with filled answer fields in questions
     }
@@ -125,6 +127,8 @@ class Form:
         new_data["deadline"] = self.deadline
         new_data["results_id"] = self.results_id
         new_data["template"] = self.template
+        new_data["last_notify"] = self.last_notify
+        new_data["notify_period"] = self.last_notify
         return new_data
 
     @data.setter
@@ -170,6 +174,22 @@ class Form:
     @deadline.setter
     def deadline(self, new_deadline):
         self._data["deadline"] = new_deadline
+
+    @property
+    def last_notify(self):
+        return self._data.get("last_notify")
+
+    @last_notify.setter
+    def last_notify(self, new_last_notify):
+        self._data["last_notify"] = new_last_notify
+
+    @property
+    def notify_period(self):
+        return self._data.get("notify_period", 60)
+
+    @notify_period.setter
+    def notify_period(self, new_notify_period):
+        self._data["notify_period"] = new_notify_period
 
     @property
     def results_id(self):
