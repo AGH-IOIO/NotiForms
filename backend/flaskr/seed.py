@@ -40,17 +40,19 @@ def seed_forms():
     template_dao.insert_one(template)
 
     send_date = datetime.utcnow()
-    deadline = send_date + timedelta(days=1.0)
+    # Simulate past-deadline form
+    deadline = send_date - timedelta(days=1.0)
 
-    results = FormResults(template, recipients=["admin"], deadline=deadline)
+    results = FormResults(template, recipients=["admin"])
     results_dao = FormResultsDAO()
     results_dao.insert_one(results)
 
     form_data = {
         "title": "AAAAA",
-        "recipient": "stubUser",
+        "recipient": "admin",
         "results_id": results.id,
-        "template": template.data
+        "template": template.data,
+        "deadline": deadline
     }
     form = Form(form_data)
     PendingFormsDAO().insert_one(form)
