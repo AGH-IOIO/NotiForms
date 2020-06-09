@@ -1,0 +1,10 @@
+Dear {{ username }},
+
+You have pending form '{{ form_name }}'.
+The deadline is {{ deadline }}.
+{{ threat }}
+
+Kind regards,
+NotiForms Team
+
+Message generated automatically, please do not respond to this e-mail.

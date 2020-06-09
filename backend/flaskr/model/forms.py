@@ -103,8 +103,11 @@ class Form:
       recipient: string,  # username
       title: string,
       send_date: date,
+      deadline: date,
+      last_notify: data,     # date of last notification
+      notify_period: int,    # number of seconds to wait before sending next periodic notification(after exceeding deadline)
       results_id: ObjectId,  # FormResults id
-      form: Template  # with filled answer fields in questions
+      template: Template  # with filled answer fields in questions
     }
     """
 
@@ -121,8 +124,11 @@ class Form:
         new_data["title"] = self.title
         new_data["recipient"] = self.recipient
         new_data["send_date"] = self.send_date
+        new_data["deadline"] = self.deadline
         new_data["results_id"] = self.results_id
-        new_data["form"] = self.form
+        new_data["template"] = self.template
+        new_data["last_notify"] = self.last_notify
+        new_data["notify_period"] = self.last_notify
         return new_data
 
     @data.setter
@@ -162,6 +168,30 @@ class Form:
         self._data["send_date"] = new_send_date
 
     @property
+    def deadline(self):
+        return self._data["deadline"]
+
+    @deadline.setter
+    def deadline(self, new_deadline):
+        self._data["deadline"] = new_deadline
+
+    @property
+    def last_notify(self):
+        return self._data.get("last_notify")
+
+    @last_notify.setter
+    def last_notify(self, new_last_notify):
+        self._data["last_notify"] = new_last_notify
+
+    @property
+    def notify_period(self):
+        return self._data.get("notify_period", 60)
+
+    @notify_period.setter
+    def notify_period(self, new_notify_period):
+        self._data["notify_period"] = new_notify_period
+
+    @property
     def results_id(self):
         return self._data["results_id"]
 
@@ -170,16 +200,16 @@ class Form:
         self._data["results_id"] = new_results_id
 
     @property
-    def form(self):
-        return self._data["form"]
+    def template(self):
+        return self._data["template"]
 
-    @form.setter
-    def form(self, new_form):
-        self._data["form"] = new_form
+    @template.setter
+    def template(self, new_template):
+        self._data["template"] = new_template
 
     @property
     def questions(self):
-        return self.form["questions"]
+        return self.template["questions"]
 
     def __eq__(self, other):
         if self.__class__ != other.__class__:
