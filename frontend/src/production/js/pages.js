@@ -29,6 +29,14 @@ function showSummary(e){
 		"answers": [{"username": "user3", "answers": ["Odp 1", "Odp 2"]},{"username": "user4", "answers": ["Odp 3", "Odp 4"]} ]\
 	}';
 
+	for(var i=0; i< window.glob.ownedForms.length; i++){
+		console.log(window.glob.ownedForms[i])
+		if(window.glob.ownedForms[i]["_id"] == e.id){
+			window.summaryJson = JSON.stringify(window.glob.ownedForms[i])
+			break;
+		}
+	}
+
     $("#main").empty();
     $("#main").load("/production/summary.html");
     if(location.pathname !== "/dashboard")
