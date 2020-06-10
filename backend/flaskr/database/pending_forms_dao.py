@@ -29,6 +29,10 @@ class PendingFormsDAO:
         query = {"_id": form.id}
         return self.find_one(query)
 
+    def fine_one_by_title(self, title):
+        query = {"title": title}
+        return self.find_one(query)
+
     def find(self, query):
         all_data = self.coll.find(query)
         return [Form(data)
