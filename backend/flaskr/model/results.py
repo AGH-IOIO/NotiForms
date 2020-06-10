@@ -10,8 +10,10 @@ class FormResults:
     {
       _id: ObjectId,
       owner: string,  # username
+      title: string,
       send_date: date,
       deadline: date,
+      finished: bool,
       not_filled_yet: list[string],  # usernames
       questions: list[
                    {
@@ -21,14 +23,14 @@ class FormResults:
                  ],
       answers: list[
                  {
-                   "username": string,
-                   "answers": list[varies]  # appropriate for the question type
+                   username: string,
+                   answers: list[varies]  # appropriate for the question type
                  }
                ]
     }
     """
 
-    def __init__(self, data, recipients=None, from_db=False):
+    def __init__(self, data, recipients=None, deadline=None, from_db=False):
         if from_db:
             self._data = data
             self._data["_id"] = parse_id(data)
@@ -41,7 +43,10 @@ class FormResults:
         self._data = dict()
         self._data["_id"] = ObjectId()
         self._data["owner"] = data.owner
+        self._data["title"] = data.title
         self._data["send_date"] = datetime.utcnow()
+        self._data["deadline"] = deadline
+        self._data["finished"] = datetime.utcnow() < deadline if deadline else False
         self._data["not_filled_yet"] = recipients
         self._data["questions"] = [{"type": question.type,
                                     "title": question.title}
@@ -73,12 +78,42 @@ class FormResults:
         self._data["owner"] = new_owner
 
     @property
+    def title(self):
+        return self._data["title"]
+
+    @title.setter
+    def title(self, new_title):
+        self._data["title"] = new_title
+
+    @property
     def send_date(self):
         return self._data["send_date"]
 
     @send_date.setter
     def send_date(self, new_send_date):
         self._data["send_date"] = new_send_date
+
+    @property
+    def deadline(self):
+        return self._data["deadline"]
+
+    @deadline.setter
+    def deadline(self, new_deadline):
+        self._data["deadline"] = new_deadline
+
+    @property
+    def finished(self):
+        return self._data["finished"]
+
+    @finished.setter
+    def finished(self, new_finished):
+        self._data["finished"] = new_finished
+
+    def mark_as_finished(self):
+        self._data["finished"] = True
+
+    def check_if_finished_and_set(self):
+        self._data["finished"] = datetime.utcnow() < self._data["deadline"] if self._data["deadline"] else False
 
     @property
     def not_filled_yet(self):
