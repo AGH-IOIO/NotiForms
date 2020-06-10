@@ -52,8 +52,7 @@ def email_notifications():
             return
 
         email_addr = target.email
-        # TODO: Wait for emails to be fixed.
-        # send_email(email_addr, "[NotiForms] Pending '%s'" % form.title, TEMPLATE_NAME, **template_data)
+        send_email(email_addr, "[NotiForms] Pending '%s'" % form.title, TEMPLATE_NAME, **template_data)
         print("Notification for %s sent." % form.title, flush=True)
         PendingFormsDAO().update_one({"_id": form.id}, {"$set": {"last_notify": now}})
 
