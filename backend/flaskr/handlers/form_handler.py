@@ -48,8 +48,6 @@ def insert_answers_to_db(body):
     message_box_dao = MessageBoxDAO()
     message_box_dao.remove_message(form_id, recipient)
 
-    return None
-
 
 @app.route("/forms/fill/", methods=["POST"])
 @expect_mime("application/json")

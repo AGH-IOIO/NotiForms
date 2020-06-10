@@ -64,6 +64,10 @@ class FormResultsDAO:
                   "$pull": {"not_filled_yet": username}}
         self.coll.find_one_and_update(query, update)
 
+        result = self.coll.find_one(query, {"_id": 0, "not_filled_yet": 1})
+        if result and len(result["not_filled_yet"]) == 0:
+            self.coll.update_one(query, {"$set": {"finished": True}})
+
     # Delete
     def delete(self, query):
         self.coll.delete_many(query)
