@@ -7,14 +7,14 @@ import pytest
 from ..auth import as_jwt
 from ..database import connection
 from ..database.form_results_dao import FormResultsDAO
+from ..database.message_box_dao import MessageBoxDAO
 from ..database.pending_forms_dao import PendingFormsDAO
 from ..database.templates_dao import TemplateDAO
 from ..database.user_dao import UserDAO
-from ..database.message_box_dao import MessageBoxDAO
 from ..model.forms import Template, Form
+from ..model.message_box import MessageBox
 from ..model.results import FormResults
 from ..model.user import User
-from ..model.message_box import MessageBox
 from ...flaskr import app
 
 
@@ -87,12 +87,13 @@ def stub_template_form():
     send_date = datetime.utcnow()
     deadline = send_date + timedelta(days=1.0)
 
-    results = FormResults(template, recipients=["stubUser"])
+    form_title = "AAAAA"
+    results = FormResults(template, form_title=form_title, recipients=["stubUser"])
     results_dao = FormResultsDAO()
     results_dao.insert_one(results)
 
     form_data = {
-        "title": "AAAAA",
+        "title": form_title,
         "recipient": "stubUser",
         "results_id": results.id,
         "template": template.data,
