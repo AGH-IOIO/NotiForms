@@ -11,6 +11,6 @@ message_box_bp = Blueprint("messages", __name__)
 @auth_required
 def get_user_messages(username):
     message_box_dao = MessageBoxDAO()
-    user_messages = message_box_dao.find_all_for_user(username)
+    message_box = message_box_dao.find_for_user(username)
 
-    return jsonify({"messages": sum([message.data["messages"] for message in user_messages], [])})
+    return jsonify({"messages": message_box.messages})

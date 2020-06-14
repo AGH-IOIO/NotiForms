@@ -32,9 +32,13 @@ class MessageBoxDAO:
                 for data
                 in all_data]
 
-    def find_all_for_user(self, owner):
+    def find_for_user(self, owner):
         query = {"owner": owner}
-        return self.find(query)
+        result = self.find(query)
+        if len(result) != 0:
+            return result[0]
+        else:
+            return None
 
     # Update
     def update_one(self, query, update):

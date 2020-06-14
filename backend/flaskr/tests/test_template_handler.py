@@ -117,8 +117,8 @@ def test_assign_template_to_team(clear_db, flask_client, stub_user):
     res = post_with_auth(flask_client, "/templates/assign/", post_data)
     assert res.status_code == 200
 
-    message_box = message_box_dao.find_all_for_user(stub_user.username)
-    message = message_box[0].messages[0]
+    message_box = message_box_dao.find_for_user(stub_user.username)
+    message = message_box.messages[0]
 
     assert message["text"] == "New form to fill"
 

@@ -58,7 +58,7 @@ from .handlers.user_handler import users_bp
 from .handlers.team_handler import team_bp
 from .handlers.template_handler import template_bp
 from .handlers.form_handler import form_bp
-from .handlers.message_box_handler import message_box_bp
+from .handlers.message_handler import message_box_bp
 
 # Blueprints registration
 app.register_blueprint(users_bp)

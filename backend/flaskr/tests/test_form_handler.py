@@ -50,7 +50,7 @@ def test_fill_form(clear_db, flask_client, stub_user, stub_template_form):
     users_with_answers = list(map(lambda x: x["username"], results.answers))
     assert user["username"] in users_with_answers
 
-    messages = message_box_dao.find_all_for_user(user["username"])[0].messages
+    messages = message_box_dao.find_for_user(user["username"]).messages
     filtered_messages = list(filter(lambda x: x["ref_id"] == form.id, messages))
     assert len(filtered_messages) == 0
 
