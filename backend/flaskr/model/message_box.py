@@ -10,12 +10,14 @@ class Message:
       _id: ObjectId,
       text: string,
       send_date: date,  # when was message sent
-      ref_id: ObjectId  # ID reference to e. g. PendingForm or PendingMessage
+      ref_id: ObjectId,  # ID reference to e. g. PendingForm or PendingMessage
+      viewed: boolean
     }
     """
 
     def __init__(self, data):
         data["_id"] = parse_id(data)
+        data["viewed"] = False
         self._data = data
 
     @property
@@ -57,6 +59,13 @@ class Message:
     @ref_id.setter
     def ref_id(self, new_ref_id):
         self._data["ref_id"] = new_ref_id
+
+    @property
+    def viewed(self):
+        return self._data["viewed"]
+
+    def mark_as_viewed(self):
+        self._data["viewed"] = True
 
     def __eq__(self, other):
         if self.__class__ != other.__class__:

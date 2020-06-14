@@ -1,16 +1,10 @@
 from datetime import datetime, timedelta
-from flask import Blueprint, jsonify
-from bson.json_util import dumps
 from bson.objectid import ObjectId
-import pytest
 
 from . import post_with_auth, get_with_auth, flask_client, stub_user, clear_db, stub_template_form
-from ..database import db
 from ..database.message_box_dao import MessageBoxDAO
-from ..database.templates_dao import TemplateDAO
 from ..database.form_results_dao import FormResultsDAO
 from ..database.pending_forms_dao import PendingFormsDAO
-from ..model.forms import Template, Form
 from ..model.results import FormResults
 from ..model.message_box import MessageBox
 
@@ -33,7 +27,13 @@ def test_fill_form(clear_db, flask_client, stub_user, stub_template_form):
             "text": "AAAAAAAAAAAAAAAA",
             "send_date": datetime.utcnow(),
             "ref_id": form.id
-        }]
+        },
+            {
+                "text": "BBBBBBBBBBBBBBB",
+                "send_date": datetime.utcnow(),
+                "ref_id": form.id
+            }
+        ]
     }
     message_box = MessageBox(message_box_data)
     message_box_dao.insert_one(message_box)

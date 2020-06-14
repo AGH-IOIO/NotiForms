@@ -66,6 +66,19 @@ class MessageBoxDAO:
         update = {"$push": {"messages": msg.data}}
         self.coll.find_one_and_update(query, update)
 
+    def mark_message_as_viewed(self, msg_id, owner=None):
+        query = {}
+        if owner:
+            query["owner"] = owner
+        query["messages._id"] = msg_id
+
+        update = {"$set": {"messages.$.viewed": True}}
+        self.coll.find_one_and_update(query, update)
+
+    def mark_all_messages_from_list_as_viewed(self, msg_id_list, owner=None):
+        for msg_id in msg_id_list:
+            self.mark_message_as_viewed(msg_id, owner)
+
     def remove_message(self, msg_ref_id, owner=None, _id=None):
         if not owner and not _id:
             raise ValueError("At least one of {owner, _id} must be not "
