@@ -12,8 +12,8 @@ function loadForm() {
 
 	if (id) {
 		form = window.glob.forms.find(t => t._id === id);
-		fields.title = form.form.title;
-		fields.questions = form.form.questions;
+		fields.title = form.template.title;
+		fields.questions = form.template.questions;
 		generate();
 	}
 }
