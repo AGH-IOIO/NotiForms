@@ -1,5 +1,6 @@
-fields = {}
-checked = []
+fields = {};
+checked = [];
+optionIndexes = [];
 
 let index = 0;
 
@@ -41,11 +42,60 @@ function addTextField(){
 		.attr("required","required");
 	
 	var check = $("<input>")
+		.addClass("item")
 		.attr("type", "checkbox")
 		.attr("id",fieldID);
-	
+
+
+	var optionListDiv = $("<div>")
+		.attr("id", "OptionListDiv" + fieldIndex);
+
+	var optionControlDiv = $("<div>")
+		.addClass("item")
+		.addClass("form-group")
+		.attr("id", "OptionControlDiv" + fieldIndex);
+
+
+	var buttonDiv = $("<div>")
+		.addClass("col-md-2")
+		.addClass("col-sm-2")
+		.addClass("offset-md-3");
+
+	var addButton = $("<button>")
+		.addClass("btn btn-primary")
+		.attr("onclick", "addAnswerOption(this.id)")
+		.attr("id", "addOptionButton" + fieldIndex);
+	addButton.html("add");
+
+	buttonDiv.append(addButton);
+
+	var choiseSelect = $("<select>")
+		.addClass("form-control")
+		.addClass("col-md-2")
+		.addClass("col-sm-2")
+        .attr("font", "16px")
+		.attr("id", "choiseSelect" + fieldIndex);
+
+
+
+	choiseSelect.html("Select type");
+
+	var choiseOption1 = $("<option>");
+	choiseOption1.html("Single-choice");
+
+	var choiseOption2 = $("<option>");
+	choiseOption2.html("Multiple-choice");
+
+
+	choiseSelect.append(choiseOption1);
+	choiseSelect.append(choiseOption2);
+
+    optionControlDiv.append(buttonDiv);
+	optionControlDiv.append(choiseSelect);
+
+
 	check.change(function () {
-            const parent_id = $(this).parent().attr("id")
+            const parent_id = $(this).parent().attr("id");
             if ($(this).is(":checked")) {
                 checked.push(parent_id);
             } else {
@@ -55,7 +105,7 @@ function addTextField(){
                 }
             }
         }
-    )
+    );
 	
 	inputDiv.append(field);
 	fieldDiv.append(inputDiv);
@@ -63,27 +113,127 @@ function addTextField(){
 	
 
 	$("#inquiry-fields").append(fieldDiv);
+	$("#inquiry-fields").append(optionListDiv);
+	$("#inquiry-fields").append(optionControlDiv);
+
+	optionIndexes.push(0);
 	index++;
+
+
 }
 
 const removeField = () => {
 	checked.forEach(fieldID => {
-		$("#" + fieldID).remove();
-		var id = parseInt(fieldID.slice(8));
-		delete fields[fieldID];
-    })
+		if(fieldID.includes("fieldDiv")){
+			$("#" + fieldID).remove();
+			fieldID =  fieldID.slice("fieldDiv".length);
+			$("#OptionListDiv" + fieldID).remove();
+			$("#OptionControlDiv" + fieldID).remove();
+		}
+		else if(fieldID.includes("OptionInputDiv")){
+			$("#" + fieldID).remove();
+		}
+    });
+    checked = [];
+};
 
-    checked = []
+function addAnswerOption(buttonID){
+	buttonID = buttonID.slice("addOptionButton".length);
+
+	var label = $("<label>")
+		.addClass("col-form-label")
+		.addClass("col-md-4")
+		.addClass("col-sm-4")
+		.addClass("label-align")
+		.text("Option *");
+
+	var optionInputDiv = $("<div>")
+		.addClass("item")
+		.addClass("form-group")
+		.addClass("offset-md-3")
+		.attr("id", "OptionInputDiv" + buttonID + "_" + optionIndexes[buttonID]);
+
+	optionIndexes[buttonID] = optionIndexes[buttonID] + 1;
+
+	var inputDiv = $("<div>")
+			.addClass("col-md-5")
+			.addClass("col-sm-5");
+
+	var optionField = $("<input>")
+		.attr("type", "text")
+		.addClass("form-control")
+		.attr("placeholder", "Option")
+		.attr("required","required");
+
+	var check = $("<input>")
+		.addClass("item")
+		.attr("type", "checkbox");
+
+
+	check.change(function () {
+			const parent_id = $(this).parent().attr("id");
+			if ($(this).is(":checked")) {
+				checked.push(parent_id);
+			} else {
+				const index = checked.indexOf(parent_id);
+				if (index > -1) {
+					checked.splice(index, 1);
+				}
+			}
+		}
+	);
+
+	inputDiv.append(optionField);
+	optionInputDiv.append(label).append(inputDiv).append(check);
+
+
+	$("#OptionListDiv" + buttonID).append(optionInputDiv);
 }
 
 function generatorSubmit(){
+
 	var fieldsArr = [];
 	Object.keys(fields).forEach(function (key) {
         if (this[key].type === "open_text"){
             this[key].title = $("#" + key).find("input[type='text']").val();
-			fieldsArr.push(this[key])
+			fieldsArr.push(this[key]);
 		}
     }, fields);
+
+	var questions = [];
+	for(var questionID = 0; questionID < index; questionID++){
+		if(document.getElementById("fieldDiv" + questionID) !== null) {
+			let type;
+			let options  = [];
+			for(var optionID = 0; optionID < optionIndexes[questionID]; optionID++){
+				if(document.getElementById("OptionInputDiv" + questionID + "_" + optionID) !== null) {
+					var option = $("#OptionInputDiv" + questionID + "_" + optionID).find("input[type='text']").val();
+					options.push(option);
+				}
+			}
+			if (options.length === 0){
+				type = "open_text";
+			}
+			else{
+				type = document.getElementById("choiseSelect" + questionID).value;
+				if(type === "Single-choice"){
+				    type = "single_choice";
+                }
+				else if(type === "Multiple-choice"){
+                    type = "multiple_choice";
+                }
+
+			}
+			var title = $("#fieldDiv" + questionID ).find("input[type='text']").val();
+			question = {
+				type: type,
+				title: title,
+				options: options
+			};
+
+			questions.push(question);
+		}
+	}
 
     const inquiryName = $("#input-form-name").val();
 
@@ -91,16 +241,19 @@ function generatorSubmit(){
 	const owner = localStorage.getItem("username");
 	const token = localStorage.getItem("token");
 
+
+
 	if(!(owner && token && backend))
 		return false;
 
 	const inquiryJson = JSON.stringify({
 		owner: owner,
 		title: inquiryName,
-		questions: fieldsArr
+		questions: questions
 	});
 
 	alert(inquiryJson);
+
 
 	$.ajax({
 		type: "POST",
@@ -113,7 +266,7 @@ function generatorSubmit(){
 		dataType: "json",
 		success: function (data) {
 			refreshNavbar();
-			console.log("template has been added with success")
+			console.log("template has been added with success");
 		},
 		failure: function (errMsg) {
 			console.log(errMsg);
@@ -126,7 +279,7 @@ function generatorSubmit(){
 // function not used
 function showDeadlinePicker(){
 	var checkbox = $("#form-deadline-checkbox");
-	var picker = $("#form-deadline-picker")
+	var picker = $("#form-deadline-picker");
 
 	if(checkbox.is(":checked")){
 		picker.css("display", "block");
