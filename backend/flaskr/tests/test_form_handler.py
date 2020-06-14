@@ -4,7 +4,7 @@ from bson.json_util import dumps
 from bson.objectid import ObjectId
 import pytest
 
-from . import post_with_auth, get_with_auth, flask_client, stub_user, clear_db
+from . import post_with_auth, get_with_auth, flask_client, stub_user, clear_db, stub_template_form
 from ..database import db
 from ..database.message_box_dao import MessageBoxDAO
 from ..database.templates_dao import TemplateDAO
@@ -13,55 +13,6 @@ from ..database.pending_forms_dao import PendingFormsDAO
 from ..model.forms import Template, Form
 from ..model.results import FormResults
 from ..model.message_box import MessageBox
-
-
-@pytest.fixture
-def stub_template_form():
-    question1 = {
-        "type": "single_choice",
-        "title": "Czy jesteś na nie?",
-        "choices": ["TAK", "NIE"],
-        "answer": -1
-    }
-    question2 = {
-        "type": "open_text",
-        "title": "Napisz coś o sobie?",
-        "answer": ""
-    }
-    question3 = {
-        "type": "multiple_choice",
-        "title": "Czy?",
-        "choices": ["TAK", "NIE", "NIE WIEM"],
-        "answer": []
-    }
-
-    template_data = {
-        "owner": "team_owner",
-        "title": "Referendum",
-        "questions": [question1, question2, question3]
-    }
-    template = Template(template_data)
-    template_dao = TemplateDAO()
-    template_dao.insert_one(template)
-
-    send_date = datetime.utcnow()
-    deadline = send_date + timedelta(days=1.0)
-
-    results = FormResults(template, recipients=["stubUser"])
-    results_dao = FormResultsDAO()
-    results_dao.insert_one(results)
-
-    form_data = {
-        "title": "AAAAA",
-        "recipient": "stubUser",
-        "results_id": results.id,
-        "template": template.data,
-        "deadline": deadline
-    }
-    form = Form(form_data)
-    PendingFormsDAO().insert_one(form)
-
-    return template, results, form
 
 
 def test_fill_form(clear_db, flask_client, stub_user, stub_template_form):
