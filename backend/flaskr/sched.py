@@ -47,16 +47,25 @@ def email_notifications():
         """
         This functions decides whether to send or not to send notification for given Form.
         """
+        notification_details = form.notification_details
+        email_details = next((x for x in notification_details if x.type == "e-mail"), None)
+        if email_details is None:
+            return
+
         now = datetime.utcnow()
-        notify_seconds = 60 if form.notify_period is None else form.notify_period
+        last_notify = email_details.notify_date
+
+        if last_notify == form.send_date:
+            notify_seconds = email_details.dead_period
+        elif now <= form.deadline:
+            notify_seconds = email_details.before_deadline_frequency
+        else:
+            notify_seconds = email_details.after_deadline_frequency
+
         notify_period = timedelta(seconds=notify_seconds)
 
         # By default don't send notification.
-        send = False
-        # Send first notification.
-        send = send or form.last_notify is None
-        # After exceeding the deadline, start sending periodic notifications.
-        send = send or (now > form.deadline and now > form.last_notify + notify_period)
+        send = now > last_notify + notify_period
 
         if not send:
             return
@@ -65,7 +74,7 @@ def email_notifications():
         template_data = {
             "username": form.recipient,
             "deadline": str(form.deadline),
-            "threat": "" if form.last_notify is None else choice(THREATS)
+            "threat": "" if last_notify == form.send_date else choice(THREATS)
         }
 
         # Find user email address
@@ -77,7 +86,8 @@ def email_notifications():
         email_addr = target.email
         send_email(email_addr, "[NotiForms] Pending '%s'" % form.title, TEMPLATE_NAME, **template_data)
         print("Notification for %s sent." % form.title, flush=True)
-        PendingFormsDAO().update_one({"_id": form.id}, {"$set": {"last_notify": now}})
+        PendingFormsDAO().update_one({"_id": form.id, "notification_details.type": "e-mail"},
+                                     {"$set": {"notification_details.$.notify_date": now}})
 
     forms = PendingFormsDAO().find({})
     [handle(form) for form in forms]

@@ -48,12 +48,23 @@ def seed_forms():
     results_dao = FormResultsDAO()
     results_dao.insert_one(results)
 
+    notification_details = [
+        {
+            "type": "e-mail",
+            "dead_period": 60,
+            "before_deadline_frequency": 60,
+            "after_deadline_frequency": 30,
+            "notify_date": deadline
+        }
+    ]
+
     form_data = {
         "title": form_title,
         "recipient": "admin",
         "results_id": results.id,
         "template": template.data,
-        "deadline": deadline
+        "deadline": deadline,
+        "notification_details": notification_details
     }
     form = Form(form_data)
     PendingFormsDAO().insert_one(form)
