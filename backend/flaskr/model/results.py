@@ -2,7 +2,6 @@ from datetime import datetime
 
 from bson import ObjectId
 
-from .notifications import parse_notification_details
 from .utils import parse_id
 
 
@@ -29,19 +28,11 @@ class FormResults:
                    username: string,
                    answers: list[varies]  # appropriate for the question type
                  }
-               ],
-      notification_details: list[
-                 {
-                   type: string,
-                   dead_period: int,
-                   before_deadline_frequency: int,
-                   after_deadline_frequency: int
-                 }
-               ],
+               ]
     }
     """
 
-    def __init__(self, data, form_title=None, recipients=None, deadline=None, notification_details=None, from_db=False):
+    def __init__(self, data, form_title=None, recipients=None, deadline=None, from_db=False):
         if from_db:
             self._data = data
             self._data["_id"] = parse_id(data)
@@ -64,11 +55,6 @@ class FormResults:
                                    for question in data.questions]
         self._data["answers"] = []
 
-        if notification_details:
-            self._data["notification_details"] = parse_notification_details(notification_details)
-        else:
-            self._data["notification_details"] = []
-
     @property
     def data(self):
         new_data = dict()
@@ -81,10 +67,6 @@ class FormResults:
         new_data["not_filled_yet"] = self.not_filled_yet
         new_data["questions"] = self.questions
         new_data["answers"] = self.answers
-        new_data["notification_details"] = []
-
-        for details in self._data["notification_details"]:
-            new_data["notification_details"].append(details.data)
 
         return new_data
 
@@ -179,14 +161,6 @@ class FormResults:
         self._data["not_filled_yet"].remove(username)
         self._data["answers"] = {"username": username,
                                  "answers": answers}
-
-    @property
-    def notification_details(self):
-        return self._data["notification_details"]
-
-    @notification_details.setter
-    def notification_details(self, new_details):
-        self._data["notification_details"] = new_details
 
     def __eq__(self, other):
         if self.__class__ != other.__class__:

@@ -9,9 +9,11 @@ def parse_notification_details(details_list):
         dead_period = int(details["dead_period"])
         before_deadline_frequency = int(details["before_deadline_frequency"])
         after_deadline_frequency = int(details["after_deadline_frequency"])
+        notify_date = details["notify_date"]
 
         result.append(
-            NotificationDetails(notification_type, dead_period, before_deadline_frequency, after_deadline_frequency))
+            NotificationDetails(notification_type, dead_period, before_deadline_frequency, after_deadline_frequency,
+                                notify_date))
 
     return result
 
@@ -24,7 +26,8 @@ class NotificationDetails:
       type: string,
       dead_period: int,  # in seconds
       before_deadline_frequency: int,  # in seconds
-      after_deadline_frequency: int  # in seconds
+      after_deadline_frequency: int,  # in seconds
+      notify_date: date
     }
     """
 
@@ -34,7 +37,8 @@ class NotificationDetails:
         "online"
     ]
 
-    def __init__(self, notification_type, dead_period, before_deadline_frequency, after_deadline_frequency):
+    def __init__(self, notification_type, dead_period, before_deadline_frequency, after_deadline_frequency,
+                 notify_date):
         if not self.__check_if_type_valid(notification_type):
             raise ValueError("Invalid notification type given!")
 
@@ -44,6 +48,7 @@ class NotificationDetails:
         self._data["dead_period"] = dead_period
         self._data["before_deadline_frequency"] = before_deadline_frequency
         self._data["after_deadline_frequency"] = after_deadline_frequency
+        self._data["notify_date"] = notify_date
 
     def __check_if_type_valid(self, notification_type):
         return notification_type.lower() in self.ALLOWED_TYPES
@@ -95,6 +100,14 @@ class NotificationDetails:
     @after_deadline_frequency.setter
     def after_deadline_frequency(self, new_frequency):
         self._data["after_deadline_frequency"] = new_frequency
+
+    @property
+    def notify_date(self):
+        return self._data["notify_date"]
+
+    @notify_date.setter
+    def notify_date(self, new_date):
+        self._data["notify_date"] = new_date
 
     def __eq__(self, other):
         if self.__class__ != other.__class__:
