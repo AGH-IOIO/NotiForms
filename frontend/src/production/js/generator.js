@@ -59,7 +59,7 @@ function addTextField(){
 	var buttonDiv = $("<div>")
 		.addClass("col-md-2")
 		.addClass("col-sm-2")
-		.addClass("offset-md-3");
+		.addClass("offset-md-1");
 
 	var addButton = $("<button>")
 		.addClass("btn btn-primary")
@@ -73,6 +73,7 @@ function addTextField(){
 		.addClass("form-control")
 		.addClass("col-md-2")
 		.addClass("col-sm-2")
+        .addClass("offset-md-5")
         .attr("font", "16px")
 		.attr("id", "choiseSelect" + fieldIndex);
 
@@ -80,19 +81,29 @@ function addTextField(){
 
 	choiseSelect.html("Select type");
 
-	var choiseOption1 = $("<option>");
-	choiseOption1.html("Single-choice");
+    var choiseOption1 = $("<option>");
+    choiseOption1.html("Open text");
 
 	var choiseOption2 = $("<option>");
-	choiseOption2.html("Multiple-choice");
+	choiseOption2.html("Single-choice");
+
+	var choiseOption3 = $("<option>");
+	choiseOption3.html("Multiple-choice");
 
 
 	choiseSelect.append(choiseOption1);
 	choiseSelect.append(choiseOption2);
+    choiseSelect.append(choiseOption3);
 
-    optionControlDiv.append(buttonDiv);
+    choiseSelect.change (function () {
+            const id = $(this).attr("id").slice("choiseSelect".length);
+            if (document.getElementById("choiseSelect" + id).value === "Open text") {
+                $("#OptionListDiv" + id).html("");
+            }
+        });
+
 	optionControlDiv.append(choiseSelect);
-
+    optionControlDiv.append(buttonDiv);
 
 	check.change(function () {
             const parent_id = $(this).parent().attr("id");
@@ -139,6 +150,10 @@ const removeField = () => {
 
 function addAnswerOption(buttonID){
 	buttonID = buttonID.slice("addOptionButton".length);
+
+	if(document.getElementById("choiseSelect" + buttonID).value === "Open text"){
+        document.getElementById("choiseSelect" + buttonID).value = "Single-choice";
+    }
 
 	var label = $("<label>")
 		.addClass("col-form-label")
@@ -222,6 +237,9 @@ function generatorSubmit(){
 				else if(type === "Multiple-choice"){
                     type = "multiple_choice";
                 }
+                else if(type === "Open text"){
+                    type = "open_text";
+                }
 
 			}
 			var title = $("#fieldDiv" + questionID ).find("input[type='text']").val();
@@ -266,7 +284,7 @@ function generatorSubmit(){
 		dataType: "json",
 		success: function (data) {
 			refreshNavbar();
-			console.log("template has been added with success");
+			console.log("template has been added with success ");
 		},
 		failure: function (errMsg) {
 			console.log(errMsg);
