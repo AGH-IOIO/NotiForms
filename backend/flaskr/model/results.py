@@ -2,6 +2,7 @@ from datetime import datetime
 
 from bson import ObjectId
 
+from .notifications import parse_notification_details
 from .utils import parse_id
 
 
@@ -62,20 +63,30 @@ class FormResults:
                                     "title": question.title}
                                    for question in data.questions]
         self._data["answers"] = []
-        self._data["notification_details"] = None
 
         if notification_details:
-            self._data["notification_details"] = [{
-                "type": notification_detail.type,
-                "dead_period": notification_detail.dead_period,
-                "before_deadline_frequency": notification_detail.before_deadline_frequency,
-                "after_deadline_frequency": notification_detail.after_deadline_frequency}
-                for notification_detail in notification_details
-            ]
+            self._data["notification_details"] = parse_notification_details(notification_details)
+        else:
+            self._data["notification_details"] = []
 
     @property
     def data(self):
-        return self._data
+        new_data = dict()
+        new_data["_id"] = self.id
+        new_data["owner"] = self.owner
+        new_data["title"] = self.title
+        new_data["send_date"] = self.send_date
+        new_data["deadline"] = self.deadline
+        new_data["finished"] = self.finished
+        new_data["not_filled_yet"] = self.not_filled_yet
+        new_data["questions"] = self.questions
+        new_data["answers"] = self.answers
+        new_data["notification_details"] = []
+
+        for details in self._data["notification_details"]:
+            new_data["notification_details"].append(details.data)
+
+        return new_data
 
     @data.setter
     def data(self, new_data):

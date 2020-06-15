@@ -4,6 +4,7 @@ import pytest
 from . import post_with_auth, get_with_auth, flask_client, stub_user, clear_db
 from ..database import db
 from ..database.user_dao import UserDAO
+from ..database.form_results_dao import FormResultsDAO
 from ..database.message_box_dao import MessageBoxDAO
 from ..database.templates_dao import TemplateDAO
 from ..database.pending_forms_dao import PendingFormsDAO
@@ -111,7 +112,21 @@ def test_assign_template_to_team(clear_db, flask_client, stub_user):
         "team": "stub_team",
         "owner": "team_owner",
         "template_title": template.title,
-        "deadline": (datetime.utcnow() + timedelta(days=1.0)).strftime("%Y-%m-%d %H:%M")
+        "deadline": (datetime.utcnow() + timedelta(days=1.0)).strftime("%Y-%m-%d %H:%M"),
+        "notification_details": [
+            {
+                "type": "push",
+                "dead_period": 72000,
+                "before_deadline_frequency": 18000,
+                "after_deadline_frequency": 9000
+            },
+            {
+                "type": "e-mail",
+                "dead_period": 36000,
+                "before_deadline_frequency": 9000,
+                "after_deadline_frequency": 4500
+            }
+        ]
     }
 
     res = post_with_auth(flask_client, "/templates/assign/", post_data)
@@ -126,6 +141,17 @@ def test_assign_template_to_team(clear_db, flask_client, stub_user):
     pending_form = pending_forms_dao.find_all_for_user(stub_user.username)[0]
 
     assert message["ref_id"] == pending_form.id
+
+    form_results_dao = FormResultsDAO()
+    results = form_results_dao.find_one({"title": post_data["title"],
+                                         "owner": post_data["owner"]})
+    assert results is not None
+    assert len(results.notification_details) == len(post_data["notification_details"])
+
+    notification_details = results.notification_details
+    assert any(x["type"] == "push" for x in notification_details)
+    assert any(x["type"] == "e-mail" for x in notification_details)
+    assert any(x["dead_period"] == 36000 for x in notification_details)
 
 
 def test_get_user_templates(clear_db, flask_client, stub_user):

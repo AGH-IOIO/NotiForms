@@ -45,8 +45,14 @@ def send_forms_to_db(body):
 
     form_title = body["title"]
     try:
-        results = FormResults(template, form_title=form_title, recipients=team_members)
+        # TODO - remove this if, after requests on frontend are matching new post format
+        if "notification_details" in body:
+            results = FormResults(template, form_title=form_title, recipients=team_members,
+                                  notification_details=body["notification_details"])
+        else:
+            results = FormResults(template, form_title=form_title, recipients=team_members)
     except ValueError:
+        # TODO - handle case when ValueError is raised due to incorrect type of notification details
         return mk_error("Error with creating form results object, team members list is empty (maybe you are trying to "
                         "send form only to yourself?)")
 

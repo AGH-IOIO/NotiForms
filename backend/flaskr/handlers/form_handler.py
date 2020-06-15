@@ -1,13 +1,11 @@
-import json
-
 from bson import ObjectId
 from flask import Blueprint, g, jsonify
 
 from .. import app
 from ..auth import auth_required
 from ..database.form_results_dao import FormResultsDAO
-from ..database.pending_forms_dao import PendingFormsDAO
 from ..database.message_box_dao import MessageBoxDAO
+from ..database.pending_forms_dao import PendingFormsDAO
 from ..database.user_dao import UserDAO
 from ..model.utils import check_answer_type
 from ..validate import expect_mime, json_body, Validator, mk_error
@@ -71,9 +69,9 @@ def fill_form():
 @app.route("/forms/pending/<username>/", methods=["GET"])
 @auth_required
 def get_user_pending_forms(username):
-    '''
+    """
     Returns pending forms of currently logged in user.
-    '''
+    """
     user = UserDAO().find_one_by_username(username)
     if user is None:
         return mk_error("Invalid username")

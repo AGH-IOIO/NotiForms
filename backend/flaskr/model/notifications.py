@@ -1,6 +1,21 @@
 from bson import ObjectId
 
 
+def parse_notification_details(details_list):
+    result = []
+
+    for details in details_list:
+        notification_type = details["type"]
+        dead_period = int(details["dead_period"])
+        before_deadline_frequency = int(details["before_deadline_frequency"])
+        after_deadline_frequency = int(details["after_deadline_frequency"])
+
+        result.append(
+            NotificationDetails(notification_type, dead_period, before_deadline_frequency, after_deadline_frequency))
+
+    return result
+
+
 class NotificationDetails:
     """
     JSON format:
