@@ -28,11 +28,19 @@ class FormResults:
                    username: string,
                    answers: list[varies]  # appropriate for the question type
                  }
-               ]
+               ],
+      notification_details: list[
+                 {
+                   type: string,
+                   dead_period: int,
+                   before_deadline_frequency: int,
+                   after_deadline_frequency: int
+                 }
+               ],
     }
     """
 
-    def __init__(self, data, form_title=None, recipients=None, deadline=None, from_db=False):
+    def __init__(self, data, form_title=None, recipients=None, deadline=None, notification_details=None, from_db=False):
         if from_db:
             self._data = data
             self._data["_id"] = parse_id(data)
@@ -54,6 +62,16 @@ class FormResults:
                                     "title": question.title}
                                    for question in data.questions]
         self._data["answers"] = []
+        self._data["notification_details"] = None
+
+        if notification_details:
+            self._data["notification_details"] = [{
+                "type": notification_detail.type,
+                "dead_period": notification_detail.dead_period,
+                "before_deadline_frequency": notification_detail.before_deadline_frequency,
+                "after_deadline_frequency": notification_detail.after_deadline_frequency}
+                for notification_detail in notification_details
+            ]
 
     @property
     def data(self):
@@ -150,6 +168,14 @@ class FormResults:
         self._data["not_filled_yet"].remove(username)
         self._data["answers"] = {"username": username,
                                  "answers": answers}
+
+    @property
+    def notification_details(self):
+        return self._data["notification_details"]
+
+    @notification_details.setter
+    def notification_details(self, new_details):
+        self._data["notification_details"] = new_details
 
     def __eq__(self, other):
         if self.__class__ != other.__class__:
