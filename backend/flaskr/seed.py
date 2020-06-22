@@ -3,10 +3,12 @@ from datetime import datetime, timedelta
 
 from .database import connection
 from .database.form_results_dao import FormResultsDAO
+from .database.message_box_dao import MessageBoxDAO
 from .database.pending_forms_dao import PendingFormsDAO
 from .database.templates_dao import TemplateDAO
 from .database.user_dao import UserDAO
 from .model.forms import Template, Form
+from .model.message_box import MessageBox
 from .model.results import FormResults
 from .model.user import User
 
@@ -48,12 +50,30 @@ def seed_forms():
     results_dao = FormResultsDAO()
     results_dao.insert_one(results)
 
+    notification_details = [
+        {
+            "type": "online",
+            "dead_period": 60,
+            "before_deadline_frequency": 60,
+            "after_deadline_frequency": 30,
+            "notify_date": deadline
+        },
+        {
+            "type": "e-mail",
+            "dead_period": 60,
+            "before_deadline_frequency": 60,
+            "after_deadline_frequency": 30,
+            "notify_date": deadline
+        }
+    ]
+
     form_data = {
         "title": form_title,
         "recipient": "admin",
         "results_id": results.id,
         "template": template.data,
-        "deadline": deadline
+        "deadline": deadline,
+        "notification_details": notification_details
     }
     form = Form(form_data)
     PendingFormsDAO().insert_one(form)
@@ -68,6 +88,13 @@ def seed_user():
     }
     user = User(data)
     UserDAO().insert_one(user)
+
+    message_box = MessageBox({
+        "owner": data["username"],
+        "messages": []
+    })
+    message_box_dao = MessageBoxDAO()
+    message_box_dao.insert_one(message_box)
 
 
 def seed_all():

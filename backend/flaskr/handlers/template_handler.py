@@ -53,8 +53,13 @@ def send_forms_to_db(body):
     results_dao = FormResultsDAO()
     results_dao.insert_one(results)
     results_id = results.id
+
     send_date = datetime.utcnow()
     deadline = datetime.strptime(body["deadline"], "%Y-%m-%d %H:%M")
+    notification_details = body["notification_details"]
+    for details in notification_details:
+        details["notify_date"] = send_date
+
     print("Inserting " + str(deadline), flush=True)
 
     pending_forms_dao = PendingFormsDAO()
@@ -63,11 +68,17 @@ def send_forms_to_db(body):
     forms_to_insert = []
 
     for member in team_members:
-        form = Form({
-            "title": form_title,
-            "template": template.data,
-            "deadline": deadline
-        })
+        try:
+            form = Form({
+                "title": form_title,
+                "template": template.data,
+                "deadline": deadline,
+                "send_date": send_date,
+                "notification_details": notification_details
+            })
+        except ValueError:
+            return mk_error("Invalid type of notification given")
+
         form.recipient = member
         form.results_id = results_id
 

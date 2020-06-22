@@ -57,7 +57,18 @@ class FormResults:
 
     @property
     def data(self):
-        return self._data
+        new_data = dict()
+        new_data["_id"] = self.id
+        new_data["owner"] = self.owner
+        new_data["title"] = self.title
+        new_data["send_date"] = str(self.send_date)
+        new_data["deadline"] = str(self.deadline)
+        new_data["finished"] = self.finished
+        new_data["not_filled_yet"] = self.not_filled_yet
+        new_data["questions"] = self.questions
+        new_data["answers"] = self.answers
+
+        return new_data
 
     @data.setter
     def data(self, new_data):
