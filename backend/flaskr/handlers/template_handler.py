@@ -43,8 +43,9 @@ def send_forms_to_db(body):
     if not template:
         return mk_error("Template with given owner and title does not exist")
 
+    form_title = body["title"]
     try:
-        results = FormResults(template, team_members)
+        results = FormResults(template, form_title=form_title, recipients=team_members)
     except ValueError:
         return mk_error("Error with creating form results object, team members list is empty (maybe you are trying to "
                         "send form only to yourself?)")
@@ -52,22 +53,32 @@ def send_forms_to_db(body):
     results_dao = FormResultsDAO()
     results_dao.insert_one(results)
     results_id = results.id
+
     send_date = datetime.utcnow()
     deadline = datetime.strptime(body["deadline"], "%Y-%m-%d %H:%M")
+    notification_details = body["notification_details"]
+    for details in notification_details:
+        details["notify_date"] = send_date
+
     print("Inserting " + str(deadline), flush=True)
 
     pending_forms_dao = PendingFormsDAO()
     message_box_dao = MessageBoxDAO()
 
     forms_to_insert = []
-    form_title = body["title"]
 
     for member in team_members:
-        form = Form({
-            "title": form_title,
-            "template": template.data,
-            "deadline": deadline
-        })
+        try:
+            form = Form({
+                "title": form_title,
+                "template": template.data,
+                "deadline": deadline,
+                "send_date": send_date,
+                "notification_details": notification_details
+            })
+        except ValueError:
+            return mk_error("Invalid type of notification given")
+
         form.recipient = member
         form.results_id = results_id
 

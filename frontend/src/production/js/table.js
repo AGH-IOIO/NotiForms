@@ -8,9 +8,7 @@ function loadFormGenerator() {
 }
 
 function loadSwitches(switches) {
-    $(".deadline-content").load("production/deadline.html", function () {
-        switches.map(s => bindSwitch(s));
-    });
+    switches.map(s => bindSwitch(s));
 }
 
 function bindSwitch(name) {
@@ -30,7 +28,7 @@ function setDateFormat(format) {
 }
 
 function setMinDate(date) {
-    $('#datetimepicker1-1').datetimepicker({minDate: date});
+    ['email', 'push', 'online'].map(t => $(`#datetimepicker-${t}`).datetimepicker({minDate: date}))
 }
 
 function refreshMemberTable(selectVal) {
@@ -164,6 +162,17 @@ function submitGroup() {
     return false;
 }
 
+function scrapeDeadline(div) {
+    const ret = {}
+
+    ret['type'] = div;
+    ret['dead_period'] = 0;
+    ret['before_deadline_frequency'] = parseInt($(`#freq-before-${div}`).val()) * parseInt($(`#freq-unit-before-${div}`).val())
+    ret['after_deadline_frequency'] = parseInt($(`#freq-after-${div}`).val()) * parseInt($(`#freq-unit-after-${div}`).val())
+
+    return ret;
+}
+
 function submitForm() {
 
     const team = $("#form-team-dropdown").val();
@@ -177,12 +186,17 @@ function submitForm() {
     if (!(owner && token && backend && deadline && title))
         return false;
 
+    const notification_details = ['email', 'online', 'push']
+        .filter(t => $(`#${t} .js-switch`).is(':checked'))
+        .map(t => scrapeDeadline(t))
+
     const formJson = JSON.stringify({
         title: title,
         team: team,
         owner: owner,
         template_title: template,
-        deadline: deadline
+        deadline: deadline,
+        notification_details
     });
 
     alert(formJson);
@@ -329,7 +343,6 @@ function addOwnedFormItem(form) {
     li.addClass('custom');
     li.find('a').text(form["_id"]);
     li.find('a').attr("id", form["_id"]);
-    console.log(li)
     $("#owned_list").append(li);
 }
 
@@ -361,7 +374,6 @@ function refreshForms(forms) {
 }
 
 function addNavbarForm(form) {
-    console.log(form)
     $("#form-list").append(
         $('<li>').append(
             $('<a>')

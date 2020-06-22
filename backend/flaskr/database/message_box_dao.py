@@ -32,9 +32,13 @@ class MessageBoxDAO:
                 for data
                 in all_data]
 
-    def find_all_for_user(self, owner):
+    def find_for_user(self, owner):
         query = {"owner": owner}
-        return self.find(query)
+        result = self.find(query)
+        if len(result) != 0:
+            return result[0]
+        else:
+            return None
 
     # Update
     def update_one(self, query, update):
@@ -61,6 +65,19 @@ class MessageBoxDAO:
 
         update = {"$push": {"messages": msg.data}}
         self.coll.find_one_and_update(query, update)
+
+    def mark_message_as_viewed(self, msg_id, owner=None):
+        query = {}
+        if owner:
+            query["owner"] = owner
+        query["messages._id"] = msg_id
+
+        update = {"$set": {"messages.$.viewed": True}}
+        self.coll.find_one_and_update(query, update)
+
+    def mark_all_messages_from_list_as_viewed(self, msg_id_list, owner=None):
+        for msg_id in msg_id_list:
+            self.mark_message_as_viewed(msg_id, owner)
 
     def remove_message(self, msg_ref_id, owner=None, _id=None):
         if not owner and not _id:

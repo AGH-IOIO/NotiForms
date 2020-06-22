@@ -1,5 +1,7 @@
-from bson import ObjectId
 from datetime import datetime
+
+from bson import ObjectId
+
 from .utils import parse_id
 
 
@@ -30,7 +32,7 @@ class FormResults:
     }
     """
 
-    def __init__(self, data, recipients=None, deadline=None, from_db=False):
+    def __init__(self, data, form_title=None, recipients=None, deadline=None, from_db=False):
         if from_db:
             self._data = data
             self._data["_id"] = parse_id(data)
@@ -43,10 +45,10 @@ class FormResults:
         self._data = dict()
         self._data["_id"] = ObjectId()
         self._data["owner"] = data.owner
-        self._data["title"] = data.title
+        self._data["title"] = form_title
         self._data["send_date"] = datetime.utcnow()
         self._data["deadline"] = deadline
-        self._data["finished"] = datetime.utcnow() < deadline if deadline else False
+        self._data["finished"] = datetime.utcnow() > deadline if deadline else False
         self._data["not_filled_yet"] = recipients
         self._data["questions"] = [{"type": question.type,
                                     "title": question.title}
@@ -55,7 +57,18 @@ class FormResults:
 
     @property
     def data(self):
-        return self._data
+        new_data = dict()
+        new_data["_id"] = self.id
+        new_data["owner"] = self.owner
+        new_data["title"] = self.title
+        new_data["send_date"] = self.send_date
+        new_data["deadline"] = self.deadline
+        new_data["finished"] = self.finished
+        new_data["not_filled_yet"] = self.not_filled_yet
+        new_data["questions"] = self.questions
+        new_data["answers"] = self.answers
+
+        return new_data
 
     @data.setter
     def data(self, new_data):
