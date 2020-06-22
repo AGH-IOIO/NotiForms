@@ -1,5 +1,7 @@
-from bson import ObjectId
 from datetime import datetime
+
+from bson import ObjectId
+
 from .utils import parse_id
 
 
@@ -30,7 +32,7 @@ class FormResults:
     }
     """
 
-    def __init__(self, data, recipients=None, deadline=None, from_db=False):
+    def __init__(self, data, form_title=None, recipients=None, deadline=None, from_db=False):
         if from_db:
             self._data = data
             self._data["_id"] = parse_id(data)
@@ -43,10 +45,10 @@ class FormResults:
         self._data = dict()
         self._data["_id"] = ObjectId()
         self._data["owner"] = data.owner
-        self._data["title"] = data.title
+        self._data["title"] = form_title
         self._data["send_date"] = datetime.utcnow()
         self._data["deadline"] = deadline
-        self._data["finished"] = datetime.utcnow() < deadline if deadline else False
+        self._data["finished"] = datetime.utcnow() > deadline if deadline else False
         self._data["not_filled_yet"] = recipients
         self._data["questions"] = [{"type": question.type,
                                     "title": question.title}

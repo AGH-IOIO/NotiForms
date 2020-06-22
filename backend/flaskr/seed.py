@@ -1,15 +1,15 @@
-from .database.user_dao import UserDAO
-from .database.templates_dao import TemplateDAO
-from .database.form_results_dao import FormResultsDAO
-from .database.pending_forms_dao import PendingFormsDAO
-from .model.user import User
-from .model.forms import Template, Form
-from .model.results import FormResults
-from .database import connection
-
+import os
 from datetime import datetime, timedelta
 
-import os
+from .database import connection
+from .database.form_results_dao import FormResultsDAO
+from .database.pending_forms_dao import PendingFormsDAO
+from .database.templates_dao import TemplateDAO
+from .database.user_dao import UserDAO
+from .model.forms import Template, Form
+from .model.results import FormResults
+from .model.user import User
+
 
 def seed_forms():
     question1 = {
@@ -43,12 +43,13 @@ def seed_forms():
     # Simulate past-deadline form
     deadline = send_date - timedelta(days=1.0)
 
-    results = FormResults(template, recipients=["admin"])
+    form_title = "AAAAA"
+    results = FormResults(template, form_title=form_title, recipients=["admin"])
     results_dao = FormResultsDAO()
     results_dao.insert_one(results)
 
     form_data = {
-        "title": "AAAAA",
+        "title": form_title,
         "recipient": "admin",
         "results_id": results.id,
         "template": template.data,
@@ -56,6 +57,7 @@ def seed_forms():
     }
     form = Form(form_data)
     PendingFormsDAO().insert_one(form)
+
 
 def seed_user():
     data = {
@@ -66,6 +68,7 @@ def seed_user():
     }
     user = User(data)
     UserDAO().insert_one(user)
+
 
 def seed_all():
     # Flush database

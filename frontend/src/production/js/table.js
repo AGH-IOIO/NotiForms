@@ -299,13 +299,24 @@ function refreshOwnedForms(forms) {
 }
 
 function addOwnedFormItem(form) {
-    const li = $('#owned_template').clone(true, true);
+    let li = null;
+
+    if(form["finished"])
+        li = $('#finished_template').clone(true, true);
+    else
+        li = $('#owned_template').clone(true, true);
+
+    li.attr('id', null);
     li.css('display', '');
     li.addClass('custom');
-    li.find('a').text(form["_id"]);
+    li.find('a').text(form["title"]);
     li.find('a').attr("id", form["_id"]);
     console.log(li)
-    $("#owned_list").append(li);
+
+    if(form["finished"])
+        $("#finished_list").append(li);
+    else
+        $("#owned_list").append(li);
 }
 
 function formsApiCall(username, token) {

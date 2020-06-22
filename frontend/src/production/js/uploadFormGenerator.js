@@ -1,45 +1,76 @@
-fields1 = {"title":"Would you please answer some questions about the meeting","questions":
-        [{"type":"open_text","title":"What is the best time for you to meet?","answer":""},
-            {"type":"open_text","title":"question2","answer":""}]};
 
-fields = {"owner":"admin","title":"Ankieta 1",
-    "questions":[{"type":"single_choice","title":"This is single-choice question1?","options":["This is option 1.","This is option 2.","This is option 3."]},
-        {"type":"open_text","title":"This is a text question2?","options":[]},
-        {"type":"open_text","title":"This is a text question3?","options":[]},
-        {"type":"multiple_choice","title":"This is multiple-choice question1?","options":["This is option 1.","This is option 2.","This is option 3.","This is option 4."]},
-        {"type":"multiple_choice","title":"This is multiple-choice question1?","options":["This is option 1.","This is option 2.","This is option 3."]}]};
+fields = {
+    "title": "Would you please answer some questions about the meeting", "questions":
+        [{"type": "open_text", "title": "What is the best time for you to meet?", "answer": ""},
+            {"type": "open_text", "title": "question2", "answer": ""}]
+
+// fields = {"owner":"admin","title":"Ankieta 1",
+//     "questions":[{"type":"single_choice","title":"This is single-choice question1?","options":["This is option 1.","This is option 2.","This is option 3."]},
+//         {"type":"open_text","title":"This is a text question2?","options":[]},
+//         {"type":"open_text","title":"This is a text question3?","options":[]},
+//         {"type":"multiple_choice","title":"This is multiple-choice question1?","options":["This is option 1.","This is option 2.","This is option 3.","This is option 4."]},
+//         {"type":"multiple_choice","title":"This is multiple-choice question1?","options":["This is option 1.","This is option 2.","This is option 3."]}]};
 
 questionDivId = 0;
 
 let form = {};
 
 function loadForm() {
-	const {pathname} = window.location;
-	const id = pathname.split("/").pop()
 
-	if (id) {
-		form = window.glob.forms.find(t => t._id === id);
-		fields.title = form.template.title;
-		fields.questions = form.template.questions;
-		generate();
-	}
+    const {pathname} = window.location;
+    const id = pathname.split("/").pop()
 
+    if (id) {
+        if (window.glob.forms) {
+            form = window.glob.forms.find(t => t._id === id);
+            fields.title = form.template.title;
+            fields.questions = form.template.questions;
+            generate();
+        } else {
+            const {backend} = window.glob;
+            const token = localStorage.getItem("token");
+            const username = localStorage.getItem("username");
+
+            if (backend && token && username) {
+                $.ajax({
+                    type: "GET",
+                    url: `${backend}/forms/pending/${username}/`,
+                    headers: {
+                        "Authorization": token
+                    },
+                    contentType: "application/json",
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.forms) {
+                            form = data.forms.find(t => t._id === id);
+                            fields.title = form.template.title;
+                            fields.questions = form.template.questions;
+                            generate();
+                        }
+                    },
+                    failure: function (errMsg) {
+                        console.log(errMsg);
+                    },
+                });
+            }
+        }
+    }
 }
 
-function generate(){
-	if (Object.keys(fields).length !== 0){
-	    //clear content of previous form
+function generate() {
+    if (Object.keys(fields).length !== 0) {
+        //clear content of previous form
         questionDivId = 0;
         $("#inquiry-fields").html("");
         $("#form_title").html("");
 
 
-		var title = fields.title;
-		var form_name = $("<h2>")
-			.addClass("title_left")
-			.attr("for", "input-form-name")
-			.text(title);
-		$("#form_title").append(form_name);
+        var title = fields.title;
+        var form_name = $("<h2>")
+            .addClass("title_left")
+            .attr("for", "input-form-name")
+            .text(title);
+        $("#form_title").append(form_name);
 
 		fields.questions.forEach(question => {
 			var question_title = (questionDivId + 1).toString(10) + ". " + question.title;
@@ -226,7 +257,5 @@ function formSubmit(){
 			},
 		});
 	}
-
-	debugger;
 }
 
