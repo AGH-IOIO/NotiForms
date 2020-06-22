@@ -110,7 +110,7 @@ function formSubmit() {
         answers: answers,
         recipient: username
     });
-    alert(answerJson);
+    //alert(answerJson);
 
     const {backend} = window.glob;
     const token = localStorage.getItem("token");
@@ -132,9 +132,12 @@ function formSubmit() {
             failure: function (errMsg) {
                 console.log(errMsg);
             },
+            error: function (errMsg) {
+                console.log(errMsg);
+            },
         });
     }
+    return false;
 
-    debugger;
 }
 
