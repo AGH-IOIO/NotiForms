@@ -135,6 +135,5 @@ function formSubmit() {
         });
     }
 
-    debugger;
 }
 
