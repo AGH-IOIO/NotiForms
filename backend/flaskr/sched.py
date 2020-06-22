@@ -1,9 +1,32 @@
+from datetime import datetime, timedelta
+from os import getenv
+from random import choice
+
 from flask_apscheduler import APScheduler
+
 scheduler = APScheduler()
 scheduler.api_enabled = True
 
-from datetime import datetime, timedelta
-from random import choice
+
+@scheduler.task("interval", id="check_deadlines", seconds=int(getenv("CHECK_DEADLINES_INTERVAL", 10)))
+def check_deadlines():
+    from .database.form_results_dao import FormResultsDAO
+
+    form_results_dao = FormResultsDAO()
+
+    def handle(form_results):
+        """
+        This function checks if deadline for given form has passed and if so updates finished field in database
+        """
+        now = datetime.utcnow()
+        deadline = form_results.deadline
+
+        if deadline is not None and now >= deadline:
+            form_results_dao.update_one_by_id(form_results.id, {"$set": {"finished": True}})
+            print("{} marked as finished".format(form_results.title))
+
+    all_results = form_results_dao.find({"finished": False})
+    [handle(results) for results in all_results]
 
 
 @scheduler.task("interval", id="email_notifications", seconds=5)
@@ -21,9 +44,9 @@ def email_notifications():
     from .email import send_email
 
     def handle(form):
-        '''
+        """
         This functions decides whether to send or not to send notification for given Form.
-        '''
+        """
         now = datetime.utcnow()
         notify_seconds = 60 if form.notify_period is None else form.notify_period
         notify_period = timedelta(seconds=notify_seconds)
@@ -42,7 +65,7 @@ def email_notifications():
         template_data = {
             "username": form.recipient,
             "deadline": str(form.deadline),
-            "threat":  "" if form.last_notify is None else choice(THREATS)
+            "threat": "" if form.last_notify is None else choice(THREATS)
         }
 
         # Find user email address
@@ -56,8 +79,5 @@ def email_notifications():
         print("Notification for %s sent." % form.title, flush=True)
         PendingFormsDAO().update_one({"_id": form.id}, {"$set": {"last_notify": now}})
 
-
     forms = PendingFormsDAO().find({})
     [handle(form) for form in forms]
-
-

@@ -43,8 +43,9 @@ def send_forms_to_db(body):
     if not template:
         return mk_error("Template with given owner and title does not exist")
 
+    form_title = body["title"]
     try:
-        results = FormResults(template, team_members)
+        results = FormResults(template, form_title=form_title, recipients=team_members)
     except ValueError:
         return mk_error("Error with creating form results object, team members list is empty (maybe you are trying to "
                         "send form only to yourself?)")
@@ -60,7 +61,6 @@ def send_forms_to_db(body):
     message_box_dao = MessageBoxDAO()
 
     forms_to_insert = []
-    form_title = body["title"]
 
     for member in team_members:
         form = Form({

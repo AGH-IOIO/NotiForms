@@ -1,4 +1,3 @@
-from bson import ObjectId
 from datetime import datetime
 
 from .questions import parse_questions

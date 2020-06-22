@@ -1,67 +1,12 @@
 from datetime import datetime, timedelta
-from flask import Blueprint, jsonify
-from bson.json_util import dumps
 from bson.objectid import ObjectId
-import pytest
 
-from . import post_with_auth, get_with_auth, flask_client, stub_user, clear_db
-from ..database import db
+from . import post_with_auth, get_with_auth, flask_client, stub_user, clear_db, stub_template_form
 from ..database.message_box_dao import MessageBoxDAO
-from ..database.templates_dao import TemplateDAO
 from ..database.form_results_dao import FormResultsDAO
 from ..database.pending_forms_dao import PendingFormsDAO
-from ..model.forms import Template, Form
 from ..model.results import FormResults
 from ..model.message_box import MessageBox
-
-
-@pytest.fixture
-def stub_template_form():
-    question1 = {
-        "type": "single_choice",
-        "title": "Czy jesteś na nie?",
-        "choices": ["TAK", "NIE"],
-        "answer": -1
-    }
-    question2 = {
-        "type": "open_text",
-        "title": "Napisz coś o sobie?",
-        "answer": ""
-    }
-    question3 = {
-        "type": "multiple_choice",
-        "title": "Czy?",
-        "choices": ["TAK", "NIE", "NIE WIEM"],
-        "answer": []
-    }
-
-    template_data = {
-        "owner": "team_owner",
-        "title": "Referendum",
-        "questions": [question1, question2, question3]
-    }
-    template = Template(template_data)
-    template_dao = TemplateDAO()
-    template_dao.insert_one(template)
-
-    send_date = datetime.utcnow()
-    deadline = send_date + timedelta(days=1.0)
-
-    results = FormResults(template, recipients=["stubUser"])
-    results_dao = FormResultsDAO()
-    results_dao.insert_one(results)
-
-    form_data = {
-        "title": "AAAAA",
-        "recipient": "stubUser",
-        "results_id": results.id,
-        "template": template.data,
-        "deadline": deadline
-    }
-    form = Form(form_data)
-    PendingFormsDAO().insert_one(form)
-
-    return template, results, form
 
 
 def test_fill_form(clear_db, flask_client, stub_user, stub_template_form):
@@ -82,7 +27,13 @@ def test_fill_form(clear_db, flask_client, stub_user, stub_template_form):
             "text": "AAAAAAAAAAAAAAAA",
             "send_date": datetime.utcnow(),
             "ref_id": form.id
-        }]
+        },
+            {
+                "text": "BBBBBBBBBBBBBBB",
+                "send_date": datetime.utcnow(),
+                "ref_id": form.id
+            }
+        ]
     }
     message_box = MessageBox(message_box_data)
     message_box_dao.insert_one(message_box)
@@ -99,7 +50,7 @@ def test_fill_form(clear_db, flask_client, stub_user, stub_template_form):
     users_with_answers = list(map(lambda x: x["username"], results.answers))
     assert user["username"] in users_with_answers
 
-    messages = message_box_dao.find_all_for_user(user["username"])[0].messages
+    messages = message_box_dao.find_for_user(user["username"]).messages
     filtered_messages = list(filter(lambda x: x["ref_id"] == form.id, messages))
     assert len(filtered_messages) == 0
 
@@ -180,14 +131,16 @@ def test_get_forms_owned_by_user(clear_db, flask_client, stub_template_form):
     template, results, _ = stub_template_form
 
     results_dao = FormResultsDAO()
-    deadline = datetime.utcnow() + timedelta(days=5.0)
 
-    results2 = FormResults(template, recipients=["stubUser"])
+    results2 = FormResults(template, form_title="BBB", recipients=["stubUser"])
     results_dao.insert_one(results2)
 
     res = get_with_auth(flask_client, "/forms/owned/{}/".format("team_owner"))
     assert res.status_code == 200
 
     res_json = res.get_json()
-    results = res_json["forms"]
-    assert len(results) == 2
+    query_results = res_json["forms"]
+    assert len(query_results) == 2
+
+    assert any(x["title"] == results.title for x in query_results)
+    assert any(x["title"] == "BBB" for x in query_results)
