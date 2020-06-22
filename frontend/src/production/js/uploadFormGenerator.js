@@ -1,15 +1,9 @@
-
-fields = {
-    "title": "Would you please answer some questions about the meeting", "questions":
-        [{"type": "open_text", "title": "What is the best time for you to meet?", "answer": ""},
-            {"type": "open_text", "title": "question2", "answer": ""}]
-
-// fields = {"owner":"admin","title":"Ankieta 1",
-//     "questions":[{"type":"single_choice","title":"This is single-choice question1?","options":["This is option 1.","This is option 2.","This is option 3."]},
-//         {"type":"open_text","title":"This is a text question2?","options":[]},
-//         {"type":"open_text","title":"This is a text question3?","options":[]},
-//         {"type":"multiple_choice","title":"This is multiple-choice question1?","options":["This is option 1.","This is option 2.","This is option 3.","This is option 4."]},
-//         {"type":"multiple_choice","title":"This is multiple-choice question1?","options":["This is option 1.","This is option 2.","This is option 3."]}]};
+fields = {"owner":"admin","title":"Ankieta 1",
+    "questions":[{"type":"single_choice","title":"This is single-choice question1?","options":["This is option 1.","This is option 2.","This is option 3."]},
+        {"type":"open_text","title":"This is a text question2?","options":[]},
+        {"type":"open_text","title":"This is a text question3?","options":[]},
+        {"type":"multiple_choice","title":"This is multiple-choice question1?","options":["This is option 1.","This is option 2.","This is option 3.","This is option 4."]},
+        {"type":"multiple_choice","title":"This is multiple-choice question1?","options":["This is option 1.","This is option 2.","This is option 3."]}]};
 
 questionDivId = 0;
 
