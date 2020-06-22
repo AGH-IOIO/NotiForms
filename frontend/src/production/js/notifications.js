@@ -66,29 +66,64 @@ function descripctionDiv(desc) {
         .text(desc);
 }
 
-function pushNotification(msg){
+function removeServiceWorkers() {
+    navigator.serviceWorker.getRegistrations().then(function (registrations) {
+        for (let registration of registrations) {
+            registration.unregister()
+        }
+    })
+}
 
-    addNotification(12,"april", "witam", "michal", "tralalal wypelnij anikete prosze ja ciebie bo bedzie zle");
+function registerServiceWorker() {
 
-    let push = function (msg){
-        new Notification('NotiForms', {
-            body: msg,
-            icon: "https://img.icons8.com/ultraviolet/80/000000/survey.png"
+    const publicVapidKey = "BD7cSED3VxyrDftluX7KC9kU8YxTz1NYCVQRBPzxP9XGPG0SYFhJslgalUc4tbpKJ7mvfsccF9cOPo2iJ_FxDKg";
+
+    navigator.serviceWorker.register('/serviceWorker.js');
+
+    navigator.serviceWorker.ready.then(
+        function (serviceWorkerRegistration) {
+            var options = {
+                userVisibleOnly: true,
+                applicationServerKey: publicVapidKey
+            };
+            serviceWorkerRegistration.pushManager.subscribe(options).then(
+                function (pushSubscription) {
+
+                    console.log('Received PushSubscription: ', JSON.stringify(pushSubscription));
+                    // The push subscription details needed by the application
+                    // server are now available, and can be sent to it using,
+                    // for example, an XMLHttpRequest.
+                }, function (error) {
+
+                    console.log(error);
+                }
+            );
         });
-    }
+}
 
-    if(!window.Notification){
-        console.log('Browser does not support notifications.');
+function urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding)
+        .replace(/\-/g, '+')
+        .replace(/_/g, '/')
+    ;
+    const rawData = window.atob(base64);
+    return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)));
+}
 
-    } else if (Notification.permission === 'granted') {
-        push(msg);
-    } else{
-        Notification.requestPermission().then(function(p) {
-            if(p === 'granted') {
-                push(msg);
-            }
-        });
-    }
+function pushNotification(msg) {
 
+    removeServiceWorkers();
 
+    // if (!window.Notification) {
+    //     console.log('Browser does not support notifications.');
+    // } else if (Notification.permission === 'granted') {
+    //     registerServiceWorker();
+    // } else {
+    //     Notification.requestPermission().then(function (p) {
+    //         if (p === 'granted') {
+    //             registerServiceWorker();
+    //         }
+    //     });
+    // }
 }

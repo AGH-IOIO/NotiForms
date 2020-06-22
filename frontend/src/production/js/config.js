@@ -1,4 +1,4 @@
 options = {
-    backend: 'http://localhost:8080',
-    frontend: 'https://localhost:443/'
+    backend: 'http://192.168.0.52:8080',
+    frontend: 'https://192.168.0.52:8081/'
 }

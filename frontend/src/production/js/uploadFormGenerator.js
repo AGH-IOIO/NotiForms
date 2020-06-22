@@ -11,6 +11,9 @@ function loadForm() {
 	const id = pathname.split("/").pop()
 
 	if (id) {
+
+
+
 		form = window.glob.forms.find(t => t._id === id);
 		fields.title = form.template.title;
 		fields.questions = form.template.questions;

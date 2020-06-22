@@ -1,11 +1,36 @@
 function loadFormGenerator() {
+    const switches = ["email", "push", "online"]
     loadSelectForm('#form-template-dropdown', window.glob.templates, t => t.title);
     loadSelectForm('#form-team-dropdown', window.glob.teams, t => t);
     setDateFormat("YYYY-MM-DD HH:mm");
+    setMinDate(new Date());
+    loadSwitches(switches);
 }
 
-function setDateFormat(format){
+function loadSwitches(switches) {
+    $(".deadline-content").load("production/deadline.html", function () {
+        switches.map(s => bindSwitch(s));
+    });
+}
+
+function bindSwitch(name) {
+    const checkbox = $(`#${name} .js-switch`);
+
+    checkbox.change(function () {
+        if (checkbox.is(':checked')) {
+            $(`#${name} .switch-req`).prop('required', true);
+        } else {
+            $(`#${name} .switch-req`).prop('required', false);
+        }
+    })
+}
+
+function setDateFormat(format) {
     $('#datetimepicker1').datetimepicker({format: format});
+}
+
+function setMinDate(date) {
+    $('#datetimepicker1-1').datetimepicker({minDate: date});
 }
 
 function refreshMemberTable(selectVal) {
@@ -14,7 +39,7 @@ function refreshMemberTable(selectVal) {
     const token = localStorage.getItem("token");
     const {backend} = window.glob;
 
-    if(backend && token){
+    if (backend && token) {
         $.ajax({
             type: "GET",
             url: `${backend}/teams/get_members/${selectVal.value}/`,
@@ -40,14 +65,14 @@ function addParticipantRow(name, table) {
     const fieldDiv = $("<tr>")
         .addClass("tableRow")
         .append(
-        $('<td>').append($('<input>')
-            .attr('type', 'checkbox')
-            .attr('class', 'check-participant')
-        ),
-        $('<td>')
-            .attr('class', 'name')
-            .text(name)
-    )
+            $('<td>').append($('<input>')
+                .attr('type', 'checkbox')
+                .attr('class', 'check-participant')
+            ),
+            $('<td>')
+                .attr('class', 'name')
+                .text(name)
+        )
     table.append(fieldDiv);
 }
 
@@ -335,12 +360,12 @@ function refreshForms(forms) {
     forms.map(f => addNavbarForm(f));
 }
 
-function addNavbarForm(form){
+function addNavbarForm(form) {
     console.log(form)
     $("#form-list").append(
         $('<li>').append(
             $('<a>')
-                .attr("href",`dashboard/form/${form._id}`)
+                .attr("href", `dashboard/form/${form._id}`)
                 .text(form.title)
         )
     )
