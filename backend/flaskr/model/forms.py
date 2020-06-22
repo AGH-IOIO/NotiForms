@@ -134,7 +134,7 @@ class Form:
         new_data["_id"] = self.id
         new_data["title"] = self.title
         new_data["recipient"] = self.recipient
-        new_data["send_date"] = self.send_date
+        new_data["send_date"] = str(self.send_date)
         new_data["deadline"] = self.deadline
         new_data["results_id"] = self.results_id
         new_data["template"] = self.template
