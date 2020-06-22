@@ -59,6 +59,7 @@ from .handlers.team_handler import team_bp
 from .handlers.template_handler import template_bp
 from .handlers.form_handler import form_bp
 from .handlers.message_handler import message_box_bp
+from .handlers.push_handler import push_bp
 
 # Blueprints registration
 app.register_blueprint(users_bp)
@@ -66,3 +67,4 @@ app.register_blueprint(team_bp)
 app.register_blueprint(template_bp)
 app.register_blueprint(form_bp)
 app.register_blueprint(message_box_bp)
+app.register_blueprint(push_bp)

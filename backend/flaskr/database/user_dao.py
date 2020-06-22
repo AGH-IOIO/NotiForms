@@ -129,6 +129,16 @@ class UserDAO:
         update = {"$pull": {"teams": team_name}}
         self.coll.find_one_and_update(query, update)
 
+    def save_push_subscription_info(self, username, user_agent, subscription_info):
+        data = {
+            "user_agent": user_agent,
+            "subscription_info": subscription_info
+        }
+
+        query = {"username": username}
+        update = {"$push": {"push_subscription_info": data}}
+        self.coll.find_one_and_update(query, update)
+
     # Delete
     def delete(self, query):
         self.coll.delete_many(query)
