@@ -126,6 +126,9 @@ def test_get_form_results(clear_db, flask_client, stub_user, stub_template_form)
     assert res_answers["username"] == user["username"]
     assert res_answers["answers"] == answers
 
+    assert "questions" in results
+    assert any("choices" in question_details for question_details in results["questions"])
+
 
 def test_get_forms_owned_by_user(clear_db, flask_client, stub_template_form):
     template, results, _ = stub_template_form

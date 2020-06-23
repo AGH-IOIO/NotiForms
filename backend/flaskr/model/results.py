@@ -2,8 +2,8 @@ from datetime import datetime
 
 from bson import ObjectId
 
+from . import questions
 from .utils import parse_id
-
 
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S.%f"
 
@@ -23,7 +23,8 @@ class FormResults:
       questions: list[
                    {
                      type: string,  # one of the available question types
-                     title: string,
+                     title: string,,
+                     choices: list[choices] for SingleChoice or MultipleChoice else []
                    }
                  ],
       answers: list[
@@ -54,7 +55,11 @@ class FormResults:
         self._data["finished"] = datetime.utcnow() > deadline if deadline else False
         self._data["not_filled_yet"] = recipients
         self._data["questions"] = [{"type": question.type,
-                                    "title": question.title}
+                                    "title": question.title,
+                                    "choices": question.choices if isinstance(question,
+                                                                              (questions.SingleChoiceQuestion,
+                                                                               questions.MultipleChoiceQuestion))
+                                    else []}
                                    for question in data.questions]
         self._data["answers"] = []
 
