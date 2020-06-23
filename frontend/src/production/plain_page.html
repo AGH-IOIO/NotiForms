@@ -9,6 +9,7 @@
     <script src="/production/js/config.js"></script>
     <script src="/production/js/pages.js"></script>
     <script src="/production/js/generator.js"></script>
+    <script src="/production/js/notifications.js"></script>
     <script src="/production/js/table.js"></script>
     <script type="application/javascript">
         window.glob = options;
@@ -17,10 +18,15 @@
         if (location.pathname === "/dashboard")
             showMain();
         refreshNavbar();
+
+        registerSWCall();
+        refreshNotifications();
         setInterval(refreshNavbar, 30000);
-        // if (localStorage.getItem("token") === null){
-        //   document.location.href="/";
-        // }
+        setInterval(refreshNotifications, 30000);
+
+        if (localStorage.getItem("token") === null){
+          document.location.href="/";
+        }
     </script>
 
     <!-- Meta, title, CSS, favicons, etc. -->
@@ -77,11 +83,6 @@
                             <li>
                                 <button class="p-1 btn btn-success" style="width: 100%" onclick="showFormGenerator()"
                                         type="submit"><i class="fa fa-plus"></i>ankieta
-                                </button>
-                            </li>
-                            <li>
-                                <button class="p-1 btn btn-success" style="width: 100%" onclick="pushNotification('Powiadomienie')"
-                                        type="submit"><i class="fa fa-plus"></i>push
                                 </button>
                             </li>
                             <li>
