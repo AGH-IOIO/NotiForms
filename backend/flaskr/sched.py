@@ -3,6 +3,7 @@ from os import getenv
 from random import choice
 
 from flask_apscheduler import APScheduler
+from pywebpush import webpush
 
 scheduler = APScheduler()
 scheduler.api_enabled = True
@@ -114,7 +115,38 @@ def online_notifications():
     forms = PendingFormsDAO().find({})
     [handle(form) for form in forms]
 
-# TODO - function for push notifications
+
+@scheduler.task("interval", id="push_notifications", seconds=int(getenv("PUSH_NOTIFICATIONS_INTERVAL", 10)))
+def push_notifications():
+    from .database.pending_forms_dao import PendingFormsDAO
+    from .database.user_dao import UserDAO
+
+    def handle(form):
+        now = datetime.utcnow()
+        details = get_last_notify_and_notify_period("push", form, now)
+        if details is None:
+            return
+        last_notify, notify_period = details
+
+        send = now > last_notify + notify_period
+        if not send:
+            return
+
+        username = form.recipient
+        user_dao = UserDAO()
+        user = user_dao.find_one_by_username(username)
+        push_subscription_info = user.push_subscription_info
+
+        private_key = getenv("PRIVATE_KEY")
+        message = choice(THREATS)
+        email = getenv("MAIL_USERNAME") + "@gmail.com"
+        vapid_claims = {"sub": "mailto:" + email}
+
+        for info in push_subscription_info:
+            webpush(info["subscription_info"], message, vapid_private_key=private_key, vapid_claims=vapid_claims)
+
+    forms = PendingFormsDAO().find({})
+    [handle(form) for form in forms]
 
 
 def get_last_notify_and_notify_period(notification_type, form, now):

@@ -59,7 +59,7 @@ def seed_forms():
             "notify_date": deadline
         },
         {
-            "type": "e-mail",
+            "type": "push",
             "dead_period": 60,
             "before_deadline_frequency": 60,
             "after_deadline_frequency": 30,
