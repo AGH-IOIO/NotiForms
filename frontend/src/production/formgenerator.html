@@ -5,7 +5,26 @@
 
 <link rel="stylesheet" type="text/css" href="production/css/main.css">
 
-<script src="/production/js/table.js"></script>
+
+<!-- Font Awesome -->
+<link href="../vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+<!-- NProgress -->
+<link href="../vendors/nprogress/nprogress.css" rel="stylesheet">
+<!-- iCheck -->
+<link href="../vendors/iCheck/skins/flat/green.css" rel="stylesheet">
+<!-- bootstrap-wysiwyg -->
+<link href="../vendors/google-code-prettify/bin/prettify.min.css" rel="stylesheet">
+<!-- Select2 -->
+<link href="../vendors/select2/dist/css/select2.min.css" rel="stylesheet">
+<!-- Switchery -->
+<link href="../vendors/switchery/dist/switchery.min.css" rel="stylesheet">
+<!-- starrr -->
+<link href="../vendors/starrr/dist/starrr.css" rel="stylesheet">
+<!-- bootstrap-daterangepicker -->
+<link href="../vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
+
+<!-- Custom Theme Style -->
+<link href="../build/css/custom.min.css" rel="stylesheet">
 
 <div class="x_panel">
     <div class="x_content">
@@ -29,7 +48,8 @@
 
             <div class="form-group row">
                 <label class="col-form-label col-md-3 col-sm-3 label-align">Pick team</label>
-                <select class="form-control col-md-6 col-sm-6" id="form-team-dropdown" onchange="refreshMemberTable(this);" required>
+                <select class="form-control col-md-6 col-sm-6" id="form-team-dropdown"
+                        onchange="refreshMemberTable(this);" required>
                     <option disabled selected value>Empty</option>
                 </select>
             </div>
@@ -99,22 +119,6 @@
                     </div>
 
                     <div class="x_content">
-
-<!--                        <div class="row">-->
-<!--                            <div class="col-md-6">-->
-<!--                                <div class="form-group row">-->
-<!--                                    <div class="checkbox">-->
-<!--                                        <label>-->
-<!--                                            <input type="checkbox" class="icheckbox_flat-green" value=""-->
-<!--                                                   id="form-deadline-checkbox" onchange="showDeadlinePicker()"> Ankieta-->
-<!--                                            ograniczona czasowo-->
-<!--                                        </label>-->
-<!--                                    </div>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-
-
                         <div class="row" id="form-deadline-picker">
                             <label class="col-form-label col-md-3 col-sm-3 label-align">Pick deadline</label>
                             <div class="col-sm-6">
@@ -125,6 +129,231 @@
                                         <div class="input-group-append" data-target="#datetimepicker1"
                                              data-toggle="datetimepicker">
                                             <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row">
+
+                    <div class="col-md-12 col-sm-12">
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <h2><i class="fa fa-bars"></i>Powiadomienia</h2>
+                                <ul class="nav navbar-right panel_toolbox">
+                                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                                    </li>
+                                    <li class="dropdown">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                                           aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                            <a class="dropdown-item" href="#">Settings 1</a>
+                                            <a class="dropdown-item" href="#">Settings 2</a>
+                                        </div>
+                                    </li>
+                                    <li><a class="close-link"><i class="fa fa-close"></i></a>
+                                    </li>
+                                </ul>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="x_content">
+
+                                <ul class="nav nav-tabs bar_tabs" id="myTab" role="tablist">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home"
+                                           role="tab" aria-controls="home" aria-selected="true">Email</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile"
+                                           role="tab" aria-controls="profile" aria-selected="false">Online</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact"
+                                           role="tab" aria-controls="contact" aria-selected="false">Push</a>
+                                    </li>
+                                </ul>
+                                <div class="tab-content" id="myTabContent">
+                                    <div class="tab-pane fade show active" id="home" role="tabpanel"
+                                         aria-labelledby="home-tab">
+                                        <div id="email" class="deadline-content">
+                                            <input type="checkbox" class="js-switch"/>
+                                            <div class="row">
+                                                <label class="col-form-label col-md-3 col-sm-3 label-align">Pick
+                                                    dead period</label>
+                                                <div class="col-sm-6 form-group input-group date"
+                                                     id="datetimepicker-email"
+                                                     data-target-input="#form-deadline-input-email">
+                                                    <input type="text" class="form-control datetimepicker-input"
+                                                           data-target="#datetimepicker-email"
+                                                           id="form-deadline-input-email"/>
+                                                    <div class="input-group-append"
+                                                         data-target="#datetimepicker-email"
+                                                         data-toggle="datetimepicker">
+                                                        <div class="input-group-text"><i
+                                                                class="fa fa-calendar"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <h2>Before</h2>
+
+                                            <label for="freq-before-email">Heard us by *:</label>
+                                            <input class="form-control switch-req number" id="freq-before-email"
+                                                   type="number"
+                                                   name="number"
+                                                   data-validate-min="1">
+
+                                            <label for="freq-unit-before-email">co:</label>
+                                            <select id="freq-unit-before-email" class="form-control switch-req">
+                                                <option value="">Choose..</option>
+                                                <option value="60">minutes</option>
+                                                <option value="3600">hours</option>
+                                                <option value="43200">days</option>
+                                            </select>
+
+                                            <h2>After</h2>
+
+                                            <label for="freq-after-email">Heard us by *:</label>
+                                            <input class="form-control switch-req number" id="freq-after-email"
+                                                   type="number"
+                                                   name="number"
+                                                   data-validate-min="1">
+
+                                            <label for="freq-unit-after-email">co:</label>
+                                            <select id="freq-unit-after-email" class="form-control switch-req">
+                                                <option value="">Choose..</option>
+                                                <option value="60">minutes</option>
+                                                <option value="3600">hours</option>
+                                                <option value="43200">days</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="tab-pane fade" id="profile" role="tabpanel"
+                                         aria-labelledby="profile-tab">
+                                        <div id="online" class="deadline-content">
+                                            <label>
+                                                <input type="checkbox" class="js-switch"/>
+                                            </label>
+                                            <div class="row">
+                                                <label class="col-form-label col-md-3 col-sm-3 label-align">Pick
+                                                    dead period</label>
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <div class="input-group date" id="datetimepicker-online"
+                                                             data-target-input="#form-deadline-input-online">
+                                                            <input type="text" class="form-control datetimepicker-input"
+                                                                   data-target="#datetimepicker-online"
+                                                                   id="form-deadline-input-online"/>
+                                                            <div class="input-group-append"
+                                                                 data-target="#datetimepicker-online"
+                                                                 data-toggle="datetimepicker">
+                                                                <div class="input-group-text"><i
+                                                                        class="fa fa-calendar"></i>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <h2>Before</h2>
+
+                                            <label for="freq-before-online">Heard us by *:</label>
+                                            <input class="form-control switch-req" id="freq-before-online" type="number"
+                                                   class='number'
+                                                   name="number"
+                                                   data-validate-min="1">
+
+                                            <label for="freq-unit-before-online">co:</label>
+                                            <select id="freq-unit-before-online" class="form-control switch-req">
+                                                <option value="">Choose..</option>
+                                                <option value="60">minutes</option>
+                                                <option value="3600">hours</option>
+                                                <option value="43200">days</option>
+                                            </select>
+
+                                            <h2>After</h2>
+
+                                            <label for="freq-after-online">Heard us by *:</label>
+                                            <input class="form-control switch-req" id="freq-after-online" type="number"
+                                                   class='number'
+                                                   name="number"
+                                                   data-validate-min="1">
+
+                                            <label for="freq-unit-after-online">co:</label>
+                                            <select id="freq-unit-after-online" class="form-control switch-req">
+                                                <option value="">Choose..</option>
+                                                <option value="60">minutes</option>
+                                                <option value="3600">hours</option>
+                                                <option value="43200">days</option>
+                                            </select>
+
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="contact" role="tabpanel"
+                                         aria-labelledby="contact-tab">
+                                        <div id="push" class="deadline-content">
+                                            <label>
+                                                <input type="checkbox" class="js-switch"/>
+                                            </label>
+                                            <div class="row">
+                                                <label class="col-form-label col-md-3 col-sm-3 label-align">Pick
+                                                    dead period</label>
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <div class="input-group date" id="datetimepicker-push"
+                                                             data-target-input="#form-deadline-input-push">
+                                                            <input type="text" class="form-control datetimepicker-input"
+                                                                   data-target="#datetimepicker-push"
+                                                                   id="form-deadline-input-push"/>
+                                                            <div class="input-group-append"
+                                                                 data-target="#datetimepicker-push"
+                                                                 data-toggle="datetimepicker">
+                                                                <div class="input-group-text"><i
+                                                                        class="fa fa-calendar"></i>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <h2>Before</h2>
+
+                                            <label for="freq-before-push">Heard us by *:</label>
+                                            <input class="form-control switch-req" id="freq-before-push" type="number"
+                                                   class='number'
+                                                   name="number"
+                                                   data-validate-min="1">
+
+                                            <label for="freq-unit-before-push">co:</label>
+                                            <select id="freq-unit-before-push" class="form-control switch-req">
+                                                <option value="">Choose..</option>
+                                                <option value="60">minutes</option>
+                                                <option value="3600">hours</option>
+                                                <option value="43200">days</option>
+                                            </select>
+
+                                            <h2>After</h2>
+
+                                            <label for="freq-after-push">Heard us by *:</label>
+                                            <input class="form-control switch-req" id="freq-after-push" type="number"
+                                                   class='number'
+                                                   name="number"
+                                                   data-validate-min="1">
+
+                                            <label for="freq-unit-after-push">co:</label>
+                                            <select id="freq-unit-after-push" class="form-control switch-req">
+                                                <option value="">Choose..</option>
+                                                <option value="60">minutes</option>
+                                                <option value="3600">hours</option>
+                                                <option value="43200">days</option>
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -148,9 +377,47 @@
     </div>
 </div>
 
+<script src="/production/js/table.js"></script>
+
 <script type="application/javascript">
     loadFormGenerator();
-    window.glob.rerenderPage = loadFormGenerator;
+    // window.glob.rerenderPage = loadFormGenerator;
 </script>
 
 <script src="/production/js/generator.js"></script>
+<script src="../vendors/jquery.hotkeys/jquery.hotkeys.js"></script>
+
+
+<!-- jQuery autocomplete -->
+<script src="../vendors/devbridge-autocomplete/dist/jquery.autocomplete.min.js"></script>
+<!-- jQuery Tags Input -->
+<script src="../vendors/jquery.tagsinput/src/jquery.tagsinput.js"></script>
+<!-- Bootstrap -->
+<script src="../vendors/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<!-- FastClick -->
+<script src="../vendors/fastclick/lib/fastclick.js"></script>
+<!-- NProgress -->
+<script src="../vendors/nprogress/nprogress.js"></script>
+<!-- bootstrap-progressbar -->
+<script src="../vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+<!-- iCheck -->
+<script src="../vendors/iCheck/icheck.min.js"></script>
+<!-- bootstrap-daterangepicker -->
+<script src="../vendors/moment/min/moment.min.js"></script>
+<script src="../vendors/bootstrap-daterangepicker/daterangepicker.js"></script>
+<!-- bootstrap-wysiwyg -->
+<script src="../vendors/bootstrap-wysiwyg/js/bootstrap-wysiwyg.min.js"></script>
+<script src="../vendors/google-code-prettify/src/prettify.js"></script>
+
+<!-- Switchery -->
+<script src="../vendors/switchery/dist/switchery.min.js"></script>
+<!-- Select2 -->
+<script src="../vendors/select2/dist/js/select2.full.min.js"></script>
+<!--&lt;!&ndash; Parsley &ndash;&gt;-->
+<!--<script src="../vendors/parsleyjs/dist/parsley.min.js"></script>-->
+<!-- Autosize -->
+<script src="../vendors/autosize/dist/autosize.min.js"></script>
+<!-- starrr -->
+<script src="../vendors/starrr/dist/starrr.js"></script>
+<!-- Custom Theme Scripts -->
+<script src="../build/js/custom.min.js"></script>

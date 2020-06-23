@@ -8,13 +8,17 @@ function setDateFormat(format){
     $('#datetimepicker1').datetimepicker({format: format});
 }
 
+function setMinDate(date) {
+    ['email', 'push', 'online'].map(t => $(`#datetimepicker-${t}`).datetimepicker({minDate: date}))
+}
+
 function refreshMemberTable(selectVal) {
     const table = $('#participants-table');
     $(".tableRow").remove();
     const token = localStorage.getItem("token");
     const {backend} = window.glob;
 
-    if(backend && token){
+    if (backend && token) {
         $.ajax({
             type: "GET",
             url: `${backend}/teams/get_members/${selectVal.value}/`,
@@ -40,14 +44,14 @@ function addParticipantRow(name, table) {
     const fieldDiv = $("<tr>")
         .addClass("tableRow")
         .append(
-        $('<td>').append($('<input>')
-            .attr('type', 'checkbox')
-            .attr('class', 'check-participant')
-        ),
-        $('<td>')
-            .attr('class', 'name')
-            .text(name)
-    )
+            $('<td>').append($('<input>')
+                .attr('type', 'checkbox')
+                .attr('class', 'check-participant')
+            ),
+            $('<td>')
+                .attr('class', 'name')
+                .text(name)
+        )
     table.append(fieldDiv);
 }
 
@@ -139,6 +143,17 @@ function submitGroup() {
     return false;
 }
 
+function scrapeDeadline(div) {
+    const ret = {}
+
+    ret['type'] = div;
+    ret['dead_period'] = 0;
+    ret['before_deadline_frequency'] = parseInt($(`#freq-before-${div}`).val()) * parseInt($(`#freq-unit-before-${div}`).val())
+    ret['after_deadline_frequency'] = parseInt($(`#freq-after-${div}`).val()) * parseInt($(`#freq-unit-after-${div}`).val())
+
+    return ret;
+}
+
 function submitForm() {
 
     const team = $("#form-team-dropdown").val();
@@ -152,12 +167,17 @@ function submitForm() {
     if (!(owner && token && backend && deadline && title))
         return false;
 
+    const notification_details = ['email', 'online', 'push']
+        .filter(t => $(`#${t} .js-switch`).is(':checked'))
+        .map(t => scrapeDeadline(t))
+
     const formJson = JSON.stringify({
         title: title,
         team: team,
         owner: owner,
         template_title: template,
-        deadline: deadline
+        deadline: deadline,
+        notification_details
     });
 
     alert(formJson);
@@ -346,12 +366,11 @@ function refreshForms(forms) {
     forms.map(f => addNavbarForm(f));
 }
 
-function addNavbarForm(form){
-    console.log(form)
+function addNavbarForm(form) {
     $("#form-list").append(
         $('<li>').append(
             $('<a>')
-                .attr("href",`dashboard/form/${form._id}`)
+                .attr("href", `dashboard/form/${form._id}`)
                 .text(form.title)
         )
     )
