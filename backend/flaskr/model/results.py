@@ -5,6 +5,9 @@ from bson import ObjectId
 from .utils import parse_id
 
 
+DATE_FORMAT = "%Y-%m-%d %H:%M:%S.%f"
+
+
 class FormResults:
     # results of sent forms, created from a template
     """
@@ -100,6 +103,8 @@ class FormResults:
 
     @property
     def send_date(self):
+        if isinstance(self._data["send_date"], str):
+            self._data["send_date"] = datetime.strptime(self._data["send_date"], DATE_FORMAT)
         return self._data["send_date"]
 
     @send_date.setter
