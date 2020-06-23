@@ -121,7 +121,7 @@ def test_assign_template_to_team(clear_db, flask_client, stub_user):
                 "after_deadline_frequency": 9000
             },
             {
-                "type": "e-mail",
+                "type": "email",
                 "dead_period": 36000,
                 "before_deadline_frequency": 9000,
                 "after_deadline_frequency": 4500
@@ -144,7 +144,7 @@ def test_assign_template_to_team(clear_db, flask_client, stub_user):
     notification_details = pending_form.notification_details
     assert len(notification_details) == len(post_data["notification_details"])
     assert any(x.type == "push" for x in notification_details)
-    assert any(x.type == "e-mail" for x in notification_details)
+    assert any(x.type == "email" for x in notification_details)
     assert any(x.dead_period == 36000 for x in notification_details)
 
     form_results_dao = FormResultsDAO()
