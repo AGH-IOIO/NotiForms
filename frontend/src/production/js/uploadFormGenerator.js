@@ -202,7 +202,7 @@ function formSubmit(){
         }
         else if(questionType === "single_choice"){
             var optionID = $("#answerDiv" + questionID).find($("input[type='radio']:checked")).attr("id");
-            optionID = optionID.slice("radio".length);
+            optionID = parseInt(optionID.slice("radio".length));
             answers.push(optionID);
         }
         else if(questionType === "multiple_choice"){
@@ -249,7 +249,11 @@ function formSubmit(){
 			failure: function (errMsg) {
 				console.log(errMsg);
 			},
+            error: function (errMsg){
+                alert(JSON.stringify(errMsg));
+            }
 		});
 	}
+    return false;
 }
 
