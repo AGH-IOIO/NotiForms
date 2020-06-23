@@ -204,18 +204,17 @@ function removeServiceWorkers() {
     })
 }
 
-
 function registerSWCall() {
 
-    removeServiceWorkers();
-
-    if (!window.Notification) {
+    if (!window.Notification || !navigator.serviceWorker) {
         console.log('Browser does not support notifications.');
     } else if (Notification.permission === 'granted') {
+        removeServiceWorkers();
         registerSW();
     } else {
         Notification.requestPermission().then(function (p) {
             if (p === 'granted') {
+                removeServiceWorkers();
                 registerSW();
             }
         });
