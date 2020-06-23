@@ -1,29 +1,10 @@
 function loadFormGenerator() {
-    const switches = ["email", "push", "online"]
     loadSelectForm('#form-template-dropdown', window.glob.templates, t => t.title);
     loadSelectForm('#form-team-dropdown', window.glob.teams, t => t);
     setDateFormat("YYYY-MM-DD HH:mm");
-    setMinDate(new Date());
-    loadSwitches(switches);
 }
 
-function loadSwitches(switches) {
-    switches.map(s => bindSwitch(s));
-}
-
-function bindSwitch(name) {
-    const checkbox = $(`#${name} .js-switch`);
-
-    checkbox.change(function () {
-        if (checkbox.is(':checked')) {
-            $(`#${name} .switch-req`).prop('required', true);
-        } else {
-            $(`#${name} .switch-req`).prop('required', false);
-        }
-    })
-}
-
-function setDateFormat(format) {
+function setDateFormat(format){
     $('#datetimepicker1').datetimepicker({format: format});
 }
 
@@ -338,12 +319,24 @@ function refreshOwnedForms(forms) {
 }
 
 function addOwnedFormItem(form) {
-    const li = $('#owned_template').clone(true, true);
+    let li = null;
+
+    if(form["finished"])
+        li = $('#finished_template').clone(true, true);
+    else
+        li = $('#owned_template').clone(true, true);
+
+    li.attr('id', null);
     li.css('display', '');
     li.addClass('custom');
-    li.find('a').text(form["_id"]);
+    li.find('a').text(form["title"]);
     li.find('a').attr("id", form["_id"]);
-    $("#owned_list").append(li);
+    console.log(li)
+
+    if(form["finished"])
+        $("#finished_list").append(li);
+    else
+        $("#owned_list").append(li);
 }
 
 function formsApiCall(username, token) {

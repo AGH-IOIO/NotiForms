@@ -1,14 +1,16 @@
-fields = {
-    "title": "Would you please answer some questions about the meeting", "questions":
-        [{"type": "open_text", "title": "What is the best time for you to meet?", "answer": ""},
-            {"type": "open_text", "title": "question2", "answer": ""}]
-};
+fields = {"owner":"admin","title":"Ankieta 1",
+    "questions":[{"type":"single_choice","title":"This is single-choice question1?","options":["This is option 1.","This is option 2.","This is option 3."]},
+        {"type":"open_text","title":"This is a text question2?","options":[]},
+        {"type":"open_text","title":"This is a text question3?","options":[]},
+        {"type":"multiple_choice","title":"This is multiple-choice question1?","options":["This is option 1.","This is option 2.","This is option 3.","This is option 4."]},
+        {"type":"multiple_choice","title":"This is multiple-choice question1?","options":["This is option 1.","This is option 2.","This is option 3."]}]};
 
 questionDivId = 0;
 
 let form = {};
 
 function loadForm() {
+
     const {pathname} = window.location;
     const id = pathname.split("/").pop()
 
@@ -64,77 +66,194 @@ function generate() {
             .text(title);
         $("#form_title").append(form_name);
 
-        fields.questions.forEach(question => {
-            var question_title = (questionDivId + 1).toString(10) + ". " + question.title;
-            var questionDiv = $("<div>")
+		fields.questions.forEach(question => {
+			var question_title = (questionDivId + 1).toString(10) + ". " + question.title;
+			var questionType = question.type;
+			var questionDiv = $("<div>")
                 .addClass("row")
-                .addClass("item")
-                .addClass("form-group")
+				.addClass("item")
+				.addClass("form-group");
             var label_question_title = $("<h4>")
                 .addClass("title_left")
-                .attr("for", "input-form-name")
-                .text(question_title);
-            var inputDiv = $("<div>")
-                .addClass("row")
-                .attr("id", questionDivId);
-
-
-            var input = $("<input>")
-                .attr("type", "text")
-                .addClass("form-control")
-                .attr("placeholder", "Answer")
-                .attr("id", questionDivId)
-                .attr("required", "required")
-                .attr("padding-bottom", "50px");
+				.attr("for", "input-form-name")
+				.text(question_title);
 
             questionDiv.append(label_question_title);
-            inputDiv.append(input);
-            inputDiv.css("padding-bottom", "15px");
-            $("#inquiry-fields").append(questionDiv).append(inputDiv);
-            questionDivId++;
-        });
-    }
+            $("#inquiry-fields").append(questionDiv);
+            if(questionType === "open_text"){
+                addTextAnswerInput(questionDivId);
+            }
+            else if(questionType === "single_choice"){
+                addSingleChoiceAnswerInput(questionDivId);
+            }
+            else if(questionType === "multiple_choice"){
+                addMultipleChoiceAnswerInput(questionDivId);
+            }
+			questionDivId++;
+		});
+	}
+}
+
+function addTextAnswerInput(questionID){
+
+    var inputDiv = $("<div>")
+        .addClass("row")
+        .attr("id", "answerDiv" + questionID);
+
+
+    var input = $("<input>")
+        .attr("type", "text")
+        .addClass("form-control")
+        .attr("placeholder", "Answer")
+        .attr("id","textAnswer" + questionID)
+        .attr("required","required")
+        .attr("padding-bottom", "50px");
+
+    inputDiv.append(input);
+    inputDiv.css("padding-bottom","15px");
+
+    $("#inquiry-fields").append(inputDiv);
+}
+
+function addSingleChoiceAnswerInput(questionID){
+    var inputDiv = $("<div>")
+        .attr("id", "answerDiv" + questionID);
+
+    var options = fields.questions[questionID].options;
+    let radioID = 0;
+    options.forEach(option => {
+        var radioDiv = $("<div>")
+            .addClass("row")
+            .addClass("item")
+            .addClass("form-group")
+            .attr("id", "answerRadioDiv" + questionID);
+
+        var radio = $("<input>")
+            .attr("type", "radio")
+            .attr("checked", "checked")
+            .attr("name", "radio" + questionID)
+            .attr("id", "radio" + radioID);
+
+        radio.css({width: "25px", height: "17px"});
+
+
+        var label = $("<label>")
+            .attr("for", "radio" + questionID)
+            .html(option);
+
+
+        radioDiv.append(radio);
+        radioDiv.append(label);
+        inputDiv.append(radioDiv);
+
+        radioID++;
+    });
+
+    inputDiv.css("padding-bottom","15px");
+
+    $("#inquiry-fields").append(inputDiv);
+}
+
+function addMultipleChoiceAnswerInput(questionID){
+    var inputDiv = $("<div>")
+        .attr("id", "answerDiv" + questionID);
+
+    var options = fields.questions[questionID].options;
+    var checkIndex = 0;
+    options.forEach(option => {
+        var checkDiv = $("<div>")
+            .addClass("row")
+            .addClass("item")
+            .addClass("form-group")
+            .attr("id", "answerCheckDiv" + questionID);
+
+        var check = $("<input>")
+            .attr("type", "checkbox")
+            .attr("id", "check" + checkIndex);
+
+        check.css({width: "25px", height: "17px"});
+
+        var label = $("<label>")
+            .attr("for", "check" + questionID)
+            .html(option);
+
+
+        checkDiv.append(check);
+        checkDiv.append(label);
+        inputDiv.append(checkDiv);
+
+        checkIndex++;
+    });
+
+    inputDiv.css("padding-bottom","15px");
+
+    $("#inquiry-fields").append(inputDiv);
 }
 
 
-function formSubmit() {
-    for (var i = 0; i < questionDivId; i++) {
-        fields.questions[i].answer = $("#" + i).find("input[type='text']").val();
+
+function formSubmit(){
+    let answers = [];
+
+	for (var questionID = 0; questionID <  questionDivId; questionID++) {
+        var questionType = fields.questions[questionID].type;
+        if(questionType === "open_text"){
+            answers.push($("#answerDiv" + questionID).find("input[type='text']").val());
+        }
+        else if(questionType === "single_choice"){
+            var optionID = $("#answerDiv" + questionID).find($("input[type='radio']:checked")).attr("id");
+            optionID = parseInt(optionID.slice("radio".length));
+            answers.push(optionID);
+        }
+        else if(questionType === "multiple_choice"){
+            let checkedOption = [];
+            $.each($("#answerDiv" + questionID).find("input[type='checkbox']:checked"), function(){
+                var checkID = $(this).attr("id");
+                checkID = parseInt(checkID.slice("check".length));
+                checkedOption.push(checkID);
+            });
+            answers.push(checkedOption);
+        }
     }
 
-    const answers = fields.questions.map(q => q.answer);
-    const username = localStorage.getItem("username");
+	const username = localStorage.getItem("username");
 
-    const answerJson = JSON.stringify({
-        form_id: form._id,
-        answers: answers,
-        recipient: username
-    });
-    alert(answerJson);
+	const answerJson = JSON.stringify({
+		form_id: form._id,
+		answers: answers,
+		recipient: username
+	});
+	alert(answerJson);
 
-    const {backend} = window.glob;
-    const token = localStorage.getItem("token");
+	//TODO delete
+	//return;
 
-    if (backend && token) {
-        $.ajax({
-            type: "POST",
-            url: `${backend}/forms/fill/`,
-            data: answerJson,
-            headers: {
-                "Authorization": token
-            },
-            contentType: "application/json",
-            dataType: "json",
-            success: function (data) {
-                refreshNavbar();
-                window.location.href = "/dashboard";
-            },
-            failure: function (errMsg) {
-                console.log(errMsg);
-            },
-        });
-    }
+	const {backend} = window.glob;
+	const token = localStorage.getItem("token");
 
-    debugger;
+	if(backend && token) {
+		$.ajax({
+			type: "POST",
+			url: `${backend}/forms/fill/`,
+			data: answerJson,
+			headers: {
+				"Authorization": token
+			},
+			contentType: "application/json",
+			dataType: "json",
+			success: function (data) {
+				refreshNavbar();
+				window.location.href = "/dashboard";
+				//console.log("success");
+			},
+			failure: function (errMsg) {
+				console.log(errMsg);
+			},
+            error: function (errMsg){
+                alert(JSON.stringify(errMsg));
+            }
+		});
+	}
+    return false;
 }
 

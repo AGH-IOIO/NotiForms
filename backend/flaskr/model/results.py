@@ -61,8 +61,8 @@ class FormResults:
         new_data["_id"] = self.id
         new_data["owner"] = self.owner
         new_data["title"] = self.title
-        new_data["send_date"] = self.send_date
-        new_data["deadline"] = self.deadline
+        new_data["send_date"] = str(self.send_date)
+        new_data["deadline"] = str(self.deadline)
         new_data["finished"] = self.finished
         new_data["not_filled_yet"] = self.not_filled_yet
         new_data["questions"] = self.questions

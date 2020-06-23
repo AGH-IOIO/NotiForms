@@ -1,4 +1,5 @@
 from werkzeug.security import generate_password_hash, check_password_hash
+
 from .utils import parse_id
 
 
@@ -9,13 +10,20 @@ class User:
       _id: ObjectId,
       username: string,    # unique
       email: string,       # unique
-      password: string     # hash, not plaintext
-      teams: list[string]  # team names
+      password: string,     # hash, not plaintext
+      teams: list[string],  # team names
+      push_subscription_info: list[{
+            user_agent: string,
+            subscription_info: dict
+        }
     }
     """
 
     def __init__(self, data, password_hash=False):
         data["_id"] = parse_id(data)
+
+        if "push_subscription_info" not in data:
+            data["push_subscription_info"] = []
         self._data = data
         if not password_hash:
             self._data["password"] = generate_password_hash(data["password"])
@@ -78,6 +86,14 @@ class User:
     @teams.setter
     def teams(self, new_teams):
         self._data["teams"] = new_teams
+
+    @property
+    def push_subscription_info(self):
+        return self._data["push_subscription_info"]
+
+    @push_subscription_info.setter
+    def push_subscription_info(self, new_info):
+        self._data["push_subscription_info"] = new_info
 
     def add_team(self, team_name):
         if team_name not in self._data["teams"]:
