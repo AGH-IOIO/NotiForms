@@ -118,6 +118,8 @@ class FormResults:
 
     @property
     def deadline(self):
+        if isinstance(self._data["deadline"], str):
+            self._data["deadline"] = datetime.strptime(self._data["deadline"], DATE_FORMAT)
         return self._data["deadline"]
 
     @deadline.setter
