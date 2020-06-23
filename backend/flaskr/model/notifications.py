@@ -33,7 +33,7 @@ class NotificationDetails:
 
     ALLOWED_TYPES = [
         "push",
-        "e-mail",
+        "email",
         "online"
     ]
 
